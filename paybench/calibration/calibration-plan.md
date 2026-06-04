@@ -31,7 +31,7 @@ Documentary sweep done 2026-06-04 — starting log-normal parameters sourced per
 | Rail | Finality model | Median (s) | sigma_log (tail) | Confidence | First-party next |
 |---|---|---|---|---|---|
 | R1 x402-Base | probabilistic, soft@block | **2.05** | 0.082 | high | **first-party n=30 done 2026-06-04** |
-| R2 x402-Stellar | deterministic @ ledger close | 6.0 | 0.26 | medium | capture adapter run |
+| R2 x402-Stellar | deterministic @ ledger close | **2.74** | 0.116 | high (manual)² | **first-party n=30 done 2026-06-04 (manual path)** |
 | R9 x402-Solana | probabilistic, 32-slot **finalized** | **14.63** | 0.057 (devnet)¹ | high (central) | **first-party n=30 done 2026-06-04** |
 | R10 MPP-on-Tempo | deterministic BFT (Simplex) | 1.0 | 0.30 | **low (proxy)** | run vs provisioned Tempo testnet |
 | R11 MPP-on-Lightning | off-chain HTLC, instant | 0.8 | 0.80 | medium (body) / est. tail | R3 regtest body proxy; R11 access pending |
@@ -41,6 +41,8 @@ Three load-bearing cautions from the sweep: (1) **Solana `finalized` ≠ `confir
 ¹ **R9 first-party update (2026-06-04).** n=30 devnet run (0 failures) gave empirical finalized median **14.63s** (confirming the 13.5s doc estimate) with σ_log 0.057 — but that σ is from *quiet devnet* and understates mainnet congestion (one devnet excursion already hit 19.46s; docs say 10–20s+). Central tendency is now high-confidence empirical; **the published-fixture σ should be widened toward ~0.15–0.25 (doc-informed)** until a mainnet/congested run is captured. The same run captured confirmed-level latency (median 2.27s) for free — that feeds the future Day-30 authorization-latency dimension. Samples committed at `samples/R9-x402-solana.samples.jsonl`.
 
 **R1 first-party update (2026-06-04).** n=30 Base Sepolia run (0 failures) gave empirical median **2.05s**, σ_log **0.082** — the doc seed (3.0 / 0.45) **over-estimated both** the median and the spread. Base soft finality is genuinely ~2s and tight (stable 2s blocks, ~0 reorg), so R1 carries less tail-risk than R9. Measures soft finality (request→200, incl. facilitator settle), not hard L1 (~20min, excluded). Samples committed at `samples/R1-x402-base.samples.jsonl`.
+
+² **R2 first-party update (2026-06-04).** n=30 (0 failures) on the **manual direct-payment path** (classic USDC payment via Horizon `submitTransaction`, resolves at ledger close) gave median **2.74s**, σ_log 0.116 — well below the 6.0s doc seed (which over-assumed a full ledger close + facilitator; real submit→inclusion averages ~half a ledger interval). This is a **lower bound** on the spec x402-on-Stellar number: the OZ-facilitator path adds a verify+settle round-trip. The spec adapter is wired (`server.ts` + `createAuthHeaders`) and pending the free OZ testnet key — re-measure on the spec path once keyed and raise the median accordingly. Samples at `samples/R2-x402-stellar.samples.jsonl`.
 
 ## Distribution approach (RECOMMENDED — to confirm)
 
@@ -59,4 +61,4 @@ Seeded RNG drives all sampling; fixtures are content-addressed (hash recorded in
 
 ## Sourcing method — DECIDED: Hybrid (C), 2026-06-04
 
-First-party measurement where adapters already run (R1 Base, R9 Solana, R3 Lightning regtest → R11 proxy); rail docs + public telemetry for the rest and for spread/tail. Documentary track done (table above). First-party track: **R1 + R9 done (n=30 each, 0 failures, 2026-06-04)** — empirical distributions now replace the doc-derived medians (measurement harnesses: `poc/rail-x402-base/measure_finality.py`, `poc/rail-solana-x402/src/measure-finality.ts`). **Next:** capture an R2 Stellar run (no adapter built yet); R10 (Tempo) + R11 (Lightspark) stay doc-proxy until full access lands.
+First-party measurement where adapters already run (R1 Base, R9 Solana, R3 Lightning regtest → R11 proxy); rail docs + public telemetry for the rest and for spread/tail. Documentary track done (table above). First-party track: **R1 + R9 + R2 done (n=30 each, 0 failures, 2026-06-04)** — empirical distributions now replace the doc-derived medians (harnesses: `poc/rail-x402-base/measure_finality.py`, `poc/rail-solana-x402/src/measure-finality.ts`, `poc/rail-stellar-x402/src/measure-finality-manual.ts`). R2 is the **manual** path (lower bound); its **spec** x402-on-Stellar adapter (`@x402/stellar` + OZ facilitator) is wired + pending the free OZ testnet key, after which R2 gets re-measured with the facilitator round-trip. **Remaining:** R10 (Tempo) + R11 (Lightspark) stay doc-proxy until full access lands.

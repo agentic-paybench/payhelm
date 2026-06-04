@@ -1,5 +1,5 @@
 # PayBench calibration provenance — R2 x402-Stellar settlement-finality
-# 2026-06-04 (documentary sweep). No first-party data yet.
+# Updated 2026-06-04 with first-party n=30 (MANUAL direct-payment path; spec/facilitator run pending OZ key).
 
 rail: "R2 x402-Stellar"
 dimension: settlement-finality
@@ -7,31 +7,32 @@ unit: seconds
 
 distribution:
   family: lognormal
-  parameters: {median_s: 6.0, sigma_log: 0.26}   # median 6.0s, P99 ~11s (matches observed outlier)
-  approach: parametric-from-docs
+  parameters: {median_s: 2.74, sigma_log: 0.116}   # EMPIRICAL n=30, manual direct-payment (no facilitator)
+  approach: first-party-empirical
 
 sources:
+  - type: first-party
+    ref: "poc/rail-stellar-x402 measure-finality-manual.ts, n=30 testnet; samples/R2-x402-stellar.samples.jsonl"
+    date: "2026-06-04"
+    sample_size: 30
+    note: >
+      0 failures. Manual direct classic-USDC payment buyer->seller via Horizon submitTransaction
+      (resolves at ledger close = finality). median 2.74s, sigma_log 0.116, p50 2.73, p90 3.17, p99 3.48.
+      MANUAL path: no x402 facilitator, no Soroban auth-entry — omits the facilitator round-trip.
   - type: documentation
-    ref: "Stellar Q3 2025 Quarterly Report https://stellar.org/blog/foundation-news/q3-2025-quarterly-report"
+    ref: "Stellar ledger close ~5.8s (Q3 2025 report / dashboard)"
     date: "2026-06-04"
     sample_size: 0
-    note: "Avg ledger close 5.76s. Deterministic finality at ledger close (SCP); no reorg, no confirmation depth."
-  - type: telemetry
-    ref: "Stellar Network Dashboard https://dashboard.stellar.org/"
-    date: "2026-06-04"
-    sample_size: 0
-    note: "5.83s avg over last 200 ledgers; one ledger observed closing in 11s (~2x mean) -> right tail."
-  - type: documentation
-    ref: "Stellar Consensus Protocol https://stellar.org/learn/stellar-consensus-protocol"
-    date: "2026-06-04"
-    sample_size: 0
-    note: "Single-ledger finality; quorum permanent-commit. x402 facilitator envelope ~0.6s additive."
+    note: "Deterministic finality at ledger close, no reorg. submit->inclusion averages ~half a ledger interval -> ~2.7s observed."
 
 calibration_date: "2026-06-04"
-confidence: medium
+confidence: high
 fixture_content_hash: ""
 notes: >
-  Median 6.0s = ~5.8s ledger close + ~0.6s x402 facilitator, rounded. sigma_log 0.26 set so P99
-  ~ the observed 11s outlier (deterministic-finality chain -> tight body, modest tail). Tail is
-  thin-evidence (single dashboard outlier, not a distribution) -> flag P99 as estimate. CAP-0070
-  may shorten close time in future; revisit. No first-party yet (no Stellar adapter run captured).
+  First-party n=30 supersedes the doc seed (6.0 / 0.26), which over-estimated the median (it assumed a
+  full ledger close + facilitator; real submit->inclusion averages ~2.7s). This is the MANUAL
+  direct-payment path -> a LOWER BOUND on spec x402-on-Stellar finality, which adds the OZ facilitator
+  round-trip (verify+settle API + facilitator rebuild/submit). Spec path is wired (server.ts via
+  @x402/stellar + OZ facilitator, createAuthHeaders) and pending the free OZ testnet key
+  (https://channels.openzeppelin.com/testnet/gen). Re-measure on the spec path once keyed; expect the
+  median to rise by the facilitator round-trip.
