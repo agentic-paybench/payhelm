@@ -1,0 +1,42 @@
+# PayBench calibration provenance — R1 x402-Base settlement-finality
+# Updated 2026-06-04 (documentary sweep). STARTING parameters — refine with n>=30 first-party.
+
+rail: "R1 x402-Base"
+dimension: settlement-finality
+unit: seconds
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 3.0, sigma_log: 0.45}   # mu = ln(median_s); median 3.0s, P90 ~5.3s, P99 ~8.5s
+  approach: hybrid                                # first-party (n=2) + documentation
+
+sources:
+  - type: first-party
+    ref: "poc/rail-x402-base two-org run, tx 0x6c2947...7943e, block 41843853"
+    date: "2026-05-22"
+    sample_size: 1
+    note: "6.781s wall-clock (request -> 200). Two-org architecture; runs slower than single-org."
+  - type: first-party
+    ref: "poc/rail-x402-base single-org run"
+    date: "2026-05-22"
+    sample_size: 1
+    note: "2.521s wall-clock. ~2.7x faster than two-org. Spread is real."
+  - type: documentation
+    ref: "Base docs Transaction Finality https://docs.base.org/base-chain/network-information/transaction-finality"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "Block time 2s; soft finality ~2s; reorg rate ~0. Hard L1 finality ~20min (NOT used; payment waits on soft)."
+  - type: documentation
+    ref: "Eco x402 explainer https://eco.com/support/en/articles/14839402-x402-protocol-explained"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "x402-on-Base end-to-end typically 3-4s. x402 facilitator envelope ~0.5-0.7s non-chain (near-constant)."
+
+calibration_date: "2026-06-04"
+confidence: medium
+fixture_content_hash: ""
+notes: >
+  Median 3.0s blends single-org first-party (~2.5s) with Base soft finality (~2s) + ~0.6s x402
+  facilitator overhead; Eco's 3-4s corroborates. Our production two-org adapter trends higher
+  (~5-7s), so median may rise to ~4s once n>=30 first-party trials land. Soft finality only
+  (hard L1 ~20min mode excluded). sigma_log 0.45 from the observed ~2.7x first-party spread.

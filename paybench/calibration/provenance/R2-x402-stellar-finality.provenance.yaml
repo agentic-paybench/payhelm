@@ -1,0 +1,37 @@
+# PayBench calibration provenance — R2 x402-Stellar settlement-finality
+# 2026-06-04 (documentary sweep). No first-party data yet.
+
+rail: "R2 x402-Stellar"
+dimension: settlement-finality
+unit: seconds
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 6.0, sigma_log: 0.26}   # median 6.0s, P99 ~11s (matches observed outlier)
+  approach: parametric-from-docs
+
+sources:
+  - type: documentation
+    ref: "Stellar Q3 2025 Quarterly Report https://stellar.org/blog/foundation-news/q3-2025-quarterly-report"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "Avg ledger close 5.76s. Deterministic finality at ledger close (SCP); no reorg, no confirmation depth."
+  - type: telemetry
+    ref: "Stellar Network Dashboard https://dashboard.stellar.org/"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "5.83s avg over last 200 ledgers; one ledger observed closing in 11s (~2x mean) -> right tail."
+  - type: documentation
+    ref: "Stellar Consensus Protocol https://stellar.org/learn/stellar-consensus-protocol"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "Single-ledger finality; quorum permanent-commit. x402 facilitator envelope ~0.6s additive."
+
+calibration_date: "2026-06-04"
+confidence: medium
+fixture_content_hash: ""
+notes: >
+  Median 6.0s = ~5.8s ledger close + ~0.6s x402 facilitator, rounded. sigma_log 0.26 set so P99
+  ~ the observed 11s outlier (deterministic-finality chain -> tight body, modest tail). Tail is
+  thin-evidence (single dashboard outlier, not a distribution) -> flag P99 as estimate. CAP-0070
+  may shorten close time in future; revisit. No first-party yet (no Stellar adapter run captured).
