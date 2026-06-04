@@ -1,35 +1,36 @@
-# PayBench calibration provenance — R10 MPP-on-Tempo (Stripe PSP) settlement-finality
-# 2026-06-04 (documentary sweep). LOW CONFIDENCE — private testnet, design targets only.
+# PayBench calibration provenance — R10 MPP-on-Tempo settlement-finality
+# Updated 2026-06-04 with first-party n=30 (REAL-RAIL — supersedes the doc-proxy LOW estimate).
 
-rail: "R10 MPP-on-Tempo (Stripe PSP)"
+rail: "R10 MPP-on-Tempo (Machine Payments Protocol)"
 dimension: settlement-finality
 unit: seconds
 
 distribution:
   family: lognormal
-  parameters: {median_s: 1.0, sigma_log: 0.30}   # PROXY: BFT design target, NOT Tempo-measured
-  approach: parametric-from-docs
+  parameters: {median_s: 1.75, sigma_log: 0.177}   # EMPIRICAL n=30, real-rail Moderato testnet
+  approach: first-party-empirical
 
 sources:
+  - type: first-party
+    ref: "poc/rail-tempo-mpp measure-finality.ts, n=30 Moderato testnet (chain 42431); samples/R10-mpp-tempo.samples.jsonl"
+    date: "2026-06-04"
+    sample_size: 30
+    note: >
+      0 failures. Real-rail MPP (Machine Payments Protocol) via the mppx SDK, pure-Tempo path, pathUSD
+      TIP-20. request->200 wall-clock (full MPP flow: 402 + signed TIP-20 authorization + on-chain settle
+      + 200). median 1.75s, sigma_log 0.177, p50 1.85, p90 1.90, p99 2.66.
   - type: documentation
-    ref: "Sentora technical observations on Tempo https://medium.com/sentora/fine-tuning-the-world-computer-on-payments-some-technical-observations-about-tempo-1d1bfa4a70d5"
+    ref: "Tempo / mpp.dev — ~500ms block finality target"
     date: "2026-06-04"
     sample_size: 0
-    note: "Simplex BFT, ~500ms blocks, deterministic immediate finality (no reorg). Reth-based EVM L1."
-  - type: documentation
-    ref: "insights4vc Tempo: Stripe's Blockchain https://insights4vc.substack.com/p/tempo-stripes-blockchain-for-stablecoin"
-    date: "2026-06-04"
-    sample_size: 0
-    note: ">=100k TPS, sub-1s finality TARGET. Private testnet, no public usage data (aspirational, not measured)."
+    note: "Underlying TIP-20 settlement ~sub-second; measured request->200 ~1.75s adds MPP protocol + HTTP overhead."
 
 calibration_date: "2026-06-04"
-confidence: low
+confidence: high
 fixture_content_hash: ""
 notes: >
-  LOW CONFIDENCE, do-not-publish-derived. Everything here is design target / private-testnet
-  commentary; there is NO measured network telemetry and NO variance/tail data for Tempo. Median
-  1.0s = ~0.5-1s BFT finality target + placeholder ~0.5s Stripe-MPP protocol envelope (no
-  rail-specific MPP latency figure found). sigma_log 0.30 is a PROXY borrowed from generic
-  deterministic-finality BFT L1 behaviour, not Tempo-measured. Chain IDs: Moderato testnet 42431,
-  Presto mainnet 4217 (NOT deprecated Andantino 42429). Revisit when Moderato/Presto telemetry is
-  public, or once first-party runs against the provisioned Tempo testnet land.
+  REAL-RAIL — supersedes the doc-proxy 1.0s LOW estimate AND the "Partial / mock per Variant E" status.
+  MPP-on-Tempo is buildable today: mppx SDK + Moderato testnet, keyless tempo_fundAddress faucet, NO Stripe,
+  NO API key, non-custodial (buyer signs TIP-20). Only the Stripe-mediated MPP *acceptance* leg stays
+  Variant-E (US-only; settles only simulated on testnet). MPP = Machine Payments Protocol (same protocol as
+  R11, different settlement rail). Measured request->200 (full flow); underlying Tempo settlement ~500ms.
