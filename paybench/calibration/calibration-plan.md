@@ -32,11 +32,13 @@ Documentary sweep done 2026-06-04 — starting log-normal parameters sourced per
 |---|---|---|---|---|---|
 | R1 x402-Base | probabilistic, soft@block | 3.0 | 0.45 | medium | extend adapter to n≥30 (runs today) |
 | R2 x402-Stellar | deterministic @ ledger close | 6.0 | 0.26 | medium | capture adapter run |
-| R9 x402-Solana | probabilistic, 32-slot **finalized** | 13.5 | 0.25 | high (tail est.) | extend adapter (devnet, runs today) |
+| R9 x402-Solana | probabilistic, 32-slot **finalized** | **14.63** | 0.057 (devnet)¹ | high (central) | **first-party n=30 done 2026-06-04** |
 | R10 MPP-on-Tempo | deterministic BFT (Simplex) | 1.0 | 0.30 | **low (proxy)** | run vs provisioned Tempo testnet |
 | R11 MPP-on-Lightning | off-chain HTLC, instant | 0.8 | 0.80 | medium (body) / est. tail | R3 regtest body proxy; R11 access pending |
 
 Three load-bearing cautions from the sweep: (1) **Solana `finalized` ≠ `confirmed`** — the ~1–2s figure is confirmed/optimistic; true finality is ~13s (~10× difference, the most likely source of a wrong fixture). Methodology §3 already commits to `finalized` — correct. (2) **R10 Tempo is genuinely thin** — design targets on a private testnet, no measured variance; every Tempo parameter is low-confidence proxy. (3) **Stellar + Lightning tails** are real but under-quantified (one Stellar 11s outlier; Lightning's qualitative retry mechanism) — P99s parameterised by us, flagged as estimates. The x402 facilitator envelope (~0.5–0.7s, near-constant) is folded into R1/R2/R9 medians.
+
+¹ **R9 first-party update (2026-06-04).** n=30 devnet run (0 failures) gave empirical finalized median **14.63s** (confirming the 13.5s doc estimate) with σ_log 0.057 — but that σ is from *quiet devnet* and understates mainnet congestion (one devnet excursion already hit 19.46s; docs say 10–20s+). Central tendency is now high-confidence empirical; **the published-fixture σ should be widened toward ~0.15–0.25 (doc-informed)** until a mainnet/congested run is captured. The same run captured confirmed-level latency (median 2.27s) for free — that feeds the future Day-30 authorization-latency dimension. Samples committed at `samples/R9-x402-solana.samples.jsonl`.
 
 ## Distribution approach (RECOMMENDED — to confirm)
 

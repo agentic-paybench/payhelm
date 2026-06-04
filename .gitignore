@@ -16,6 +16,7 @@ microsoft_client.lock
 *.log
 *.out
 *.jsonl
+!paybench/calibration/samples/*.jsonl
 nltk_data/
 
 # MechanicalTurkCritiqueClient
