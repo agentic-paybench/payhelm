@@ -1,0 +1,24 @@
+# PayBench calibration provenance — TEMPLATE
+# One file per fixture. Documents how a calibrated mock-fixture distribution was sourced.
+# See ../calibration-plan.md and ../../methodology/methodology.md §7.
+
+rail: "<R-id> <name>"            # e.g. "R1 x402-Base"
+dimension: settlement-finality   # this batch is finality only (AP2/R6 -> Day-30 auth-latency)
+unit: seconds                    # wall-clock, submission -> final
+
+distribution:
+  family: lognormal              # lognormal | empirical | gamma | other (justify in notes)
+  parameters: {}                 # e.g. {mu: <float>, sigma: <float>}  (log-space for lognormal)
+  approach: parametric-from-docs # first-party-empirical | parametric-from-docs | hybrid
+
+sources:                         # >= 1; combine first-party + doc + telemetry per the plan
+  - type: first-party            # first-party | documentation | telemetry
+    ref: "<path / URL / run id>"
+    date: "<YYYY-MM-DD>"
+    sample_size: 0               # n observations contributed (0 for doc-only)
+    note: ""
+
+calibration_date: "<YYYY-MM-DD>"
+confidence: low                  # low | medium | high  (drives whether a rail is benchmark-ready)
+fixture_content_hash: ""         # sha256 of the generated fixture; filled at fixture generation
+notes: ""

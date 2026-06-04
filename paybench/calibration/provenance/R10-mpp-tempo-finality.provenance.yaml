@@ -1,0 +1,35 @@
+# PayBench calibration provenance — R10 MPP-on-Tempo (Stripe PSP) settlement-finality
+# 2026-06-04 (documentary sweep). LOW CONFIDENCE — private testnet, design targets only.
+
+rail: "R10 MPP-on-Tempo (Stripe PSP)"
+dimension: settlement-finality
+unit: seconds
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 1.0, sigma_log: 0.30}   # PROXY: BFT design target, NOT Tempo-measured
+  approach: parametric-from-docs
+
+sources:
+  - type: documentation
+    ref: "Sentora technical observations on Tempo https://medium.com/sentora/fine-tuning-the-world-computer-on-payments-some-technical-observations-about-tempo-1d1bfa4a70d5"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "Simplex BFT, ~500ms blocks, deterministic immediate finality (no reorg). Reth-based EVM L1."
+  - type: documentation
+    ref: "insights4vc Tempo: Stripe's Blockchain https://insights4vc.substack.com/p/tempo-stripes-blockchain-for-stablecoin"
+    date: "2026-06-04"
+    sample_size: 0
+    note: ">=100k TPS, sub-1s finality TARGET. Private testnet, no public usage data (aspirational, not measured)."
+
+calibration_date: "2026-06-04"
+confidence: low
+fixture_content_hash: ""
+notes: >
+  LOW CONFIDENCE, do-not-publish-derived. Everything here is design target / private-testnet
+  commentary; there is NO measured network telemetry and NO variance/tail data for Tempo. Median
+  1.0s = ~0.5-1s BFT finality target + placeholder ~0.5s Stripe-MPP protocol envelope (no
+  rail-specific MPP latency figure found). sigma_log 0.30 is a PROXY borrowed from generic
+  deterministic-finality BFT L1 behaviour, not Tempo-measured. Chain IDs: Moderato testnet 42431,
+  Presto mainnet 4217 (NOT deprecated Andantino 42429). Revisit when Moderato/Presto telemetry is
+  public, or once first-party runs against the provisioned Tempo testnet land.

@@ -1,0 +1,38 @@
+# PayBench calibration provenance — R9 x402-Solana settlement-finality
+# 2026-06-04 (documentary sweep). CRITICAL: `finalized`, NOT `confirmed`.
+
+rail: "R9 x402-Solana"
+dimension: settlement-finality
+unit: seconds
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 13.5, sigma_log: 0.25}   # finalized commitment; median ~13.5s, P99 ~24s under congestion
+  approach: parametric-from-docs
+
+sources:
+  - type: documentation
+    ref: "Helius Solana Commitment Levels https://www.helius.dev/blog/solana-commitment-levels"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "finalized = 32 slots x ~400ms ~= 13s; 10-20s normal; congestion extends. confirmed ~0.6s (NOT used)."
+  - type: documentation
+    ref: "Anza/Agave Commitment Status https://docs.anza.xyz/consensus/commitments"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "finalized = supermajority + >=31 additional confirmed blocks (rooted); irreversible level."
+  - type: documentation
+    ref: "Eco x402 explainer (Solana end-to-end 1-2s = CONFIRMED-level, not finalized)"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "x402-on-Solana ~1-2s reflects confirmed/optimistic; true finalized chain term is ~13s + ~0.6s facilitator."
+
+calibration_date: "2026-06-04"
+confidence: high
+fixture_content_hash: ""
+notes: >
+  LOAD-BEARING: PayBench measures `finalized` (methodology s3 table), NOT `confirmed`. The ~1-2s
+  number circulating for x402-on-Solana is confirmed/optimistic and is ~10x too fast for finality.
+  Median 13.5s = ~13s finalized + ~0.6s facilitator. sigma_log 0.25 captures the 10-20s+ congestion
+  band (P99 ~24s). Central HIGH confidence; upper tail is a directional estimate (no clean percentile
+  distribution published). Devnet finality math identical to mainnet; mainnet congestion drives tail.

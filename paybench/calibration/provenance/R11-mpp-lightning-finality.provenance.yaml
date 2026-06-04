@@ -1,0 +1,39 @@
+# PayBench calibration provenance — R11 MPP-on-Lightning (Lightspark) settlement-finality
+# 2026-06-04 (documentary sweep). MPP here = Lightning Multi-Path Payments (NOT Stripe MPP/R10).
+
+rail: "R11 MPP-on-Lightning (Lightspark)"
+dimension: settlement-finality
+unit: seconds
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 0.8, sigma_log: 0.80}   # low floor, heavy right tail from hops + retries
+  approach: parametric-from-docs
+
+sources:
+  - type: documentation
+    ref: "Fidelity Digital Assets + Voltage, The Lightning Network (2025) https://www.fidelitydigitalassets.com/sites/g/files/djuvja3256/files/acquiadam/FDA_US_UK_TheLightningNetwork_ExpandingBitcoinUseCases_1187503.2.0_V1.pdf"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "Single-hop ~0.38s avg; <1M sats finalize <1s; per-hop success -4-8%; single-hop >99%. Retries drive the tail."
+  - type: documentation
+    ref: "Lightspark Multi-Path Payments https://lightspark.com/glossary/multi-path-payments"
+    date: "2026-06-04"
+    sample_size: 0
+    note: "MPP splits payment across channels, atomic settle-when-all-parts-resolve. Slowest/retried part sets the tail."
+  - type: first-party
+    ref: "poc/rail-lightning-l402 (R3 Polar regtest) - proxy for R11 production path"
+    date: "2026-05-22"
+    sample_size: 0
+    note: "Regtest near-instant HTLC resolution; informs body, not tail (regtest has no real routing/retries)."
+
+calibration_date: "2026-06-04"
+confidence: medium
+fixture_content_hash: ""
+notes: >
+  Body HIGH confidence (~0.38s single-hop / sub-1s typical); tail shape well-described (hop count +
+  retries) but exact P90/P99 in seconds NOT published. Median 0.8s allows for multi-hop + small
+  Lightspark API overhead above the 0.38s single-hop floor. sigma_log 0.80 = heavy right tail
+  (P99 ~5s; rare retry loops can reach ~30s per operator anecdote). Lightning MPP widens the upper
+  tail vs clean single-hop (atomic on slowest part). R3 regtest is a body proxy only. Refine when
+  R11 Lightspark access lands and first-party multi-hop runs are captured.
