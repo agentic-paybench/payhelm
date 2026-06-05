@@ -27,7 +27,7 @@ sources:
 
 calibration_date: "2026-06-04"
 confidence: high
-fixture_content_hash: ""
+fixture_content_hash: "sha256:b002e83280933bfebd0aa2b35e3b8610b489c6130c55e5a62f99c095d2a0b38c"
 notes: >
   First-party n=30 supersedes the doc seed (6.0 / 0.26), which over-estimated the median (it assumed a
   full ledger close + facilitator; real submit->inclusion averages ~2.7s). This is the MANUAL
