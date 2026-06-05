@@ -1,39 +1,47 @@
-# PayBench calibration provenance — R11 MPP-on-Lightning (Lightspark) settlement-finality
-# 2026-06-04 (documentary sweep). MPP here = Lightning Multi-Path Payments (NOT Stripe MPP/R10).
+# PayBench calibration provenance — R11 MPP-on-Lightning settlement-finality
+# Created 2026-06-05 with first-party n=30 (REAL-RAIL — supersedes the 2026-06-04 doc-proxy 0.8s estimate).
+# NOTE: the prior doc-proxy version of this file mis-labelled MPP as "Lightning Multi-Path Payments" —
+# corrected here: MPP = Machine Payments Protocol (mpp.dev), the SAME protocol as R10, Lightning settlement.
 
-rail: "R11 MPP-on-Lightning (Lightspark)"
+rail: "R11 MPP-on-Lightning (Machine Payments Protocol, via Lightspark/Spark)"
 dimension: settlement-finality
 unit: seconds
 
 distribution:
   family: lognormal
-  parameters: {median_s: 0.8, sigma_log: 0.80}   # low floor, heavy right tail from hops + retries
-  approach: parametric-from-docs
+  parameters: {median_s: 16.52, sigma_log: 0.156}   # EMPIRICAL n=30, real-rail Spark hosted regtest
+  approach: first-party-empirical
 
 sources:
-  - type: documentation
-    ref: "Fidelity Digital Assets + Voltage, The Lightning Network (2025) https://www.fidelitydigitalassets.com/sites/g/files/djuvja3256/files/acquiadam/FDA_US_UK_TheLightningNetwork_ExpandingBitcoinUseCases_1187503.2.0_V1.pdf"
-    date: "2026-06-04"
-    sample_size: 0
-    note: "Single-hop ~0.38s avg; <1M sats finalize <1s; per-hop success -4-8%; single-hop >99%. Retries drive the tail."
-  - type: documentation
-    ref: "Lightspark Multi-Path Payments https://lightspark.com/glossary/multi-path-payments"
-    date: "2026-06-04"
-    sample_size: 0
-    note: "MPP splits payment across channels, atomic settle-when-all-parts-resolve. Slowest/retried part sets the tail."
   - type: first-party
-    ref: "poc/rail-lightning-l402 (R3 Polar regtest) - proxy for R11 production path"
-    date: "2026-05-22"
+    ref: "poc/rail-lightning-mpp measure-finality.ts, n=30 Spark hosted regtest; samples/R11-mpp-lightning.samples.jsonl"
+    date: "2026-06-05"
+    sample_size: 30
+    note: >
+      0 failures. Real-rail MPP (Machine Payments Protocol) on Lightning via the
+      @buildonspark/lightning-mpp-sdk (extends mppx). request->200 wall-clock for the full L402-family
+      flow: 402 + fresh BOLT11 invoice (seller Spark wallet) + Lightning payment + preimage proof + 200.
+      median 16.52s, sigma_log 0.156, min 8.45, p50 16.75, p90 18.33, p99 23.66.
+  - type: documentation
+    ref: "mpp.dev/payment-methods/lightning; Lightning HTLC resolution semantics"
+    date: "2026-06-05"
     sample_size: 0
-    note: "Regtest near-instant HTLC resolution; informs body, not tail (regtest has no real routing/retries)."
+    note: "Raw Lightning HTLC resolution is sub-second; the measured ~16.5s is dominated by the Spark layer, not HTLC."
 
-calibration_date: "2026-06-04"
-confidence: medium
+calibration_date: "2026-06-05"
+confidence: "high (central, Spark-path); spread is quiet-regtest and likely understates mainnet"
 fixture_content_hash: ""
 notes: >
-  Body HIGH confidence (~0.38s single-hop / sub-1s typical); tail shape well-described (hop count +
-  retries) but exact P90/P99 in seconds NOT published. Median 0.8s allows for multi-hop + small
-  Lightspark API overhead above the 0.38s single-hop floor. sigma_log 0.80 = heavy right tail
-  (P99 ~5s; rare retry loops can reach ~30s per operator anecdote). Lightning MPP widens the upper
-  tail vs clean single-hop (atomic on slowest part). R3 regtest is a body proxy only. Refine when
-  R11 Lightspark access lands and first-party multi-hop runs are captured.
+  REAL-RAIL — supersedes the doc-proxy 0.8s / sigma 0.80 MEDIUM estimate. CRITICAL ATTRIBUTION: this
+  ~16.5s is the MPP-on-Lightning-VIA-SPARK number, NOT raw Lightning HTLC speed. Each payment is a
+  multi-round-trip to Spark's hosted operators — FROST threshold-signing ceremony + SSP preimage swap
+  (/spark.SparkService/initiate_preimage_swap_v3) — and that ceremony, not Lightning HTLC resolution
+  (which is sub-second), dominates wall-clock. Puts R11 in the same finality band as R9 Solana-finalized
+  (14.63s), an entirely different regime from what "Lightning = instant" assumes. A raw-LND L402 path
+  (cf. R3 Polar regtest) would settle the Lightning leg far faster; R11 benchmarks the Spark production
+  path specifically. Measured on Spark's HOSTED regtest (not a local node); mainnet operator latency may
+  differ. sigma_log 0.156 is quiet-regtest and likely understates mainnet congestion — widen toward a
+  doc-informed spread until a mainnet run is captured (same caution as R9). MPP = Machine Payments
+  Protocol (same protocol envelope as R10, different settlement rail); the SDK README confirms this is
+  NOT Lightning Multi-Path Payments. One transient preimage-swap failure was seen only under concurrent
+  duplicate loops (operator error, since fixed); the clean single-process n=30 had 0 failures.
