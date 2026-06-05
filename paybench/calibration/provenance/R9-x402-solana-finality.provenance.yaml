@@ -33,7 +33,7 @@ sources:
 
 calibration_date: "2026-06-04"
 confidence: high          # central tendency high (n=30 first-party); tail is an estimate (see notes)
-fixture_content_hash: ""
+fixture_content_hash: "sha256:b0765414c4d731db6c92fd4576b4d9e4fccf68e65d1222187601f1c809b348fd"
 notes: >
   LOAD-BEARING: PayBench measures `finalized`, NOT `confirmed`. First-party n=30 confirmed the doc
   estimate (13.5s) — empirical median 14.63s. CENTRAL TENDENCY is now high-confidence empirical.
