@@ -104,10 +104,12 @@ reference it. (Fork `main` stays pristine HELM until the Day-0 cutover; the tag 
 rendered from `methodology.md` v1.1 (standard `article` + amsmath/booktabs/hyperref/geometry; compiles
 on arXiv's TeX Live). It honours F14 (no per-rail finality numbers / no ranking in the public preprint),
 carries the watermarked title, the mock-harness abstract disclaimer, the manifest hash, and the
-v1-only-canonical note. **Two things to resolve before submission:** (1) the `TODO(identity)`
-author/affiliation placeholder — the Stage-1-research-framing vs Stage-2-founder-framing identity
-decision; (2) pick the category (cs.CR / cs.DC). Then submit to arXiv. A first-time submitter may need
-an endorsement — begin that early, as it gates the timeline.
+v1-only-canonical note. **Identity resolved 2026-06-06:** author = **Michael Blake**, affiliation =
+**Independent researcher**, contact = everydayai.link (AgentPay stays invisible; the paper uses
+"PayBench"). **One thing left before submission:** pick the category (**cs.CR** crypto & security, or
+cs.DC distributed computing — cs.CR fits the pre-registration / trust-anchor framing best). Then
+submit to arXiv. A first-time submitter may need an endorsement — begin that early, as it gates the
+timeline.
 
 - **Watermark (cross-LLM review).** The title must contain "Mock Harness" or "Simulated Fixtures" —
   e.g. *"PayBench: A Pre-Registered Methodology and Calibrated Mock Harness for Agent-to-Agent
