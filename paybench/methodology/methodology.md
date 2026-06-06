@@ -1,12 +1,22 @@
 # PayBench Methodology
 
-**ROUGH DRAFT v0.2 — pre-registration pending — 2026-06-04**
+**v1.0 — FROZEN for pre-registration — 2026-06-05**
 
-> **Status.** This is a Friday-1 rough draft (ship target 2026-05-29 window). It is *not* the
-> pre-registered methodology of record. Prose is settled where a closed decision settles the
-> method; `TODO(calibration)` markers flag everything that depends on calibration data still
-> being sourced. No real-rail rankings appear here and none will until the conditions in
-> §7 (Variant E) are met.
+> **Status.** This is the **frozen methodology of record** for the settlement-finality
+> pre-registration (§9). Every `TODO(calibration)` marker from the v0.2 rough draft is resolved —
+> the per-rail finality definitions, the pass@k `k`-grid, and the calibration sources are now
+> pinned to the first-party n=30 calibration runs (all 5 settling rails, 2026-06-04/05) and the
+> content-addressed fixtures they parameterise. The method below is what the cryptographic
+> anchors (OSF DOI + cosign/Rekor + OpenTimestamps + signed git tag + arXiv) commit to. No
+> real-rail rankings appear here and none will until the conditions in §7 (Variant E) are met —
+> the §9 anchoring covers the *method* and the *calibrated mock fixtures*, not a real-rail result.
+>
+> **Two disclosed limitations are pre-registered as such (no silent caps, §5.4 item 7), not
+> hidden:** (1) the published-fixture spreads (`sigma_log`) for the testnet/devnet/regtest-measured
+> rails — most sharply R9 and R11 — come from quiet conditions and likely understate mainnet
+> congestion tails (§7); (2) R2's fixture is the *manual direct-payment* lower bound on the spec
+> x402-on-Stellar path (§3, §7). Both are stated in-method so a later real-rail run is measured
+> against a commitment that already names them.
 >
 > **Canonical home.** This document is AgentPay-canonical. It lives in `paybench/` — deliberately
 > *outside* the upstream HELM `docs/` mkdocs tree — to keep the fork-first / upstream-second
@@ -26,7 +36,7 @@ rankings is deferred.
 | The measurement model (what a "trial" is, what we score) | Real-rail rankings (deferred — Variant E, Q3 HELD residual) |
 | The statistical method (BT MLE + pass@k + Wilson LB CIs) | Worked BT-MLE math / harness code (lives in `paybench/`, separate) |
 | The tiered schema (N6) | The pre-registration *artefact* itself (separate "pre-reg scaffolded" item) |
-| The experimental design (rails, pairs, trials, seeding) | Calibration *values* (separate in-flight Friday-1 item) |
+| The experimental design (rails, pairs, trials, seeding) | Calibration *values* (live in the provenance files + `calibration/`) |
 | The reproducibility + pre-registration *protocol* | The IETF I-D / W3C explainer derivatives (downstream of this) |
 
 This document *describes* the pre-registration protocol; it does not *execute* it. Executing it
@@ -121,20 +131,43 @@ presenting a convenience-driven choice as pure principle. The principled test st
 (finality genuinely is the dominant rail-DX question for any class of rail), so the dimension order
 is not reverse-engineered to fit AgentPay's regulatory posture — but the alignment is acknowledged.
 
-**Per-rail operationalisation.** "Final" is rail-specific and must be defined per rail before any
-trial runs (and pre-registered):
+**Per-rail operationalisation — the reliance-level doctrine.** "Final" is rail-specific. Rails do
+not share a single cryptographic finality model (deterministic BFT close, probabilistic rooting,
+optimistic-rollup soft finality, and HTLC preimage release are genuinely different mechanisms), so
+PayBench cannot pin one uniform threshold across all five. Instead it pins each rail to its
+**ecosystem-canonical reliance level** — the point that rail's own protocol/documentation designates
+as the level at which a builder may rely on the payment for an irreversible downstream action. This
+is the right doctrine for an *agent-DX* benchmark: it measures the moment an autonomous agent is told
+it can act, which is the §3 question ("when can I rely on this payment?").
 
-| Rail | Candidate finality definition | Notes |
-|---|---|---|
-| x402-Base (R1) | N block confirmations on Base | `TODO(calibration)`: pin N |
-| x402-Stellar (R2) | Ledger close | Stellar finality is ~single-ledger |
-| x402-Solana (R9) | Commitment level (`finalized`) | not `confirmed` |
-| MPP-on-Tempo / Stripe PSP (R10) | Tempo L1 block finality | `TODO`: testnet vs Presto |
-| GCP + AP2 (R6) | **excluded from finality — measured on Day-30 authorization latency (§8)** | resolved (Resolution B) |
-| MPP-on-Lightning / Lightspark (R11) | HTLC resolution / preimage release | Lightning finality semantics |
+**This doctrine is stated openly, including its one sharp edge.** Because the canonical reliance
+level differs by rail, the thresholds are not equi-conservative: Base's canonical level is
+*optimistic* (soft finality), whereas Solana's is *conservative* (`finalized`, not the optimistic
+`confirmed`). A uniform-optimistic doctrine (Base soft **and** Solana `confirmed`) or a
+uniform-irreversibility doctrine (Base hard-L1 **and** Solana `finalized`) would each be internally
+symmetric but would each misrepresent at least one rail's own builder guidance. PayBench takes the
+per-rail-canonical doctrine and names the asymmetry rather than hiding it. *(This is the dimension's
+most exposed flank under adversarial review; the choice is deliberate and defended here, not
+defaulted.)*
 
-**Unit.** Seconds, wall-clock, submission → final. Each trial yields one finality time per rail in
-the pair.
+| Rail | Finality definition (pinned) | Empirical median | Measured on |
+|---|---|---|---|
+| x402-Base (R1) | **Soft finality, 1 Base block (~2s)** — optimistic-rollup sequencer inclusion + ~0 reorg; this is Base's canonical payment-reliance level. Hard L1 finality (~min–20 min) is the bridging/withdrawal threshold, not the payment one, and no agent waits it — **excluded**. | 2.05 s | Base Sepolia, n=30 |
+| x402-Stellar (R2) | **Ledger close** — deterministic, single-ledger, no reorg. | 2.74 s¹ | testnet, n=30 (manual path) |
+| x402-Solana (R9) | **Commitment `finalized`** (32-slot rooted) — *not* `confirmed`. Solana's own docs designate `finalized` as the irreversibility level. | 14.63 s | devnet, n=30 |
+| MPP-on-Tempo (R10) | **Tempo BFT block finality** (Simplex consensus) — deterministic. Calibrated on Moderato **testnet** (chain 42431); mainnet `Presto` (chain 4217) shares the consensus. Fixture is the **pure-Tempo MPP path**; the Stripe-mediated acceptance leg is Variant-E mock (§7). | 1.75 s | Moderato testnet, n=30 |
+| GCP + AP2 (R6) | **Excluded from finality** — AP2 does not settle independently; measured on Day-30 authorization latency (§8). | — | — (Resolution B) |
+| MPP-on-Lightning (R11) | **Preimage release** — the payment is final when the preimage is revealed. Operationally the wall-clock is dominated by the **Spark FROST-signing + SSP preimage-swap ceremony**, *not* the (sub-second) Lightning HTLC; R11 benchmarks the Spark hosted-operator path specifically (a raw-LND L402 path would settle far faster). | 16.52 s | Spark hosted regtest, n=30 |
+
+¹ R2's median is a **lower bound** on the spec x402-on-Stellar finality: it was measured on the
+manual direct-payment path, which omits the OZ-facilitator verify+settle round-trip the spec path
+adds. Pre-registered as a disclosed limitation (§7), not as the spec-path figure.
+
+**Unit.** Seconds, wall-clock, request → HTTP 200 (submission → the agent's reliance point). This
+deliberately bundles the rail's protocol/HTTP envelope (e.g. the x402 facilitator round-trip, the
+MPP/L402 flow) *with* on-chain settlement, because that full round-trip is what the agent actually
+experiences and waits on — consistent with the agent-DX framing above. Each trial yields one
+finality time per rail in the pair.
 
 ---
 
@@ -184,8 +217,21 @@ coherent A>B>C with strengths).
 BT strength is purely relative. Operationally an agent also needs an *absolute* answer: "will this
 rail settle within my SLA?" So we report **pass@k defined as P(finality ≤ k seconds)** — the
 empirical probability a rail reaches finality within a `k`-second budget, for a small set of
-pre-registered `k` values. `TODO(calibration)`: choose the `k` grid from the calibrated finality
-distributions.
+pre-registered `k` values.
+
+**Pinned `k`-grid: `{2, 3, 5, 10, 15, 20}` seconds.** The grid is chosen to discriminate across the
+calibrated medians, which fall in two well-separated clusters — a *fast* cluster (R10 1.75 s, R1
+2.05 s, R2 2.74 s) and a *slow* cluster (R9 14.63 s, R11 16.52 s):
+
+- `k=2` separates *within* the fast cluster (R10 ≈ 0.77 vs R1 ≈ 0.37 vs R2 ≈ 0.00).
+- `k=3` and `k=5` clear the fast cluster (R2 resolves at `k=3`; all three reach ≈ 1.0 by `k=5`).
+- `k=10` is the clean cluster separator — ≈ 1.0 for every fast rail, ≈ 0 for every slow rail —
+  carrying no within-cluster discrimination by design (it sits in the empirical gap, R2 p99 ≈ 3.5 s
+  to R11 min ≈ 8.5 s).
+- `k=15` separates *within* the slow cluster (R9 ≈ 0.66 vs R11 ≈ 0.26).
+- `k=20` clears the slow cluster (R9 ≈ 1.0; R11 ≈ 0.89, its tail still resolving).
+
+The grid is frozen with the rest of the design (§9); it is not re-fit per run.
 
 ### 5.3 Wilson lower-bound confidence intervals
 
@@ -249,11 +295,25 @@ cryptoasset arranging perimeter. Variant E sidesteps that perimeter on PayBench'
 while preserving the full methodology + tooling story.
 
 **Calibration — what "calibrated mock fixtures" means.** The fixtures are *not* arbitrary synthetic
-numbers. Each fixture's finality distribution is parameterised from real reference data — rail
-documentation, public telemetry (e.g. x402scan), and first-party testnet/devnet observations from
-the POC adapters (R1 Base Sepolia, R9 Solana devnet, R3 Lightning regtest, etc.). The mock harness
-is therefore *meaningful* — it exercises the full measurement + statistics pipeline against
-realistic distributions — without publishing a real-rail ranking.
+numbers. Each fixture is a seeded **log-normal** population (finality times are positive and
+right-skewed; log-normal is the parameter-light default — calibration-plan §"Distribution approach")
+whose `{median_s, sigma_log}` is parameterised from real reference data. As of the freeze, **all five
+settling rails carry first-party n=30 calibration runs** (0 failures each), so the medians are
+measured, not doc-derived:
+
+| Rail | `median_s` | `sigma_log` | Approach | First-party source (n=30) | Doc cross-check |
+|---|---|---|---|---|---|
+| R1 x402-Base | 2.05 | 0.082 | first-party-empirical | Base Sepolia (`poc/rail-x402-base`) | Base docs: 2 s block, ~0 reorg, soft ≈ 2 s |
+| R2 x402-Stellar | 2.74 | 0.116 | first-party-empirical¹ | testnet manual path (`poc/rail-stellar-x402`) | Stellar ledger close (deterministic) |
+| R9 x402-Solana | 14.63 | 0.057 | hybrid (first-party central + doc tail) | devnet (`poc/rail-solana-x402`) | Helius/Anza: `finalized` = 32 slots ≈ 13 s |
+| R10 MPP-on-Tempo | 1.75 | 0.177 | first-party-empirical (real-rail) | Moderato testnet (`poc/rail-tempo-mpp`) | Tempo ≈ 500 ms block finality target |
+| R11 MPP-on-Lightning | 16.52 | 0.156 | first-party-empirical (real-rail) | Spark hosted regtest (`poc/rail-lightning-mpp`) | Spark FROST+SSP ceremony (HTLC sub-second) |
+
+The mock harness is therefore *meaningful* — it exercises the full measurement + statistics pipeline
+against realistic, first-party-anchored distributions — without publishing a real-rail ranking. Full
+per-source detail (refs, dates, sample sizes, parameterisation rationale) lives in
+`calibration/provenance/<rail>-finality.provenance.yaml`; the sourcing method is in
+`calibration/calibration-plan.md` (Hybrid (C), decided 2026-06-04).
 
 **Per-fixture provenance.** Every fixture ships with a provenance file recording its calibration
 source(s), the date sourced, and the parameterisation. Provenance is a Day-0 artefact.
@@ -264,9 +324,26 @@ right-of-reply infrastructure (§10) live Day-0; rankings *derived from* calibra
 ladder (L1 triage within 30 days; L2 human-in-loop Day-30+; L3 draft-only response MVP-era; L4 auto
 NOT shipped) governs the right-of-reply operations.
 
-> `TODO(calibration)`: this section carries the actual calibration sources + parameterisations once
-> the calibration-sourcing Friday-1 item lands. Until then the harness runs against placeholder
-> distributions clearly labelled as uncalibrated.
+**Pre-registered disclosed limitations (no silent caps, §5.4 item 7).** Two calibration facts are
+committed *into* the frozen method so a later real-rail run is measured against a prior that already
+names them — not surfaced after the fact:
+
+1. **Quiet-condition spreads understate mainnet tails.** The `sigma_log` values are measured under
+   quiet testnet/devnet/regtest load. Most sharply for **R9** (`sigma_log` 0.057 from quiet devnet;
+   docs + a single devnet excursion to 19.46 s indicate the real tail is heavier — widen toward
+   ~0.15–0.25 on a mainnet/congested run) and **R11** (`sigma_log` 0.156 from quiet Spark regtest,
+   likely understating mainnet operator-latency variance). The *central tendencies* are
+   high-confidence empirical; the *tails* are the disclosed soft spot. The fixtures are frozen at the
+   measured spreads (they are mock fixtures under Variant E, not a real-rail ranking); the limitation
+   is registered rather than silently corrected.
+2. **R2 is a lower bound.** R2's fixture is the manual direct-payment path, which omits the
+   OZ-facilitator round-trip the spec x402-on-Stellar path adds — so R2's finality is registered as a
+   *lower bound*, expected to rise on a spec-path re-measure (the spec path is wired and validated
+   end-to-end; the n=30 spec re-measure is deferred).
+
+These are the only two non-empirical-tightness caveats in the calibration set, and both are visible
+in the per-rail provenance `confidence`/`notes` fields. Real-rail publication (the Q3 HELD residual)
+re-runs the *same frozen method* against production-rail fixtures.
 
 ---
 
@@ -319,6 +396,23 @@ pre-registration. Protocol (closed decision):
 metric definitions (BT MLE + pass@k `k`-grid + Wilson), the RNG seed, the fixture hashes, and the
 analysis plan.
 
+**Frozen manifest (this pre-registration — methodology v1.0, 2026-06-05).** The concrete values the
+anchors below commit to:
+
+| Item | Frozen value |
+|---|---|
+| Settling rail set (race on finality) | R1, R2, R9, R10, R11 (AP2/R6 on Day-30 latency, §8) |
+| Pairs × trials | C(5,2) = 10 pairs × 500 = **5,000 trials** |
+| Master seed | `20260717` |
+| Metrics | BT MLE (symmetric smoothing prior 1.0) + pass@k `P(finality ≤ k)`, `k ∈ {2,3,5,10,15,20}` s + Wilson 95% LB |
+| Fixture hashes (sha256) | R1 `05099bcb…46af` · R2 `b002e832…b38c` · R9 `b0765414…348f` · R10 `2d77a6cb…785f4` · R11 `b31f7945…8910` |
+| Run hash (the scored mock run) | `895f99ed52567421a1d7e9068ab9a0d7147d6381ec137e1b130b805e63b14ee0` |
+
+The full-length fixture hashes are authoritative in each fixture file's `content_hash` and the rail's
+provenance `fixture_content_hash`; the harness re-verifies them on every load (§6). The run hash is
+deterministic over the report with no wall-clock written into it (§5.4 item 6) — re-running the
+harness on the frozen fixtures reproduces it byte-for-byte.
+
 **Cryptographic grounding (defence-in-depth):**
 
 - **OSF pre-registration** → DOI (the human-readable trust anchor)
@@ -369,8 +463,8 @@ This document only *points* at the taxonomy; the full A1–A8 specification is c
 > from the POC-duration closed decision, not from the method. The methodology fixes only the
 > *sequence* (pre-register → run → publish) and the *gates* (§9): the schedule can compress without
 > changing the methodology, provided it does not compress past the pre-registration dependency chain
-> (AP2 resolved — done, §8; calibration in; cryptographic anchors landed) or skip the pre-publication
-> adversarial review.
+> (AP2 resolved — done, §8; calibration in; method frozen v1.0; cryptographic anchors to land) or
+> skip the pre-publication adversarial review.
 
 ---
 
