@@ -1,10 +1,8 @@
-# PayBench settlement-finality pre-registration manifest — methodology v1.0
-# Frozen 2026-06-05; decisions D1-keep / D2-freeze confirmed 2026-06-06.
+# PayBench settlement-finality pre-registration manifest — methodology v1.1
+# Frozen 2026-06-06 (post-cross-LLM-review). D1-keep / D2-freeze unchanged; F14 de-rank + F1/F13 hardening applied; no fixture regen.
 # Paths are relative to paybench/. Verify with:  cd paybench && sha256sum -c methodology/prereg-manifest.sha256
-# This manifest is the byte-set the §9 anchors commit to (cosign signature, OpenTimestamps,
-# signed git tag). The adversarial-review companion is intentionally EXCLUDED — it keeps accruing
-# cross-LLM dispositions by design and is not part of the frozen method.
-ba04e43f5c7b841aaab6672f6772c621aa977c3fd0b7f724a459ec7c44f16fd3  methodology/methodology.md
+# This manifest is the byte-set the §9 anchors commit to. The adversarial-review companion is EXCLUDED (it accrues cross-LLM dispositions by design).
+2eb58dffda62741746690eeaa49f777d196a5c3f2c9e4b58097a6cf4180c0f16  methodology/methodology.md
 86dbeb52fd22d901022e1e4784b77164cdf7f992d720f15dba5f930f722f8c8d  calibration/calibration-plan.md
 12e391a751bcc21ce98f646201af66bd433baa27d0f83b0acc9d6f2c2a483f7e  calibration/provenance/R1-x402-base-finality.provenance.yaml
 0fa68e0e4ee0f673881d4b0153de965a34d41bd9db82d5cf448a4280bc2cab2a  calibration/provenance/R2-x402-stellar-finality.provenance.yaml

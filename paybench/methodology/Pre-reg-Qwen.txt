@@ -1,0 +1,102 @@
+# Cross-LLM Adversarial Review — Qwen3.7 Max Dispositions
+
+**Reviewer:** Qwen3.7 Max (Independent Statistical & Methodological Adversary)
+**Date:** 2026-06-06
+**Target:** `methodology.md` (v1.0) + `adversarial_review.md`
+
+Below are the formal dispositions for integration into your adversarial review file, followed by the detailed pressure-test report.
+
+---
+
+## 1. Dispositions Table (For direct copy-paste into `adversarial_review.md`)
+
+| # | Finding | Model Disposition (Qwen3.7 Max) |
+|---|---|---|
+| F1 | Per-rail finality threshold | **D1-keep CONDITIONAL.** Keep doctrine, but mandate a "Trust Assumption" column in Tier-1 output to neutralize the centralized-vs-decentralized confound. |
+| F2 | Quiet-condition spreads | **D2-freeze CONFIRMED.** Mock fixtures must use empirical $\sigma$; hand-widening introduces unmeasured judgment and breaks the "every number is measured" invariant. |
+| F3 | R2 manual-path lower bound | **CONFIRMED.** Disclosure is sufficient; spec-path re-measure is correctly deferred. |
+| F4 | `request → 200` unit | **CONFIRMED.** Agent-DX framing successfully defends the bundled protocol+chain unit. |
+| F5 | Log-normal on deterministic | **CONFIRMED.** Acceptable parameter-light default for mock harness pipeline validation. |
+| F6 | BT degeneracy | **ADD CAVEAT.** Must explicitly state that BT magnitude *between* clusters is an artefact of the prior/trial count under complete separation; only rank order is interpretable. |
+| F7 | R10 pure-Tempo scoping | **RENAME R11.** Change "MPP-on-Lightning" to "MPP-on-Spark-Lightning" to prevent critics from claiming generic LN performance is being misrepresented. |
+| NEW | Pre-reg PR Risk | **HIGH.** arXiv title and OSF abstract must explicitly contain "Mock Harness" or "Simulated Fixtures" to prevent the mock leaderboard from being screenshot and published as real results. |
+| NEW | Statistical Multiplicity | **LOW.** 40+ CIs computed. Must explicitly state all Wilson CIs are **pointwise 95%**, not simultaneous/family-wise adjusted. |
+
+---
+
+## 2. Detailed Pressure-Test Report
+
+<details>
+<summary><strong>Task 1: Attacking F1 (The Trust vs. Latency Confound)</strong> — <em>Click to expand</em></summary>
+
+### The Attack Vector
+The "per-rail-canonical reliance level" doctrine is not threshold-shopping; it accurately reflects the developer experience on each chain. However, a hostile CRFM reviewer or a Solana-aligned competitor will not attack the *latency* definitions—they will attack the **trust assumptions**.
+
+Base soft finality relies on a centralized sequencer's honesty, uptime, and lack of censorship. Solana `finalized` relies on a supermajority of decentralized economic stake. By comparing them purely on wall-clock time, PayBench implicitly treats a centralized sequencer IOU as mathematically equivalent to decentralized BFT settlement. The attack is: *"You aren't measuring finality; you are measuring the latency of a centralized promise vs. a decentralized proof."*
+
+### Why D1-keep is still the correct choice
+D1-uniform-optimistic (using Solana `confirmed`) is a trap. Solana's own documentation explicitly warns against treating `confirmed` as irreversible for high-value transfers. Adopting it would violate your own "canonical reliance" doctrine and invite the exact "cherry-picking" critique you are trying to avoid. D1-uniform-irreversibility (Base hard L1) is operationally meaningless, as you correctly noted.
+
+### The Required Fix
+To bulletproof D1-keep, the defence requires a mandatory **Trust Assumption** column in the published Tier-1 results table (e.g., *"Centralized Sequencer Promise"* vs *"Decentralized BFT Root"* vs *"Optimistic Rollup Soft Commit"*). This pre-empts the "apples to oranges" attack by explicitly acknowledging the security trade-off the agent is making when it accepts that rail's canonical reliance level.
+
+</details>
+
+<details>
+<summary><strong>Task 2: Missed Finality-Threshold Inconsistencies</strong> — <em>Click to expand</em></summary>
+
+### Stellar (R2) Median vs. Ledger Close Time
+The document states R2's median is 2.74 s, but Stellar's deterministic ledger close time is typically ~5–6 s. A hostile reviewer will flag this as a discrepancy. Statistically, this is sound: if transaction submission is uniformly distributed relative to the ledger closure window, the expected wait time is indeed half the interval (~2.5–3.0 s).
+* **Action:** Add a one-sentence note in `calibration/provenance/rail-stellar-x402-finality.provenance.yaml` explicitly stating that the 2.74 s median reflects the uniform distribution of submission times within the ~5.5 s ledger close window.
+
+### Tempo (R10) Testnet vs. Mainnet BFT
+You calibrate R10 on Moderato testnet. BFT consensus latency is highly sensitive to validator count and network topology (message complexity scales with $O(N^2)$ or $O(N)$ depending on the specific consensus variant). If Moderato has significantly fewer validators than mainnet Presto, the testnet finality time will be artificially fast.
+* **Action:** Disclose this in the R10 provenance as a "validator-count gap" limitation, similar to the R9/R11 tail-spread disclosures.
+
+### Lightning (R11) Naming Confound
+"MPP-on-Lightning" implies the generic Lightning Network protocol. However, your fixture specifically benchmarks the **Spark hosted-operator path** (FROST-signing + SSP ceremony). Raw LND L402 would be sub-second.
+* **Action:** Rename the rail in all tables and text to **MPP-on-Spark-Lightning**. If you leave it as generic Lightning, critics will rightfully claim you are misrepresenting the protocol's baseline performance by benchmarking a specific custodial/enclave wrapper.
+
+</details>
+
+<details>
+<summary><strong>Task 3: Pre-Registration Mechanics & Variant-E Firewall</strong> — <em>Click to expand</em></summary>
+
+### The "Mock Leaderboard" PR Risk (Severity: HIGH)
+The Variant-E firewall is textually strong but visually and PR-weak. Freezing a `run_hash` over mock fixtures and publishing it via OSF/arXiv creates a massive risk that journalists, crypto-Twitter, or competitors will screenshot the mock leaderboard and publish it as *"PayBench ranks Base #1, Solana #4"*. Once that narrative escapes, the methodological nuance will be ignored.
+
+### Required Fixes Before §9 Execution
+1. **arXiv Title:** Must explicitly include "Mock Harness" or "Simulated Fixtures".
+   * *Recommended:* `PayBench: A Pre-Registered Methodology and Calibrated Mock Harness for Agent-to-Agent Payment Rails`
+2. **OSF Metadata:** If the OSF registration schema has a "Simulation/Mock Data" or "No Human/Real-World Subjects" checkbox, it must be checked. The first sentence of the abstract must state: *"This pre-registration covers a simulated harness; no real-rail funds are moved and no production rankings are derived."*
+3. **Harness Output Watermark:** The Python harness CLI/UI must print a highly visible, un-disableable watermark on every generated report:
+   ```text
+   [MOCK FIXTURES - VARIANT E - NOT PRODUCTION RANKINGS]
+   ```
+
+</details>
+
+<details>
+<summary><strong>Task 4: Independent Statistical Review</strong> — <em>Click to expand</em></summary>
+
+### Wilson Lower-Bound CIs
+Excellent choice. The Wilson interval is well-behaved at the boundaries ($p \to 0$ and $p \to 1$), which is critical here because pass@k for the fast cluster at $k=10$ will be exactly or near $1.0$, and for the slow cluster near $0.0$. The normal approximation (Wald interval) would fail catastrophically here.
+
+### pass@k Definition and Multiplicity
+Defined as $P(\text{finality} \le k)$. This is simply the empirical Cumulative Distribution Function (CDF) evaluated at $k$. Perfectly sound.
+* **The Multiplicity Trap:** You are computing 6 values of $k$ across 5 rails (30 estimates), plus 10 pairwise win rates. That is 40 distinct confidence intervals. A pedantic statistician will flag the multiple comparisons problem.
+* **Action:** Explicitly state in §5.3: *"All reported Wilson CIs are pointwise 95% confidence intervals; no family-wise error rate (FWER) or false discovery rate (FDR) adjustments are applied, as PayBench reports are evaluated as independent descriptive metrics rather than a single joint hypothesis test."*
+
+### Bradley-Terry MLE and the Smoothing Prior
+The symmetric smoothing prior of $1.0$ is strictly necessary because the fast and slow clusters will exhibit **complete separation** (e.g., R10 will beat R11 in 500 out of 500 trials). Without regularization, the MLE diverges to infinity.
+
+However, with a prior of $\alpha=1$, the posterior odds for a 500-0 sweep become $501:1$, yielding a log-strength difference of $\ln(501) \approx 6.21$. If the prior were $10.0$, the odds would be $510:10 = 51:1$, yielding a log-strength of $\ln(51) \approx 3.93$.
+* **Crucial Caveat:** The **magnitude** of the BT strength difference between the fast and slow clusters is an artefact of the prior and the trial count, not a meaningful real-world quantity.
+* **Action:** Add this exact sentence to §5.1 or the eventual paper: *"Under complete separation between clusters, BT strength magnitudes are prior-dependent; only the rank order and within-cluster differences are interpretable."* This neutralizes any attack claiming your BT scores "exaggerate" the gap between clusters.
+
+</details>
+
+---
+
+### Final Verdict for §9 Execution
+The methodology is highly rigorous and the Variant-E framing is legally and strategically sound. Provided you adopt the **Trust Assumption column** (F1), **rename R11** (F7), and **watermark the pre-registration artefacts** (Task 3), the methodology is cleared for cryptographic anchoring.
