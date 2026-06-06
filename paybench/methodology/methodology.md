@@ -1,6 +1,6 @@
 # PayBench Methodology
 
-**v1.1 — FROZEN for pre-registration — 2026-06-06 (post-cross-LLM-review)**
+**v1.2 — FROZEN for pre-registration — 2026-06-06 (post-cross-LLM-review)**
 
 > **Status.** This is the **frozen methodology of record** for the settlement-finality
 > pre-registration (§9). Every `TODO(calibration)` marker from the v0.2 rough draft is resolved —
@@ -29,7 +29,7 @@
 > x402-on-Stellar path (§3, §7). Both are stated in-method so a later real-rail run is measured
 > against a commitment that already names them.
 >
-> **Canonical home.** This document is AgentPay-canonical. It lives in `paybench/` — deliberately
+> **Canonical home.** This document is the project's canonical methodology of record. It lives in `paybench/` — deliberately
 > *outside* the upstream HELM `docs/` mkdocs tree — to keep the fork-first / upstream-second
 > boundary clean. At Stage 2 it renames with the rest of `paybench/` to the canonical brand.
 
@@ -73,8 +73,8 @@ routing/analytics layers, and service-discovery surfaces. PayBench's distinct co
 *methodological*: a pre-registered, comparative benchmark published from a non-custodial,
 rail-neutral posture. A neutral related-work treatment — naming specific efforts with sourced, dated
 characterisations — belongs in the Related Work section of the eventual publication, not here.
-Competitive positioning lives in the marketing collateral (`marketing/competitive-positioning.md` in
-the agentpay working repo), deliberately kept out of the methodology so this document reads as the
+Competitive positioning lives in the project's separate marketing collateral,
+deliberately kept out of the methodology so this document reads as the
 neutral instrument it needs to be in front of standards bodies and reviewers.
 
 The category claim is **comparative, not absolute**: PayBench ranks rails *against each other* on
@@ -140,7 +140,7 @@ carries the least cryptoasset-arranging-perimeter exposure of the candidate dime
 rationales are real and they happen to point the same way; the doc states this openly rather than
 presenting a convenience-driven choice as pure principle. The principled test stands on its own
 (finality genuinely is the dominant rail-DX question for any class of rail), so the dimension order
-is not reverse-engineered to fit AgentPay's regulatory posture — but the alignment is acknowledged.
+is not reverse-engineered to fit the project's regulatory posture — but the alignment is acknowledged.
 
 **Per-rail operationalisation — the reliance-level doctrine.** "Final" is rail-specific. Rails do
 not share a single cryptographic finality model (deterministic BFT close, probabilistic rooting,
@@ -475,14 +475,14 @@ freeze the finality design.
 ## 9. Reproducibility & pre-registration protocol
 
 Pre-registration is the **load-bearing canonical artefact** — it is what defends PayBench against
-Leaderboard-Illusion-style critique and establishes AgentPay as an early-mover on benchmark
+Leaderboard-Illusion-style critique and establishes PayBench as an early-mover on benchmark
 pre-registration. Protocol (closed decision):
 
 **Pre-register, before any scored run:** the rail set, per-rail finality definitions, trial counts,
 metric definitions (BT MLE + pass@k `k`-grid + Wilson), the RNG seed, the fixture hashes, and the
 analysis plan.
 
-**Frozen manifest (this pre-registration — methodology v1.1, 2026-06-06).** The concrete values the
+**Frozen manifest (this pre-registration — methodology v1.2, 2026-06-06).** The concrete values the
 anchors below commit to:
 
 | Item | Frozen value |
@@ -534,7 +534,7 @@ for bulk dataset signing.
 
 ## 10. Right-of-reply & corrections (publisher posture)
 
-AgentPay publishes as a **publisher, not a platform** (DSA framing closed decision; Recital 13
+PayBench publishes as a **publisher, not a platform** (DSA framing closed decision; Recital 13
 "minor and ancillary feature" exclusion; UK Defamation Act 2013 governs, primary shield is s.4
 public-interest). PayBench voluntarily mirrors DSA Articles 16/17/20 *inside the right-of-reply
 channel only*.
@@ -598,6 +598,6 @@ This document only *points* at the taxonomy; the full A1–A8 specification is c
 
 ## Appendix — pointers
 
-- Project context + full closed-decisions table: `CLAUDE.md` (repo root of the agentpay working repo)
-- Canonical decisions, glossary, dispute taxonomy: Notion (AgentPay parent)
+- Project context + full closed-decisions table: `CLAUDE.md` (repo root of the project's working repo)
+- Canonical decisions, glossary, dispute taxonomy: the project's Notion workspace
 - Sibling Friday-1 deliverable (reference task shape): the x402_base adapter at `poc/rail-x402-base/`

@@ -282,3 +282,12 @@ distributions for deterministic rails (F5); σ_log bootstrap CIs; legal-posture 
 
 **Status: cross-LLM gate CLEARED; v1.1 is the frozen method of record. Ready for §9 anchoring** (still
 gated only on the interactive-machine / YubiKey / tooling logistics, per the runbook).
+
+### v1.2 (2026-06-06) — editorial de-branding, no methodological change
+
+After v1.1 was frozen, a Day-0 brand-invisibility pass genericised incidental platform-brand
+references in `methodology.md` (and three non-manifest files). This is **not** a method change —
+method, rails, metrics, seed, fixture hashes, and the mock-pipeline verification hash (`895f99ed…`)
+are byte-identical to v1.1. Only `methodology.md`'s bytes changed, so the manifest hash moved:
+**v1.1 `f0b9b079…009d99` → v1.2 `a5f6feb4…d3a6f`**. The anchors (and the signed tag,
+`paybench-prereg-v1.2`) target v1.2. The cross-LLM findings and dispositions above stand unchanged.
