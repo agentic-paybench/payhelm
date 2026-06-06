@@ -25,7 +25,7 @@ the manifest and this hash changes — re-anchor from scratch.
 
 The two signing steps (cosign keyless, git tag) are deliberately human-gated — that is the point of a
 trust-anchor ceremony. The PVE host is headless, so the YubiKey and browser-OIDC steps must run on
-your laptop with the repo checked out at the **v1.1 freeze commit** (`<V1.1_COMMIT>`).
+your laptop with the repo checked out at the **v1.1 freeze commit** (`dfbb93b3`).
 
 ## 1. Pre-flight (re-verify the frozen artefact)
 
@@ -68,7 +68,7 @@ Commit the `.sig` and `.pem`.
 ```
 gpg --card-status                              # confirm the YubiKey OpenPGP key is present
 git config user.signingkey <YUBIKEY_KEYID>     # if not already
-git tag -s paybench-prereg-v1.1 <V1.1_COMMIT> \
+git tag -s paybench-prereg-v1.1 dfbb93b3 \
   -m "PayBench settlement-finality pre-registration — methodology v1.1; manifest f0b9b079…009d99"
 git tag -v paybench-prereg-v1.1                # verify the signature
 git push origin paybench-prereg-v1.1           # requires the commit to be pushed (step 6)
