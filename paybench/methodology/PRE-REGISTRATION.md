@@ -75,15 +75,17 @@ real-rail result.
 The manifest hash above is committed via three independent trust anchors plus two corroborating
 records:
 
-- **OSF pre-registration** → DOI (human-readable anchor; this document)
-- **cosign** signature over the manifest → **Rekor** transparency-log entry
-- **OpenTimestamps** on the manifest → **Bitcoin** block anchor
-- **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit (YubiKey OpenPGP)
-- **arXiv** preprint of the methodology
+- **OSF pre-registration** → DOI (human-readable anchor; this document) — *in progress*
+- **cosign** signature over the manifest → **Rekor** transparency-log entry — **landed 2026-06-06**, Rekor logIndex `1740328355`
+- **OpenTimestamps** on the manifest → **Bitcoin** block anchor — **landed 2026-06-06** (calendar commitment; Bitcoin confirmation upgrades in ~hours)
+- **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit `aeab0640` (YubiKey OpenPGP) — *deferred pending hardware-key provisioning; supplementary, not part of the triad*
+- **arXiv** preprint of the methodology — *pending (paper drafted; category cs.CR)*
 
 Trust-anchor triad: **OSF DOI + Bitcoin block + Rekor entry** — three independent anchors, no single
-point of trust. Bulk trial telemetry (when real-rail runs occur) is signed with a Merkle root +
-cosign, not VCDM/SD-JWT (§9).
+point of trust. **Two of the three are already landed** (Bitcoin via OpenTimestamps + Rekor via
+cosign); the OSF DOI completes the triad. The signed git tag and arXiv preprint are additional
+defence-in-depth beyond the triad. Bulk trial telemetry (when real-rail runs occur) is signed with a
+Merkle root + cosign, not VCDM/SD-JWT (§9).
 
 ## Verification
 

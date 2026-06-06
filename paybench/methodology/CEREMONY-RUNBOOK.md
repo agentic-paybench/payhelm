@@ -42,7 +42,12 @@ python3 -m paybench.mockbench.cli verify                 # fixtures vs provenanc
 python3 -m paybench.mockbench.cli run | grep run_hash    # == 895f99ed…14ee0 (mock-pipeline hash)
 ```
 
-## 2. OpenTimestamps → Bitcoin anchor (do this first — non-interactive, headless OK)
+## 2. OpenTimestamps → Bitcoin anchor (do this first — non-interactive, headless OK) — DONE 2026-06-06
+
+**Stamped over the v1.2 hash** (`ots info` confirms `a5f6feb4…`); `.ots` committed (`b6188941`).
+Bitcoin attestation is calendar-pending — run `ots upgrade …sha256.ots` in a few hours to bake in the
+full Bitcoin proof, then commit the upgraded `.ots`. *(Gotcha: `ots stamp` refuses to overwrite an
+existing `.ots` — delete the stale one first if re-stamping after a re-freeze.)*
 
 ```
 pipx install opentimestamps-client            # or: pip install --user opentimestamps-client
@@ -56,19 +61,32 @@ Commit `prereg-manifest.sha256.ots` once stamped.
 
 ## 3. cosign signature → Rekor transparency log (your machine, browser)
 
+**DONE 2026-06-06** — Rekor **logIndex `1740328355`**; bundle committed (`b6188941`). Modern cosign
+(≥ 2.x) deprecated `--output-signature/--output-certificate` and defaults to a single bundle, so the
+working command is `--bundle` (one JSON file = signature + cert + tlog entry):
 ```
 # install: see https://docs.sigstore.dev/cosign/installation
-cosign sign-blob \
-  --yes \
-  --output-signature  paybench/methodology/prereg-manifest.sha256.sig \
-  --output-certificate paybench/methodology/prereg-manifest.sha256.pem \
+cosign sign-blob --yes \
+  --bundle paybench/methodology/prereg-manifest.sha256.cosign.bundle \
   paybench/methodology/prereg-manifest.sha256
-# keyless: opens a browser for OIDC; the signature + cert are logged to Rekor automatically.
-# Record the Rekor log index/UUID printed to stderr into PRE-REGISTRATION.md.
+# keyless: opens a browser for OIDC; signature + cert + Rekor entry land in the bundle.
+# Rekor logIndex:  jq -r '.verificationMaterial.tlogEntries[0].logIndex' …cosign.bundle
+# verify:          cosign verify-blob --bundle …cosign.bundle \
+#                    --certificate-identity-regexp '.*' --certificate-oidc-issuer-regexp '.*' …sha256
 ```
-Commit the `.sig` and `.pem`.
+Bundle committed (replaces the old `.sig`/`.pem` artefacts).
 
-## 4. Signed git tag (your machine, YubiKey plugged in)
+## 4. Signed git tag (your machine, YubiKey plugged in) — DEFERRED 2026-06-06
+
+> **Deferred, by design — not a blocker.** The signed tag is *supplementary* defence-in-depth, **not
+> part of the trust-anchor triad** (OSF DOI + Bitcoin + Rekor). It points at the immutable commit
+> `aeab0640`, so it can be added any time later and is exactly as valid. Deferred because the YubiKey
+> is factory-fresh (`gpg --card-status` → `Signature key: [none]`); hardware-signing requires the
+> OpenPGP key to be provisioned first. Per the closed decision (primary + backup, cold storage),
+> provisioning is its own airgapped issuance ceremony — see the YubiKey issuance ceremony checklist in
+> the agentpay working repo. **Run that ceremony, then create this tag on `aeab0640` before Day-0.**
+> (`gpg --card-status` access on this host needed `disable-ccid` in `~/.gnupg/scdaemon.conf` to get
+> past a pcscd/scdaemon turf war.)
 
 ```
 gpg --card-status                              # confirm the YubiKey OpenPGP key is present
@@ -129,8 +147,8 @@ timeline.
 
 | Anchor | Status | Reference |
 |---|---|---|
-| OpenTimestamps (Bitcoin) | pending | `prereg-manifest.sha256.ots` |
-| cosign → Rekor | pending | Rekor UUID: — |
-| Signed git tag | pending | `paybench-prereg-v1.2` |
-| OSF DOI | pending | DOI: — |
-| arXiv | pending | arXiv id: — |
+| OpenTimestamps (Bitcoin) | **DONE** (calendar-pending; `ots upgrade` later) | `prereg-manifest.sha256.ots` over `a5f6feb4…`; committed `b6188941` |
+| cosign → Rekor | **DONE** | Rekor logIndex `1740328355`; `prereg-manifest.sha256.cosign.bundle`, committed `b6188941` |
+| Signed git tag | **DEFERRED** (YubiKey provisioning) | `paybench-prereg-v1.2` on `aeab0640` — after the issuance ceremony, before Day-0 |
+| OSF DOI | in progress | DOI: — |
+| arXiv | pending | paper drafted (`paper/payhelm-methods.tex`); category cs.CR; needs endorsement |
