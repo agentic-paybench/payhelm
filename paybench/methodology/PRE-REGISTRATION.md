@@ -3,16 +3,17 @@
 **Pre-registration of an evaluation methodology and its analysis plan, committed before
 publication of any real-rail ranking.**
 
-- **Methodology version:** v1.1 (frozen 2026-06-06, post-cross-LLM-review)
+- **Methodology version:** v1.2 (frozen 2026-06-06)
 - **Decisions confirmed:** 2026-06-06 — D1-keep (per-rail-canonical reliance-level finality
   doctrine), D2-freeze (empirical `sigma_log` as-measured + disclosed limitation). A four-model
-  cross-LLM adversarial review (Gemini/DeepSeek/Kimi/Qwen) upheld **D1 3–1** and **D2 4/4**; v1.1
-  applies its zero-regen hardening (no fixture regen). See `pre-reg-adversarial-review.md`.
-- **Frozen-method commit (agentic-paybench/payhelm):** tag `paybench-prereg-v1.1` (resolves to the
-  v1.1 freeze commit; the prior v1.0 freeze was `58f656e1`)
+  cross-LLM adversarial review (Gemini/DeepSeek/Kimi/Qwen) upheld **D1 3–1** and **D2 4/4**; the
+  zero-regen hardening it produced is carried in v1.2 (no fixture regen). See
+  `pre-reg-adversarial-review.md`.
+- **Frozen-method commit (agentic-paybench/payhelm):** tag `paybench-prereg-v1.2` (resolves to the
+  v1.2 freeze commit; prior freezes: v1.0 `58f656e1`, v1.1 `dfbb93b3`)
 - **Manifest:** `paybench/methodology/prereg-manifest.sha256`
 - **Manifest hash (the value the cryptographic anchors commit to):**
-  `sha256:f0b9b079e72fcfdadde976be9ee5cdcd5ac893e86e86e875b440ac13e3009d99`
+  `sha256:a5f6feb46819dc3926012a8a38ac519cd0d5df33c20734516dca4b32d30d3a6f`
 
 ---
 
@@ -20,7 +21,7 @@ publication of any real-rail ranking.**
 
 The complete settlement-finality benchmark design **and** analysis plan, fixed in advance of
 publishing any rail-by-rail result, so that no element can later be accused of having been chosen to
-flatter a rail. The full method is `paybench/methodology/methodology.md` (v1.1); this document is the
+flatter a rail. The full method is `paybench/methodology/methodology.md` (v1.2); this document is the
 registration record and points at the frozen byte-set.
 
 This pre-registration covers the **measurement method and the calibrated mock baseline only**. The
@@ -77,7 +78,7 @@ records:
 - **OSF pre-registration** → DOI (human-readable anchor; this document)
 - **cosign** signature over the manifest → **Rekor** transparency-log entry
 - **OpenTimestamps** on the manifest → **Bitcoin** block anchor
-- **Signed git tag** `paybench-prereg-v1.1` on the v1.1 freeze commit (YubiKey OpenPGP)
+- **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit (YubiKey OpenPGP)
 - **arXiv** preprint of the methodology
 
 Trust-anchor triad: **OSF DOI + Bitcoin block + Rekor entry** — three independent anchors, no single
@@ -89,7 +90,7 @@ cosign, not VCDM/SD-JWT (§9).
 ```
 cd paybench
 sha256sum -c methodology/prereg-manifest.sha256        # all 19 files OK
-sha256sum methodology/prereg-manifest.sha256           # == f0b9b079…009d99
+sha256sum methodology/prereg-manifest.sha256           # == a5f6feb4…d3a6f
 python3 -m paybench.mockbench.cli verify               # fixture hashes vs provenance
 python3 -m paybench.mockbench.cli run                  # reproduces mock-pipeline hash 895f99ed…14ee0
 ```

@@ -1,8 +1,10 @@
-# PayBench settlement-finality pre-registration manifest — methodology v1.1
-# Frozen 2026-06-06 (post-cross-LLM-review). D1-keep / D2-freeze unchanged; F14 de-rank + F1/F13 hardening applied; no fixture regen.
+# PayBench settlement-finality pre-registration manifest — methodology v1.2
+# v1.2 is an editorial revision of v1.1 with no methodological change: method, rails, metrics,
+# seed, fixture hashes, and the mock-pipeline verification hash are byte-identical to v1.1; only
+# methodology.md's bytes changed, so the manifest hash changes. Frozen 2026-06-06.
 # Paths are relative to paybench/. Verify with:  cd paybench && sha256sum -c methodology/prereg-manifest.sha256
 # This manifest is the byte-set the §9 anchors commit to. The adversarial-review companion is EXCLUDED (it accrues cross-LLM dispositions by design).
-2eb58dffda62741746690eeaa49f777d196a5c3f2c9e4b58097a6cf4180c0f16  methodology/methodology.md
+340dad208a3553e40457be38290ba36d5bbbd873df2e0b342d49726153ae8d44  methodology/methodology.md
 86dbeb52fd22d901022e1e4784b77164cdf7f992d720f15dba5f930f722f8c8d  calibration/calibration-plan.md
 12e391a751bcc21ce98f646201af66bd433baa27d0f83b0acc9d6f2c2a483f7e  calibration/provenance/R1-x402-base-finality.provenance.yaml
 0fa68e0e4ee0f673881d4b0153de965a34d41bd9db82d5cf448a4280bc2cab2a  calibration/provenance/R2-x402-stellar-finality.provenance.yaml

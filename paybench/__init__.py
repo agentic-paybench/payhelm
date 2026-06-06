@@ -1,4 +1,4 @@
-"""PayBench — the AgentPay agent-to-agent payment-rail benchmark.
+"""PayBench — a benchmark for agent-to-agent payment rails.
 
 This package sits deliberately *outside* the upstream HELM ``src/`` tree (HELM's
 setuptools config discovers only ``src/``), keeping the fork-first / upstream-second
