@@ -30,7 +30,7 @@ the manifest and this hash changes — re-anchor from scratch.
 
 The two signing steps (cosign keyless, git tag) are deliberately human-gated — that is the point of a
 trust-anchor ceremony. The PVE host is headless, so the YubiKey and browser-OIDC steps must run on
-your laptop with the repo checked out at the **v1.2 freeze commit** (`<V1.2_COMMIT>`).
+your laptop with the repo checked out at the **v1.2 freeze commit** (`aeab0640`).
 
 ## 1. Pre-flight (re-verify the frozen artefact)
 
@@ -73,7 +73,7 @@ Commit the `.sig` and `.pem`.
 ```
 gpg --card-status                              # confirm the YubiKey OpenPGP key is present
 git config user.signingkey <YUBIKEY_KEYID>     # if not already
-git tag -s paybench-prereg-v1.2 <V1.2_COMMIT> \
+git tag -s paybench-prereg-v1.2 aeab0640 \
   -m "PayBench settlement-finality pre-registration — methodology v1.2; manifest a5f6feb4…d3a6f"
 git tag -v paybench-prereg-v1.2                # verify the signature
 git push origin paybench-prereg-v1.2           # requires the commit to be pushed (step 6)
@@ -99,7 +99,7 @@ into `PRE-REGISTRATION.md`. The DOI is the human-readable leg of the trust-ancho
 ## 6. Push the frozen commit (prerequisite for the tag in step 4) — DONE 2026-06-06
 
 Branch renamed `paybench/methodology-rough-draft` → **`paybench/poc`** and pushed to `origin`
-(tracking). The **v1.2 freeze commit** (`<V1.2_COMMIT>`) is on the remote, so the step-4 tag can
+(tracking). The **v1.2 freeze commit** (`aeab0640`) is on the remote, so the step-4 tag can
 reference it. (Fork `main` stays pristine HELM until the Day-0 cutover; the tag lands on
 `paybench/poc`.)
 
