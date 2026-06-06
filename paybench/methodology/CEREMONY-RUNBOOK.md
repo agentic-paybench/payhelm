@@ -91,18 +91,23 @@ into `PRE-REGISTRATION.md`. The DOI is the human-readable leg of the trust-ancho
   and note in `PRE-REGISTRATION.md` that the **Rekor entry + OpenTimestamps proof are independently
   sufficient** to establish the freeze date even if OSF is unavailable.
 
-## 6. Push the frozen commit (prerequisite for the tag in step 4)
+## 6. Push the frozen commit (prerequisite for the tag in step 4) — DONE 2026-06-06
 
-Branch `paybench/methodology-rough-draft` is local-only. Decide topology first (see the session
-hand-off): push the branch as-is, rename it (the "rough-draft" name is now stale), or merge to the
-fork's `main` so the tag lands on canonical history. Whichever — the tag in step 4 must reference a
-**pushed** commit.
+Branch renamed `paybench/methodology-rough-draft` → **`paybench/poc`** and pushed to
+`origin` (tracking). The v1.1 freeze commit `dfbb93b3` is on the remote, so the step-4 tag can
+reference it. (Fork `main` stays pristine HELM until the Day-0 cutover; the tag lands on
+`paybench/poc`.)
 
 ## 7. arXiv preprint (longest lead — start the account/endorsement early)
 
-The methodology is not yet in paper form. Render `methodology.md` → a short methods paper (LaTeX),
-then submit to arXiv (cs.CR / cs.DC). A first-time submitter may need an endorsement — begin that
-process before the rest, as it gates the timeline.
+**Draft ready:** `paybench/methodology/paper/payhelm-methods.tex` — a self-contained methods paper
+rendered from `methodology.md` v1.1 (standard `article` + amsmath/booktabs/hyperref/geometry; compiles
+on arXiv's TeX Live). It honours F14 (no per-rail finality numbers / no ranking in the public preprint),
+carries the watermarked title, the mock-harness abstract disclaimer, the manifest hash, and the
+v1-only-canonical note. **Two things to resolve before submission:** (1) the `TODO(identity)`
+author/affiliation placeholder — the Stage-1-research-framing vs Stage-2-founder-framing identity
+decision; (2) pick the category (cs.CR / cs.DC). Then submit to arXiv. A first-time submitter may need
+an endorsement — begin that early, as it gates the timeline.
 
 - **Watermark (cross-LLM review).** The title must contain "Mock Harness" or "Simulated Fixtures" —
   e.g. *"PayBench: A Pre-Registered Methodology and Calibrated Mock Harness for Agent-to-Agent
