@@ -44,10 +44,12 @@ python3 -m paybench.mockbench.cli run | grep run_hash    # == 895f99ed…14ee0 (
 
 ## 2. OpenTimestamps → Bitcoin anchor (do this first — non-interactive, headless OK) — DONE 2026-06-06
 
-**Stamped over the v1.2 hash** (`ots info` confirms `a5f6feb4…`); `.ots` committed (`b6188941`).
-Bitcoin attestation is calendar-pending — run `ots upgrade …sha256.ots` in a few hours to bake in the
-full Bitcoin proof, then commit the upgraded `.ots`. *(Gotcha: `ots stamp` refuses to overwrite an
-existing `.ots` — delete the stale one first if re-stamping after a re-freeze.)*
+**Stamped over the v1.2 hash** (`ots info` confirms `a5f6feb4…`) and **CONFIRMED in Bitcoin block
+952636** (2026-06-06, same-day; independently checked via the opentimestamps.org web verifier).
+`ots upgrade` baked the Bitcoin attestation into the `.ots`; upgraded `.ots` committed (`7e268405`).
+*(Gotchas: `ots stamp` refuses to overwrite an existing `.ots` — delete the stale one first if
+re-stamping after a re-freeze. `ots upgrade` leaves a `.ots.bak` — don't commit it. `ots verify`
+needs a local `bitcoind`; the web verifier or `ots info` is the no-node path.)*
 
 ```
 pipx install opentimestamps-client            # or: pip install --user opentimestamps-client
@@ -147,7 +149,7 @@ timeline.
 
 | Anchor | Status | Reference |
 |---|---|---|
-| OpenTimestamps (Bitcoin) | **DONE** (calendar-pending; `ots upgrade` later) | `prereg-manifest.sha256.ots` over `a5f6feb4…`; committed `b6188941` |
+| OpenTimestamps (Bitcoin) | **DONE — confirmed Bitcoin block 952636** | `prereg-manifest.sha256.ots` over `a5f6feb4…`; upgraded + committed `7e268405` |
 | cosign → Rekor | **DONE** | Rekor logIndex `1740328355`; `prereg-manifest.sha256.cosign.bundle`, committed `b6188941` |
 | Signed git tag | **DEFERRED** (YubiKey provisioning) | `paybench-prereg-v1.2` on `aeab0640` — after the issuance ceremony, before Day-0 |
 | OSF DOI | in progress | DOI: — |
