@@ -77,7 +77,7 @@ records:
 
 - **OSF pre-registration** → DOI (human-readable anchor; this document) — *in progress*
 - **cosign** signature over the manifest → **Rekor** transparency-log entry — **landed 2026-06-06**, Rekor logIndex `1740328355`
-- **OpenTimestamps** on the manifest → **Bitcoin** block anchor — **landed 2026-06-06** (calendar commitment; Bitcoin confirmation upgrades in ~hours)
+- **OpenTimestamps** on the manifest → **Bitcoin** block anchor — **confirmed in Bitcoin block 952636** (2026-06-06)
 - **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit `aeab0640` (YubiKey OpenPGP) — *deferred pending hardware-key provisioning; supplementary, not part of the triad*
 - **arXiv** preprint of the methodology — *pending (paper drafted; category cs.CR)*
 
