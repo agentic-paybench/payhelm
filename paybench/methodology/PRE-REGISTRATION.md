@@ -78,7 +78,7 @@ records:
 - **OSF pre-registration** → DOI (human-readable anchor; this document) — *in progress*
 - **cosign** signature over the manifest → **Rekor** transparency-log entry — **landed 2026-06-06**, Rekor logIndex `1740328355`
 - **OpenTimestamps** on the manifest → **Bitcoin** block anchor — **confirmed in Bitcoin block 952636** (2026-06-06)
-- **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit `aeab0640` (YubiKey OpenPGP) — *deferred pending hardware-key provisioning; supplementary, not part of the triad*
+- **Signed git tag** `paybench-prereg-v1.2` on the v1.2 freeze commit `aeab0640` (YubiKey OpenPGP, ed25519 subkey `B61635C9…286042AC`) — **landed 2026-06-14**; tag obj `225c26a8…`, signer `Michael Blake <mblake@everydayai.link>`, public key `887BEAFA…` on keys.openpgp.org; supplementary, not part of the triad
 - **arXiv** preprint of the methodology — *pending (paper drafted; category cs.CR)*
 
 Trust-anchor triad: **OSF DOI + Bitcoin block + Rekor entry** — three independent anchors, no single

@@ -78,17 +78,16 @@ cosign sign-blob --yes \
 ```
 Bundle committed (replaces the old `.sig`/`.pem` artefacts).
 
-## 4. Signed git tag (your machine, YubiKey plugged in) — DEFERRED 2026-06-06
+## 4. Signed git tag (your machine, YubiKey plugged in) — LANDED 2026-06-14
 
-> **Deferred, by design — not a blocker.** The signed tag is *supplementary* defence-in-depth, **not
-> part of the trust-anchor triad** (OSF DOI + Bitcoin + Rekor). It points at the immutable commit
-> `aeab0640`, so it can be added any time later and is exactly as valid. Deferred because the YubiKey
-> is factory-fresh (`gpg --card-status` → `Signature key: [none]`); hardware-signing requires the
-> OpenPGP key to be provisioned first. Per the closed decision (primary + backup, cold storage),
-> provisioning is its own airgapped issuance ceremony — see the YubiKey issuance ceremony checklist in
-> the agentpay working repo. **Run that ceremony, then create this tag on `aeab0640` before Day-0.**
-> (`gpg --card-status` access on this host needed `disable-ccid` in `~/.gnupg/scdaemon.conf` to get
-> past a pcscd/scdaemon turf war.)
+> **Landed 2026-06-14.** Signed `paybench-prereg-v1.2` (tag obj `225c26a8…`) on `aeab0640` with the
+> YubiKey OpenPGP ed25519 signing subkey `B61635C9…286042AC` (master `887BEAFA…`) and pushed to origin.
+> Signer identity `Michael Blake <mblake@everydayai.link>` — the key's UID was changed from the
+> as-provisioned `michael@everydayai.link` to the canonical address *before* publishing (see the agentpay
+> ceremony checklist §9). Public key uploaded + verified on keys.openpgp.org. The tag is *supplementary*
+> defence-in-depth, **not part of the trust-anchor triad** (OSF DOI + Bitcoin + Rekor); it points at the
+> immutable commit `aeab0640`. (Issuance + dual-card + UID-change procedure: the YubiKey issuance
+> ceremony checklist §§5,9 in the agentpay repo.)
 
 ```
 gpg --card-status                              # confirm the YubiKey OpenPGP key is present
@@ -151,6 +150,6 @@ timeline.
 |---|---|---|
 | OpenTimestamps (Bitcoin) | **DONE — confirmed Bitcoin block 952636** | `prereg-manifest.sha256.ots` over `a5f6feb4…`; upgraded + committed `7e268405` |
 | cosign → Rekor | **DONE** | Rekor logIndex `1740328355`; `prereg-manifest.sha256.cosign.bundle`, committed `b6188941` |
-| Signed git tag | **DEFERRED** (YubiKey provisioning) | `paybench-prereg-v1.2` on `aeab0640` — after the issuance ceremony, before Day-0 |
+| Signed git tag | **DONE — landed 2026-06-14** | `paybench-prereg-v1.2` (tag obj `225c26a8…`) on `aeab0640`; signer `mblake@everydayai.link`, key `887BEAFA…` on keys.openpgp.org |
 | OSF DOI | in progress | DOI: — |
 | arXiv | pending | paper drafted (`paper/payhelm-methods.tex`); category cs.CR; needs endorsement |
