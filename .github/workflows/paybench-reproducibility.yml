@@ -1,0 +1,82 @@
+# Reproducibility CI for the frozen, pre-registered PayBench v1.2 finality artefact.
+#
+# This guards the published-from artefact: a drift in any fixture content-hash,
+# a change in the Bradley-Terry rank order, or a change in the run_hash must fail
+# CI loudly. Do NOT "fix" a red run by regenerating fixtures — that defeats the
+# entire purpose of this workflow.
+#
+# Deliberately isolated from HELM's CI (test-python.yml et al.): mockbench is
+# pure stdlib, so this job installs no HELM dependencies and a HELM-side change
+# cannot break it (nor vice-versa). Pinned to a single Python version so the
+# exact-hash assertions reproduce the frozen v1.2 repro bit-for-bit.
+name: PayBench Reproducibility
+
+on:
+  push:
+    paths:
+      - 'paybench/**'
+      - '.github/workflows/paybench-reproducibility.yml'
+  pull_request:
+    paths:
+      - 'paybench/**'
+      - '.github/workflows/paybench-reproducibility.yml'
+
+jobs:
+  reproducibility:
+    name: Guard frozen v1.2 finality artefact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify fixture content-hashes vs provenance
+        # Fails (exit 1) on any fixture/provenance hash mismatch.
+        run: python -m paybench.mockbench.cli verify
+
+      - name: Reproduce finality report
+        run: python -m paybench.mockbench.cli run
+
+      - name: Assert rank order and run_hash are unchanged
+        # The expected values ARE the frozen v1.2 artefact. If this step fails,
+        # the benchmark output drifted — investigate; do not regenerate to silence it.
+        run: |
+          python - <<'PY'
+          import json, sys
+
+          EXPECTED_RANKING = ["R10", "R1", "R2", "R9", "R11"]
+          EXPECTED_RUN_HASH = "sha256:895f99ed52567421a1d7e9068ab9a0d7147d6381ec137e1b130b805e63b14ee0"
+
+          with open("paybench/runs/finality-run.json", encoding="utf-8") as fh:
+              report = json.load(fh)
+
+          ranking = report["bradley_terry"]["ranking"]
+          run_hash = report["run_hash"]
+
+          errors = []
+          if ranking != EXPECTED_RANKING:
+              errors.append(f"BT rank order drift: got {ranking}, expected {EXPECTED_RANKING}")
+          if run_hash != EXPECTED_RUN_HASH:
+              errors.append(f"run_hash drift: got {run_hash}, expected {EXPECTED_RUN_HASH}")
+
+          if errors:
+              print("REPRODUCIBILITY FAILURE — frozen v1.2 artefact drifted:")
+              for e in errors:
+                  print(f"  - {e}")
+              sys.exit(1)
+
+          print(f"OK  rank order {ranking}")
+          print(f"OK  run_hash   {run_hash}")
+          PY
+
+      - name: Install pytest
+        run: python -m pip install --quiet pytest
+
+      - name: Run mockbench test suite (isolated from HELM root conftest)
+        # --noconftest skips the repo-root HELM conftest (imports `helm`, not installed here);
+        # -o addopts="" clears pyproject's xdoctest opts. Mirrors the local isolated invocation.
+        run: python -m pytest paybench/mockbench/tests/ --noconftest -p no:cacheprovider -o addopts="" -v
