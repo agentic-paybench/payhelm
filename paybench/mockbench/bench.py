@@ -23,13 +23,11 @@ import random
 from dataclasses import dataclass
 
 from . import (
-    K_GRID_SECONDS,
     MASTER_SEED,
-    SETTLING_RAILS,
     TRIALS_PER_PAIR,
 )
+from .dimensions import FINALITY, Dimension
 from .fixtures import derive_seed, load_fixture
-from .paths import RUNS_DIR
 from .stats import bradley_terry_mle, pass_at_k, wilson_interval
 
 
@@ -43,13 +41,17 @@ class PairResult:
     ties: int
 
 
-def race_pair(a: str, b: str, samples: dict[str, list[float]]) -> PairResult:
-    """Run TRIALS_PER_PAIR seeded finality races between rails a and b.
+def race_pair(
+    a: str, b: str, samples: dict[str, list[float]], dim: Dimension = FINALITY
+) -> PairResult:
+    """Run TRIALS_PER_PAIR seeded races between rails a and b on ``dim``.
 
     Per-pair RNG is domain-separated from the single master seed so pair order
     is irrelevant to any pair's outcome (a race is reproducible in isolation).
+    Both finality and auth-latency are lower-is-better (``dim.direction``), so the
+    race rule — lower value wins, ties split 0.5/0.5 — is shared unchanged.
     """
-    rng = random.Random(derive_seed(f"pair:{a}:{b}"))
+    rng = random.Random(derive_seed(dim.pair_seed_domain(a, b)))
     sa, sb = samples[a], samples[b]
     na, nb = len(sa), len(sb)
     wins_a = wins_b = 0.0
@@ -75,21 +77,23 @@ def _run_hash(report_without_hash: dict) -> str:
     return "sha256:" + hashlib.sha256(canon).hexdigest()
 
 
-def run_benchmark(rails: list[str] = SETTLING_RAILS) -> dict:
-    """Execute the full settlement-finality benchmark and return the report dict.
+def run_benchmark(dim: Dimension = FINALITY, rails: list[str] | None = None) -> dict:
+    """Execute the full benchmark for ``dim`` and return the report dict.
 
+    Defaults to the frozen settlement-finality dimension (5 rails → 10 pairs →
+    5,000 trials), reproducing the pre-registered v1.2 report bit-for-bit.
     Loading each fixture verifies its content hash (the trial design records and
     re-checks the exact fixture bytes it consumes — content-addressing wired into
     the run, §6).
     """
-    rails = list(rails)
-    fixtures = {r: load_fixture(r) for r in rails}
+    rails = list(dim.rails if rails is None else rails)
+    fixtures = {r: load_fixture(r, dim) for r in rails}
     samples = {r: [float(s) for s in fixtures[r]["samples"]] for r in rails}
 
     pairs = [tuple(sorted(p)) for p in itertools.combinations(sorted(rails), 2)]
 
     # --- run every pair ---
-    pair_results = [race_pair(a, b, samples) for (a, b) in pairs]
+    pair_results = [race_pair(a, b, samples, dim) for (a, b) in pairs]
 
     # --- Bradley-Terry inputs ---
     wins: dict[tuple[str, str], float] = {}
@@ -129,10 +133,11 @@ def run_benchmark(rails: list[str] = SETTLING_RAILS) -> dict:
         )
 
     # --- pass@k per rail over its calibrated population, with Wilson LB ---
+    k_grid = list(dim.k_grid)
     passk_report = {}
     for r in rails:
         rows = []
-        for k in K_GRID_SECONDS:
+        for k in k_grid:
             pk = pass_at_k(samples[r], k)
             rows.append(
                 {
@@ -146,8 +151,8 @@ def run_benchmark(rails: list[str] = SETTLING_RAILS) -> dict:
         passk_report[r] = rows
 
     report = {
-        "schema": "paybench.finality-run.v1",
-        "dimension": "settlement-finality",
+        "schema": dim.run_schema,
+        "dimension": dim.dimension,
         "config": {
             "master_seed": MASTER_SEED,
             "rails": rails,
@@ -156,7 +161,7 @@ def run_benchmark(rails: list[str] = SETTLING_RAILS) -> dict:
             "n_pairs": len(pairs),
             "trials_per_pair": TRIALS_PER_PAIR,
             "total_trials": TRIALS_PER_PAIR * len(pairs),
-            "k_grid_seconds": K_GRID_SECONDS,
+            "k_grid_seconds": k_grid,
             "fixture_hashes": {r: fixtures[r]["content_hash"] for r in rails},
         },
         "bradley_terry": {
@@ -173,9 +178,9 @@ def run_benchmark(rails: list[str] = SETTLING_RAILS) -> dict:
     return report
 
 
-def write_report(report: dict) -> str:
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    out = RUNS_DIR / "finality-run.json"
+def write_report(report: dict, dim: Dimension = FINALITY) -> str:
+    dim.run_path().parent.mkdir(parents=True, exist_ok=True)
+    out = dim.run_path()
     out.write_text(
         json.dumps(report, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
         encoding="utf-8",
