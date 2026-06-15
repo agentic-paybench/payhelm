@@ -1,0 +1,35 @@
+# PayBench calibration provenance — R10 MPP-on-Tempo AUTHORIZATION LATENCY
+# Dimension 2 (Day-30, §11). PLACEHOLDER — pending founder calibration.
+#
+# !!! PLACEHOLDER — pending founder calibration !!!
+# The {median_s, sigma_log} below are illustrative placeholders chosen only to
+# exercise the harness end-to-end. They are NOT measured and MUST NOT be
+# published or pre-registered. See methodology/dim2-auth-latency.DRAFT.md.
+
+rail: "R10 MPP-on-Tempo"
+dimension: authorization-latency
+unit: seconds                    # wall-clock, payment-intent presented -> authorization granted
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 0.30, sigma_log: 0.30}   # PLACEHOLDER — NOT measured
+  approach: placeholder
+
+sources:
+  - type: placeholder
+    ref: "PLACEHOLDER — no measurement; harness-exercising value only"
+    date: "2026-06-15"
+    sample_size: 0
+    note: >
+      Authorization latency for MPP-on-Tempo = the MPP 402 -> payment-authorization
+      handshake (mppx envelope) ahead of Tempo BFT settlement (the R10 finality
+      dimension). The pure-Tempo path authorizes quickly; the Stripe-mediated
+      acceptance leg is Variant-E mock and may dominate a real auth-latency
+      measure (founder to decide which leg is in scope). Placeholder median 0.30s
+      / sigma_log 0.30.
+
+calibration_date: "2026-06-15"
+confidence: placeholder
+fixture_content_hash: "sha256:7b409bf5ba7a065bdaecff178ebb800de893ec1ff1dc5fc5f54ad6aacf9dd17b"
+notes: >
+  PLACEHOLDER — pending founder calibration. Do not publish or pre-register.

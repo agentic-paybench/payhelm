@@ -1,0 +1,34 @@
+# PayBench calibration provenance — R2 x402-Stellar AUTHORIZATION LATENCY
+# Dimension 2 (Day-30, §11). PLACEHOLDER — pending founder calibration.
+#
+# !!! PLACEHOLDER — pending founder calibration !!!
+# The {median_s, sigma_log} below are illustrative placeholders chosen only to
+# exercise the harness end-to-end. They are NOT measured and MUST NOT be
+# published or pre-registered. See methodology/dim2-auth-latency.DRAFT.md.
+
+rail: "R2 x402-Stellar"
+dimension: authorization-latency
+unit: seconds                    # wall-clock, payment-intent presented -> authorization granted
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 0.55, sigma_log: 0.30}   # PLACEHOLDER — NOT measured
+  approach: placeholder
+
+sources:
+  - type: placeholder
+    ref: "PLACEHOLDER — no measurement; harness-exercising value only"
+    date: "2026-06-15"
+    sample_size: 0
+    note: >
+      Authorization latency for x402-Stellar = the 402 challenge -> auth-header
+      construction (createAuthHeaders) -> facilitator/manual verify round-trip,
+      ahead of ledger-close settlement (the R2 finality dimension). The spec
+      OZ-facilitator path adds a verify+settle round-trip; a first-party measure
+      should isolate the authorize leg. Placeholder median 0.55s / sigma_log 0.30.
+
+calibration_date: "2026-06-15"
+confidence: placeholder
+fixture_content_hash: "sha256:bf1a32110ee22dc5331b9d220ec8abf707d6b72a29c33a2b037a239d5ed5bf2f"
+notes: >
+  PLACEHOLDER — pending founder calibration. Do not publish or pre-register.
