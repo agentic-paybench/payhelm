@@ -114,6 +114,23 @@ into `PRE-REGISTRATION.md`. The DOI is the human-readable leg of the trust-ancho
   Independently archive `PRE-REGISTRATION.md` + `prereg-manifest.sha256` (Internet Archive / IPFS),
   and note in `PRE-REGISTRATION.md` that the **Rekor entry + OpenTimestamps proof are independently
   sufficient** to establish the freeze date even if OSF is unavailable.
+  - **Part 1 — DONE 2026-06-17.** Internet Archive item
+    <https://archive.org/details/methodology_202606> (IA-stamped 17 Jun 2026). Archived all 5 OSF
+    attachments — `PRE-REGISTRATION.md`, `methodology.md`, `prereg-manifest.sha256`, plus the `.ots`
+    and `.cosign.bundle` proof files — so the item is self-verifying (re-check Bitcoin + Rekor
+    against hash `a5f6feb4…` without OSF or the repo). IA satisfies the "/" requirement; IPFS not
+    needed. (Snapshot is the pre-DOI version, which is correct as a freeze-time record.)
+  - **Part 2 — pending:** add the explicit "Rekor + OpenTimestamps independently sufficient even if
+    OSF unavailable" sentence to `PRE-REGISTRATION.md`; bundle it with the post-submission DOI
+    write-back (one edit, then re-attach + optionally re-archive).
+- **Embargo.** Register under an OSF embargo to **2026-07-17 (POC Day-0)**, early-release permitted
+  (OSF supports ending an embargo before its date). The embargo gates only the OSF-hosted narrative
+  + attachments; the OpenTimestamps (Bitcoin block 952636) and Rekor (logIndex 1740328355) anchors
+  are already public from 2026-06-06, so the freeze date itself is *not* embargoed. Rationale:
+  syncs the OSF registration's public visibility with the rest of the Day-0 ship bundle. **Set this
+  in the OSF UI at registration time — it is a platform setting, not recorded in the frozen
+  artefacts** (`PRE-REGISTRATION.md` and the 19-file manifest are immutable / uploaded; do not edit
+  them to carry process decisions).
 
 ## 6. Push the frozen commit (prerequisite for the tag in step 4) — DONE 2026-06-06
 
@@ -151,5 +168,5 @@ timeline.
 | OpenTimestamps (Bitcoin) | **DONE — confirmed Bitcoin block 952636** | `prereg-manifest.sha256.ots` over `a5f6feb4…`; upgraded + committed `7e268405` |
 | cosign → Rekor | **DONE** | Rekor logIndex `1740328355`; `prereg-manifest.sha256.cosign.bundle`, committed `b6188941` |
 | Signed git tag | **DONE — landed 2026-06-14** | `paybench-prereg-v1.2` (tag obj `225c26a8…`) on `aeab0640`; signer `mblake@everydayai.link`, key `887BEAFA…` on keys.openpgp.org |
-| OSF DOI | in progress | DOI: — |
+| OSF DOI | in progress | DOI: — (register under embargo to 2026-07-17, early-release permitted) |
 | arXiv | pending | paper drafted (`paper/payhelm-methods.tex`); category cs.CR; needs endorsement |
