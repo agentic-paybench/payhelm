@@ -53,9 +53,9 @@ in §3 — the asymmetry should be named, not hidden.
 | x402-Base (R1) | x402 **`/verify` accept** of the signed payload (off-chain: sig recovery + balance + simulation), before the on-chain `transferWithAuthorization` settle | ✅ primary spec | `TODO(calibration)` |
 | x402-Stellar (R2) | x402 **`/verify` accept** (decode XDR, check Soroban auth-entry signatures, simulate), before submission via the OZ Relayer | ✅ primary spec | `TODO(calibration)` |
 | x402-Solana (R9) | x402 **`/verify` accept** at the **facilitator** layer — **earlier** than Solana `confirmed`. `confirmed` (~2.27s) is the *settle-at-confirmed* checkpoint, **not** the accept; record accept / confirmed / finalized as three checkpoints (see §9, C1) | ✅ primary spec (facilitator); ⚠️ accept ≠ `confirmed` | `TODO(calibration)` |
-| MPP-on-Tempo (R10) | MPP **payment-authorization handshake** (mppx envelope), before Tempo BFT settlement; Stripe-mediated acceptance leg is Variant-E mock (scope TBD) | ❓ unevidenced — gap pass `wdcd8fxdt` | `TODO(calibration)` |
-| MPP-on-Spark-Lightning (R11) | L402-family challenge → **BOLT11 invoice issuance / authorization**, before the Spark FROST+SSP preimage-release ceremony | ❓ unevidenced — gap pass `wdcd8fxdt` | `TODO(calibration)` |
-| GCP + AP2 (R6) | **AP2 mandate-verification + orchestration decision** — the authorization layer itself; see §3 (this is AP2's proper, well-defined dimension) | ❓ unevidenced — gap pass `wdcd8fxdt` | `TODO(calibration)` |
+| MPP-on-Tempo (R10) | MPP **`Verify` procedure** (402 → `Authorization: Payment` credential → server verify-before-broadcast), before Tempo BFT settlement (~500ms). Normative verify/settle split; **but** for the one-time *Charge* intent verify+settle are a combined ~500ms step (accept instrumentable, not separately *published*); *Session* intent = near-zero off-chain voucher verify | ✅ primary spec (Charge/Session nuance) | `TODO(calibration)` |
+| MPP-on-Spark-Lightning (R11) | L402-family challenge → **BOLT11 invoice issuance / authorization**, before the Spark FROST+SSP preimage-release ceremony | ❓ budget-starved — needs final narrow pass | `TODO(calibration)` |
+| GCP + AP2 (R6) | **AP2 mandate-verification → credential issuance → dispatch** to the Merchant/processor — the authorization layer itself; AP2 does **not** settle (settlement out of scope, delegated to the underlying rail). Matches the Q1 "verify + orchestration → dispatchable" framing | ✅ primary spec | `TODO(calibration)` |
 
 ¹ The placeholder `{median_s, sigma_log}` actually shipped in the harness live in
 `calibration/provenance/<rail>-auth-latency.provenance.yaml`, each marked
@@ -63,12 +63,17 @@ in §3 — the asymmetry should be named, not hidden.
 pipeline end-to-end; they are not measurements and must not be published or
 pre-registered.
 
-² Evidence status per the 2026-06-20 research pass (`dim2-auth-latency.research.md`):
-the off-chain-accept-before-settle definition is **primary-source-validated for all
-three x402 rails**; R6/R10/R11 are unevidenced pending the focused second pass
-(task `wdcd8fxdt`). **Instrumentation note (research caveat C2):** capturing the
-accept requires invoking `/verify` *explicitly* — some integrations call only
-`/settle` (which verifies internally), so the fused 200 does not expose the accept.
+² Evidence status per the two 2026-06-20 research passes (`dim2-auth-latency.research.md`):
+the accept-before-settle definition is **primary-source-validated for R1/R2/R9
+(x402), R6 (AP2), and R10 (MPP-Tempo)**; **R11 (L402/Spark) and the prior-art/novelty
+question remain budget-starved** (sources fetched, not yet adversarially verified) —
+a final narrow pass closes them. **Instrumentation note (research caveat C2):**
+capturing the accept requires invoking `/verify` (or the rail's verify primitive)
+*explicitly* — some integrations call only `/settle` (which verifies internally), so
+a fused 200 does not expose the accept. **Terminology note:** MPP/AP2 name this step
+"verification" / "mandate verification", not "authorization" — our label is our
+framing over their verify primitive; no rail publishes a metric named "authorization
+latency" (state openly; relevant to the §8 gate's novelty question).
 
 **The §3 asymmetry caution carries over.** Just as finality mixes optimistic
 (Base soft) and conservative (Solana `finalized`) reliance levels, authorization
@@ -216,10 +221,13 @@ ratified** — all remain subject to the deep research, the validation run, and 
   (approach: measure/record all three independently; benchmark on the total; race and
   stats consume one value per rail, so BT/pass@k/Wilson and the frozen finality path
   are untouched). **AP2-only for now** — it is the only rail whose authorization is
-  genuinely two processes.
-- **Q2 — A1, VALIDATED for the x402 rails** (R1/R2/R9) by primary specs
-  (research pass 2026-06-20, `dim2-auth-latency.research.md`); **unevidenced** for
-  R6/R10/R11 pending the focused gap pass (`wdcd8fxdt`). Authorization = the
+  genuinely two processes. *Evidence (Pass 2):* AP2's published structure —
+  mandate-verify → credential issuance → dispatch to the Merchant/processor, with
+  settlement out of AP2 scope — **matches this framing exactly** (primary spec); no
+  AP2 latency figures are published, so its calibration is first-party/placeholder.
+- **Q2 — A1, VALIDATED for R1/R2/R9 (x402), R6 (AP2), R10 (MPP-Tempo)** by primary
+  specs (two passes 2026-06-20, `dim2-auth-latency.research.md`); **R11 (L402/Spark)
+  + prior-art remain budget-starved**, needing a final narrow pass. Authorization = the
   off-chain facilitator **`/verify` accept** signal (payload validated: signature +
   funds), recorded with `confirmed` and `finalized` as separate checkpoints. The
   x402 spec normatively separates `/verify` (off-chain; response `{"isValid":true,
