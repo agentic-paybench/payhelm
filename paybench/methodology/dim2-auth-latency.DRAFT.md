@@ -150,7 +150,79 @@ auth-latency benchmark runs end-to-end on placeholder fixtures; content-addresse
 fixtures + provenance; tests mirroring the finality suite; finality still
 reproduces bit-for-bit.
 
-**Founder, next (judgment):** resolve Q1–Q5; replace every placeholder with real
-calibration; ratify this doctrine into the methodology; *then* (separately) the
-pre-registration ceremony (OSF / cosign / OpenTimestamps / signed tag). See
-`SESSION-1-HANDOFF.md`.
+**Founder, next (judgment), in order:** resolve Q1–Q5; replace every placeholder
+with real calibration; draft the doctrine into this addendum; **pass it through the
+cross-lineage adversarial review gate (§8)**; revise; ratify into the methodology;
+*then* (separately) the pre-registration ceremony (OSF / cosign / OpenTimestamps /
+signed tag). See `SESSION-1-HANDOFF.md`.
+
+## 8. Planned validation gate — cross-lineage adversarial review (PRE-PRE-REGISTRATION)
+
+**This dimension must pass a cross-lineage adversarial review before
+pre-registration**, mirroring the gate dimension-1 cleared — the methodology
+records a *four-model cross-LLM adversarial review (2026-06-06) that upheld the
+finality doctrine 3–1* on the Solana `confirmed`-vs-`finalized` question
+(artefacts: `Pre-reg-{Deepseek,Gemini,Kimi,Qwen}`, `pre-reg-adversarial-review.md`).
+Dimension 2 has *more* contestable surface than dimension 1, so the gate is not
+optional.
+
+**Position in the sequence (§7):** after the doctrine is drafted and (ideally)
+after the validation test run that confirms A1's empirical claim, **before** the
+founder pre-registration ceremony. Running it earlier just yields split votes on an
+under-specified proposal; running it on a grounded proposal yields a citable verdict.
+
+**What to put to the panel (the exposed flanks):**
+
+- **A1 vs A2** — off-chain facilitator *accept* vs optimistic on-chain
+  *confirmation* as the authorization point (a measurement-validity fork).
+- **Accept is facilitator-internal, not client-perceived.** In the fused/in-process
+  x402 topologies the POC uses, the agent receives no "authorized" signal before the
+  post-settle 200 (the facilitator's `verify()` return is server-side; see the
+  scoping note below). Is racing a facilitator-side checkpoint a valid *agent-DX*
+  benchmark, or does legitimacy require the x402 spec's separately-exposed `/verify`
+  endpoint? This is the sharpest flank.
+- **AP2 scope** (verify-only vs verify + orchestration to dispatch) and the per-rail
+  authorization-point asymmetry / apples-to-apples across different facilitator
+  topologies.
+- **Is "authorization latency" measurement-valid as defined** at all, distinct from
+  finality?
+
+**Mechanics.** Founder-run multi-lineage ceremony (the doctrine pasted to each
+external lineage, as the `Pre-reg-*` files were). Claude drafts the cross-lineage
+prompt and synthesises the responses into `dim2-adversarial-review.md`, the
+dimension-2 analogue of `pre-reg-adversarial-review.md`.
+
+**Honest limit.** The gate *hardens and red-teams*; it does not resolve empirical
+facts (that is the research + validation run) and may return a split that still needs
+founder judgment.
+
+## 9. Decision log (session-directed — TENTATIVE, pending the §8 gate)
+
+Records founder-directed decisions taken while building the harness. **Not yet
+ratified** — all remain subject to the deep research, the validation run, and the
+§8 cross-lineage gate before they enter the frozen methodology.
+
+- **Q1 — RESOLVED (founder-directed).** AP2's authorization timer runs **mandate
+  presented → dispatchable** (verify **+** orchestration to first underlying-rail
+  dispatch). The **total** is what the benchmark races; the **verify** and
+  **orchestration** component distributions are *additionally recorded and published*
+  (approach: measure/record all three independently; benchmark on the total; race and
+  stats consume one value per rail, so BT/pass@k/Wilson and the frozen finality path
+  are untouched). **AP2-only for now** — it is the only rail whose authorization is
+  genuinely two processes.
+- **Q2 — TENTATIVE A1**, pending research + validation run. Authorization = the
+  off-chain facilitator **verify/accept** signal (payload validated: signature +
+  funds), recorded with `confirmed` and `finalized` as separate checkpoints.
+  *Scoping finding (POC harnesses):* x402 has a discrete `verify()`→`settle()` split
+  (the **accept = `verify()` return**); the Solana `confirmed_s` (~2.27s) the
+  calibration plan earmarked is actually the **settle-at-confirmed** checkpoint, *not*
+  the accept — so under A1, R9's authorization figure is the *earlier* verify step,
+  and accept / settle@confirmed / finalized are **three** recorded checkpoints.
+  *Open tension for §8:* the accept is facilitator-internal, not client-perceived in
+  the fused topologies (client-observability needs the x402 spec's separate `/verify`
+  endpoint).
+- **Roadmap note (founder).** The authorization timer will likely need **per-rail
+  structural variants** (component splits, different protocol checkpoints) as we learn
+  each rail — AP2's verify/orchestration split is the **first instance, not a
+  one-off**. The provenance schema's optional `components:` block is the generalisation
+  point.
