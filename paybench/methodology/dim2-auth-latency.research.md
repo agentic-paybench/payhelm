@@ -1,21 +1,26 @@
 # Dim-2 Authorization Latency — Research Memo (evidence base, not doctrine)
 
 > **Status: RESEARCH INPUT to `dim2-auth-latency.DRAFT.md` — not doctrine, not
-> pre-registered.** Captures the adversarially-verified findings from the deep
-> research pass run 2026-06-20 (109 agents, 26 sources, 122 claims extracted →
-> top-25 verified, 25 confirmed / 0 refuted). Primary-source-strong on x402;
-> three rails + a prior-art question were left as gaps and are the subject of a
-> **second, focused pass** (see §"Gaps", below — task `wdcd8fxdt`).
+> pre-registered.** Captures adversarially-verified findings from two deep-research
+> passes on 2026-06-20: **Pass 1** (`wxhbthfbs`, the x402 rails) and **Pass 2**
+> (`wdcd8fxdt`, the AP2/Tempo/Lightning gaps + prior art). Each pass verifies only
+> its top-25 claims, so coverage skews to whichever rails produce the most strong
+> claims; two items (R11 L402/Spark, prior-art/novelty) remain **budget-starved,
+> not refuted** and need a final narrow pass.
 
-## Verdict
+## Verdict (per rail)
 
-The **A1 doctrine** — authorization = an **off-chain facilitator ACCEPT** signal
-that occurs **before** on-chain confirmation, recorded as a checkpoint distinct
-from `confirmed` and `finalized` — is **validated by primary specifications for
-all three x402 rails** (Base/EVM, Stellar/Soroban, Solana at the facilitator
-layer). It is **unevidenced** (neither confirmed nor refuted) for AP2 (R6),
-MPP-on-Tempo (R10), and MPP-on-Spark-Lightning (R11), and **no prior published
-"authorization latency" benchmark** was surfaced.
+The **A1 doctrine** — authorization = an authorization-layer **ACCEPT/verify** signal
+that occurs **before** settlement, recorded as a checkpoint distinct from
+`confirmed`/`finalized` — now stands as:
+
+| Rail | A1 evidenced? | By |
+|---|---|---|
+| R1 Base / R2 Stellar / R9 Solana (x402) | ✅ primary spec | Pass 1 — x402 `/verify` vs `/settle` |
+| R6 Google AP2 | ✅ primary spec | Pass 2 — mandate-verify → credential → dispatch, settlement out of scope |
+| R10 MPP-on-Tempo | ✅ primary spec (with a Charge/Session nuance) | Pass 2 — MPP normative Verify vs Settle procedures |
+| R11 MPP-on-Spark-Lightning (L402) | ❓ budget-starved both passes | needs a final narrow pass |
+| Prior-art / novelty | ❓ budget-starved | needs a final narrow pass (card ISO-8583 is strong *conceptual* precedent) |
 
 ## Verified findings (primary sources; 3-0 adversarial votes)
 
@@ -83,23 +88,68 @@ MPP-on-Tempo (R10), and MPP-on-Spark-Lightning (R11), and **no prior published
   quantitative figure in the corpus is Solana's ~13s confirmed↔finalized gap. All
   per-rail accept timings must be **first-party measured** (the validation run).
 
-## Gaps — subject of the focused second pass (task `wdcd8fxdt`)
+## Pass-2 verified findings (2026-06-20, task `wdcd8fxdt`)
 
-The first pass verified only its top-25 claims (a budget cut that skewed toward
-x402/Solana); AP2/Tempo/Lightning claims were extracted but not verified, so these
-are **gaps, not refutations**:
+**R6 — Google AP2 (validates the Q1 framing).**
+- AP2 is **explicitly an authorization/mandate layer that does not settle**;
+  settlement is delegated to a separate **Merchant Payment Processor** role + the
+  underlying rail, and is **out of AP2 scope** ("AP2 operates as a security feature
+  within a Commerce Protocol … outside the scope of AP2").
+- **Discrete, normatively-ordered authorization checkpoint:** chained signed
+  **Intent → Cart/Checkout → Payment** mandates; the Shopping Agent forwards the
+  Payment Mandate to the **Credential Provider** (and possibly the Network) for
+  **verification**; **only upon successful verification is a payment credential
+  released**, which is **then dispatched to the Merchant**, who initiates payment
+  with the processor. MUST-ordering: "Credential Provider MUST receive a Payment
+  Mandate before returning a payment credential."
+- This is exactly the **Q1 "verify + orchestration → dispatchable"** structure:
+  mandate-verify → credential issuance → dispatch-to-rail, published and discrete.
+- **No latency figures** — the spec frames discrete *steps*, not timed moments →
+  AP2 calibration is first-party/placeholder.
+- *Sources:* ap2-protocol.org/specification (+ /ap2/specification, /ap2/flows);
+  Google Cloud AP2 announcement.
 
-- **R6 Google AP2** — mandate-verification vs settlement framing; is there a discrete
-  "authorized / ready to dispatch" moment? (AP2 specs were fetched; no verified claim.)
-- **R10 MPP-on-Tempo** — authorization/accept checkpoint distinct from Tempo BFT
-  settlement? Unevidenced.
-- **R11 MPP-on-Spark-Lightning (L402)** — is the L402 challenge / BOLT11 invoice
-  issuance an authorization checkpoint distinct from preimage-release settlement?
-  Unevidenced (L402 spec fetched, no surviving claim).
+**R10 — MPP-on-Tempo (verify/settle split is normative; a Charge/Session nuance).**
+- MPP defines an **HTTP-native handshake** — 402 + `WWW-Authenticate: Payment`
+  challenge → client retries with `Authorization: Payment` credential → server
+  verifies → `Payment-Receipt`. The MPP core spec (draft-httpauth-payment-00, Tempo
+  Labs + Stripe) **requires every method to define BOTH a "Verification Procedure"
+  and a separate "Settlement Procedure"** — verify-before-settle is normative (same
+  shape as x402).
+- **Pull path:** server MUST verify (deserialize the RLP tx, check call/amount/
+  recipient) **before broadcasting** — accept provably precedes on-chain submission.
+- **Nuance for calibration:** for the one-time **Charge** intent the docs present
+  verify+settle as **one combined ~500ms step** (the only *published* timing is the
+  ~500ms Simplex-BFT confirmation), so the accept is **instrumentable but not
+  separately published** for Charge. For the **Session** intent, per-payment
+  authorization is an off-chain **signed-voucher** check (**microseconds / near-zero**),
+  clearly earlier than the two-tx batched settlement.
+- *Sources:* github.com/tempoxyz/mpp-specs; mpp.dev/protocol/http-402 (+ /intents/charge,
+  /payment-methods/tempo); docs.tempo.xyz; tempo.xyz/blog/mpp-sessions.
+
+**Terminology caveat (carry into the doctrine + the cross-lineage gate).** Neither
+AP2 nor MPP uses the literal word *"authorization latency"*: MPP calls the accept
+step **"verification"**, AP2 calls it **"mandate verification / credential issuance"**.
+The *separability* from settlement is genuine and published, but **our
+"authorization" label is our framing over their verify/verify-mandate primitive**,
+and **no rail publishes a metric named "authorization latency"** or an
+authorization-step latency number for the per-transaction path. State this openly.
+
+## Gaps still open — need a final narrow pass
+
+Both were **budget-starved** (sources fetched, claims extracted, but crowded out of
+the top-25 verification by the AP2/Tempo claims) — *absence of evidence in these
+passes, not a negative finding*:
+
+- **R11 MPP-on-Spark-Lightning (L402)** — is the L402 challenge (402 + macaroon +
+  BOLT11 invoice issuance) an authorization checkpoint distinct from preimage-release
+  settlement, and is invoice-issuance separable/earlier than the Spark FROST+SSP
+  ceremony? L402 + Spark sources were fetched in both passes; **no claim survived**.
 - **Prior art / novelty** — no published "authorization latency" benchmark surfaced.
-  The dimension *appears novel*, but a dedicated prior-art check (incl. card-network
-  ISO-8583 authorization-vs-settlement as conceptual precedent) is needed **before**
-  any novelty claim.
+  The card-network **ISO-8583 authorization (0100/0110) vs clearing/settlement**
+  distinction is **strong *conceptual* precedent** for the idea (and a useful framing
+  asset), but was not adversarially verified here. Run a dedicated prior-art pass
+  **before** asserting novelty.
 
 ## Implications for the doctrine
 
