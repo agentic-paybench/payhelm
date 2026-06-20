@@ -40,49 +40,96 @@ envelope is bundled in, because that is what the agent actually waits on.
 therefore identical and the existing BT/pass@k/Wilson machinery applies unchanged
 (see §4).
 
-## 2. Per-rail operationalisation — the reliance-level analogue (PROPOSED)
+## 2. Per-rail operationalisation — the reliance-level analogue (PROPOSED, evidence-grounded)
 
-§3 pins each rail to its **ecosystem-canonical reliance level** for *finality*.
-The Day-30 analogue is to pin each rail to its **canonical authorization point** —
-the protocol step at which that rail considers the payment *authorized to proceed*.
-As in §3, this is per-rail (rails do not share one authorization model), and — as
-in §3 — the asymmetry should be named, not hidden.
+§3 (finality) pins each rail to its **ecosystem-canonical reliance level**. The Day-30
+analogue pins each rail to its **canonical authorization point** — the protocol step at
+which the rail issues the **go-ahead that the payment is *authorized to proceed toward
+settlement*** (explicitly **not** the point of irreversible reliance; §1). As in §3 this
+is per-rail (rails do not share one authorization model) and — as in §3 — the asymmetry
+is **named, not hidden**, via a trust/equivalence-class column. **Every row below is
+primary-source-validated** (three research passes 2026-06-20, `dim2-auth-latency.research.md`).
 
-| Rail | PROPOSED authorization point (the D1-reliance analogue) | Evidence² | Placeholder¹ |
-|---|---|---|---|
-| x402-Base (R1) | x402 **`/verify` accept** of the signed payload (off-chain: sig recovery + balance + simulation), before the on-chain `transferWithAuthorization` settle | ✅ primary spec | `TODO(calibration)` |
-| x402-Stellar (R2) | x402 **`/verify` accept** (decode XDR, check Soroban auth-entry signatures, simulate), before submission via the OZ Relayer | ✅ primary spec | `TODO(calibration)` |
-| x402-Solana (R9) | x402 **`/verify` accept** at the **facilitator** layer — **earlier** than Solana `confirmed`. `confirmed` (~2.27s) is the *settle-at-confirmed* checkpoint, **not** the accept; record accept / confirmed / finalized as three checkpoints (see §9, C1) | ✅ primary spec (facilitator); ⚠️ accept ≠ `confirmed` | `TODO(calibration)` |
-| MPP-on-Tempo (R10) | MPP **`Verify` procedure** (402 → `Authorization: Payment` credential → server verify-before-broadcast), before Tempo BFT settlement (~500ms). Normative verify/settle split; **but** for the one-time *Charge* intent verify+settle are a combined ~500ms step (accept instrumentable, not separately *published*); *Session* intent = near-zero off-chain voucher verify | ✅ primary spec (Charge/Session nuance) | `TODO(calibration)` |
-| MPP-on-Spark-Lightning (R11) | L402 **macaroon + BOLT11 invoice issuance** (the 402 challenge = the authorization grant; macaroon = auth credential, preimage = settlement proof), before the Spark FROST+SSP preimage-release ceremony. Spark's conditional-lock step precedes SSP-preimage finalize | ✅ primary spec | `TODO(calibration)` |
-| GCP + AP2 (R6) | **AP2 mandate-verification → credential issuance → dispatch** to the Merchant/processor — the authorization layer itself; AP2 does **not** settle (settlement out of scope, delegated to the underlying rail). Matches the Q1 "verify + orchestration → dispatchable" framing | ✅ primary spec | `TODO(calibration)` |
+| Rail | Authorization point — *pinned* | Trust / equivalence class |
+|---|---|---|
+| x402-Base (R1) | Facilitator **`/verify` accept** of the payer's signed EIP-3009 payload (off-chain: sig recovery + balance + simulation), before the on-chain `transferWithAuthorization` settle | Facilitator off-chain **validation of a payer-signed payment authorization** |
+| x402-Stellar (R2) | Facilitator **`/verify` accept** (decode XDR, check Soroban auth-entry signatures, simulate), before OZ-Relayer submission | Facilitator off-chain **validation of a payer-signed payment authorization** |
+| x402-Solana (R9) | Facilitator **`/verify` accept** of the signed SVM payload (off-chain) — **earlier than** Solana `confirmed` | Facilitator off-chain **validation of a payer-signed payment authorization** |
+| MPP-on-Tempo (R10) | Server **`Verify` procedure** (validate the `Authorization: Payment` credential) before broadcast | **Payee/server** off-chain **validation of a payer credential** |
+| MPP-on-Spark-Lightning (R11) | Server **issuance of the macaroon authorization grant + BOLT11 invoice** (the 402 challenge), before the payer pays / the Spark FROST+SSP preimage-release ceremony | **Server-issued authorization *grant* (token)** — *grant-to-pay*, **not** verify-of-payment ⚠ |
+| GCP + AP2 (R6) | Authorization-layer **mandate verification → payment-credential issuance → dispatch** to the Merchant/processor | **Dedicated authorization layer** — cryptographic mandate proof, rail-agnostic, **does not settle** |
 
-¹ The placeholder `{median_s, sigma_log}` actually shipped in the harness live in
+All `{median_s, sigma_log}` are `TODO(calibration)` PLACEHOLDERS (footnote¹).
+
+¹ The placeholders shipped in the harness live in
 `calibration/provenance/<rail>-auth-latency.provenance.yaml`, each marked
-**"PLACEHOLDER — pending founder calibration"**. They exist only to exercise the
-pipeline end-to-end; they are not measurements and must not be published or
-pre-registered.
+**"PLACEHOLDER — pending founder calibration"** — they exercise the pipeline only;
+not measurements, not for publication or pre-registration.
 
-² Evidence status per the three 2026-06-20 research passes (`dim2-auth-latency.research.md`):
-the accept-before-settle definition is **primary-source-validated for all six rails** —
-R1/R2/R9 (x402 `/verify` vs `/settle`), R6 (AP2 mandate-verify → credential →
-dispatch), R10 (MPP-Tempo Verify vs Settle), R11 (L402 macaroon+invoice vs preimage;
-Spark conditional-lock vs SSP finalize). Conceptual precedent: ISO-8583 MTI
-authorization (0100/0110) vs settlement (0200/0220); no prior "authorization-latency"
-benchmark surfaced (novelty plausible). **Instrumentation note (research caveat C2):**
-capturing the accept requires invoking `/verify` (or the rail's verify primitive)
-*explicitly* — some integrations call only `/settle` (which verifies internally), so
-a fused 200 does not expose the accept. **Terminology note:** MPP/AP2 name this step
-"verification" / "mandate verification", not "authorization" — our label is our
-framing over their verify primitive; no rail publishes a metric named "authorization
-latency" (state openly; relevant to the §8 gate's novelty question).
+### 2.1 Per-rail mechanics & nuances (the cells above, expanded)
 
-**The §3 asymmetry caution carries over.** Just as finality mixes optimistic
-(Base soft) and conservative (Solana `finalized`) reliance levels, authorization
-points are not equi-conservative across rails (a facilitator "accept" is a
-different security object from an AP2 mandate-verify). The published table should
-carry the same **trust / equivalence-class** column §3 uses, and name the
-asymmetry rather than averaging it away.
+- **R9 (Solana): accept ≠ `confirmed`.** The facilitator accept is **earlier** than the
+  on-chain `confirmed` (~2.27s); `confirmed` is the *settle-at-confirmed* checkpoint, not
+  the accept (research caveat C1). → Record **three checkpoints** (§2.2).
+- **R10 (Tempo): Charge vs Session.** The MPP core spec mandates a `Verify` procedure
+  separate from `Settle`. For the one-time **Charge** intent the docs fuse verify+settle
+  into one **~500ms** figure (accept instrumentable but not separately *published*); for
+  **Session** intent per-payment authorization is a **near-zero off-chain voucher** check.
+- **R11 (L402/Spark): a grant, not a verify.** The macaroon (authorization credential) +
+  invoice are issued **before** the payer pays; the **preimage** is the settlement proof,
+  obtained only by paying. Spark's **conditional-lock** step precedes the SSP-preimage
+  finalize (the ~16.5s ceremony = settlement). See the named asymmetry in §2.3.
+- **R6 (AP2): the two-process timer.** Authorization = mandate-verify **+** orchestration
+  to dispatchable; the **total** is raced, the **verify** and **orchestration** components
+  are recorded separately (Q1, §9). AP2 does not settle (settlement out of AP2 scope).
+
+### 2.2 Checkpoint-recording model (the "record all three" decision)
+
+Where a rail exposes them, record up to **three checkpoints** per payment and **race the
+authorization (accept) checkpoint**:
+
+1. **accept** — the authorization go-ahead (the table above). *Raced; lower-is-better.*
+2. **intermediate settle signal** — e.g. Solana `confirmed`, Tempo ~500ms block, the L402
+   preimage / Spark SSP finalize (rail-dependent; may equal #3).
+3. **finalized** — the §3 settlement-finality point (the Day-0 dimension).
+
+The **accept → finalized gap** is itself a publishable quantity (e.g. Solana ≈ accept vs
+~14.6s). Capturing the accept requires invoking the rail's **verify primitive explicitly**
+(research caveat C2) — some integrations call only `/settle` (which verifies internally),
+so a fused HTTP 200 does **not** expose the accept.
+
+### 2.3 Named asymmetries (the §3-analogue — do not average away)
+
+Authorization points are **not equi-conservative**, and the research showed the security
+*object* differs across rails. Name it, exactly as §3 names the finality reliance-level
+asymmetry:
+
+- **Validation-of-payer vs grant-to-payer vs mandate-verify.** R1/R2/R9/R10 time the
+  **validation of the payer's submitted payment authorization** ("your payment is valid").
+  **R11 (L402)** times the **issuance of an authorization *grant*** (the macaroon — "here
+  is your authorization to pay"), which sits **earlier in the flow** and is a *different
+  security object* (server grants vs facilitator validates). **R6 (AP2)** times a
+  **dedicated authorization layer's** mandate verification + credential issuance. The
+  published table must carry the trust/equivalence-class column above and flag that R11's
+  point is a grant, not a verify — a candidate **cross-lineage-gate question** (§8): is
+  macaroon-issuance the right race analogue of an x402 facilitator-accept, or should R11
+  be pinned to a later "payment-accepted" signal for apples-to-apples?
+- **Off-chain vs on-chain.** All accepts are **off-chain** except R10's *Charge* path,
+  where verify+settle fuse at the ~500ms on-chain point.
+- **Per-rail structural variants are expected** (the §9 roadmap note): the timer will need
+  rail-specific checkpoints (component splits, grant-vs-verify) — AP2's verify/orchestration
+  split is the first instance, not a one-off.
+
+### 2.4 Terminology honesty
+
+No rail publishes a metric literally named *"authorization latency"*: x402 calls it
+`/verify`, MPP calls it **"verification"**, AP2 calls it **"mandate verification /
+credential issuance"**, L402 calls it the **macaroon/challenge**. The *separability from
+settlement is genuine and published on every rail*, but **"authorization latency" is
+PayBench's framing** over those primitives. Conceptual precedent exists — the card-network
+**ISO-8583** split of real-time authorization (MTI 0100/0110) from settlement (0200/0220)
+— so the dimension ports a long-standing distinction rather than inventing one; but **no
+prior benchmark measures it** (novelty plausible, re-check before any published claim, §8).
 
 ## 3. How AP2 (R6) is measured here
 
@@ -137,25 +184,32 @@ This namespace scheme is a **proposed** design to be ratified at pre-registratio
 bit-for-bit while auth-latency draws independent streams (asserted in
 `tests/test_auth_latency.py::test_dimensions_are_rng_domain_separated`).
 
-## 6. Open questions for the founder (must resolve before pre-registration)
+## 6. Open questions for the founder (status against pre-registration)
 
-- **Q1 — AP2 scope.** Time mandate-verify only, or verify + orchestration to first
-  underlying-rail dispatch? (Affects R6's whole meaning.)
-- **Q2 — Solana authorization point.** Is `confirmed`-level (~optimistic) the right
-  authorization signal for R9? The D1 run already captured a Solana `confirmed`
-  latency (~2.27s) "for free"; it is **deliberately not** used in the placeholder
-  fixture pending this decision (the §3 doctrine disavows `confirmed` for
-  *finality*, but authorization is a different question — `confirmed` may be exactly
-  right *here*). The real number is withheld until ratified.
-- **Q3 — per-rail authorization-point doctrine.** Ratify the §2 table (the D1
-  reliance-level analogue), including the trust/equivalence-class column and the
-  named asymmetry, exactly as §3 does for finality.
-- **Q4 — calibration sourcing.** First-party measurement isolating the *authorize*
-  leg from the *settle* leg per rail (the D1 calibration plan instruments full
-  request→finality; auth-latency needs the authorize sub-interval), plus the
-  doc/telemetry spread, mirroring the Hybrid (C) approach.
-- **Q5 — k-grid + scoring constants.** Confirm the finer pass@k grid and confirm
-  the BT smoothing prior (1.0) still suits sub-second separations.
+Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 and the
+§9 decision log) but **not yet ratified** — ratification is a founder act gated by the
+§8 cross-lineage review. Q4–Q5 remain genuinely open.
+
+- **Q1 — AP2 scope.** ✅ **RESOLVED** — mandate-verify **+** orchestration → dispatchable;
+  total raced, components recorded (§9). AP2's published structure matches this.
+- **Q2 — authorization point per rail.** ✅ **RESOLVED (A1)** — off-chain accept/verify,
+  primary-source-validated for all six rails (§2; `dim2-auth-latency.research.md`).
+  *Solana clarified:* the accept is the facilitator `/verify`, **earlier** than
+  `confirmed` (~2.27s); `confirmed`/`finalized` are recorded as separate checkpoints
+  (§2.1–§2.2). Real numbers withheld pending Q4 calibration.
+- **Q3 — per-rail authorization-point doctrine.** ✅ **DRAFTED** in §2 — the pinned
+  authorization point + trust/equivalence-class column + named asymmetries (§2.3),
+  every row evidence-grounded. **Pending the §8 cross-lineage gate** (the open
+  sub-question it must settle: is R11's macaroon *grant* the right race analogue of an
+  x402 *verify*, or should R11 be pinned to a later accepted signal?) **then founder
+  ratification**.
+- **Q4 — calibration sourcing.** ⏳ **OPEN.** First-party measurement isolating the
+  *authorize* leg from the *settle* leg per rail — invoke the verify primitive
+  **explicitly** (research caveat C2); the D1 harnesses already capture
+  confirmed/finalized, so the new work is the **accept timestamp** (validation run,
+  credentialed testnet). Plus doc/telemetry spread, mirroring Hybrid (C).
+- **Q5 — k-grid + scoring constants.** ⏳ **OPEN.** Confirm the finer pass@k grid and
+  that the BT smoothing prior (1.0) suits sub-second separations.
 
 ## 7. What is done vs. what a founder must do
 
