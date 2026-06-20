@@ -1,12 +1,13 @@
 # Dim-2 Authorization Latency — Research Memo (evidence base, not doctrine)
 
 > **Status: RESEARCH INPUT to `dim2-auth-latency.DRAFT.md` — not doctrine, not
-> pre-registered.** Captures adversarially-verified findings from two deep-research
-> passes on 2026-06-20: **Pass 1** (`wxhbthfbs`, the x402 rails) and **Pass 2**
-> (`wdcd8fxdt`, the AP2/Tempo/Lightning gaps + prior art). Each pass verifies only
-> its top-25 claims, so coverage skews to whichever rails produce the most strong
-> claims; two items (R11 L402/Spark, prior-art/novelty) remain **budget-starved,
-> not refuted** and need a final narrow pass.
+> pre-registered.** Captures adversarially-verified findings from three deep-research
+> passes on 2026-06-20: **Pass 1** (`wxhbthfbs`, x402 rails), **Pass 2** (`wdcd8fxdt`,
+> AP2 + Tempo-MPP), **Pass 3** (`w2x1qieos`, L402/Spark + prior-art). **All six rails
+> now carry a primary-source-validated authorization checkpoint distinct from
+> settlement.** (Pass 3's final synthesis was truncated by a session token limit, but
+> its 23 claims were verified 3-0 individually; the two card-network sub-claims that
+> abstained are noted under Gap B.)
 
 ## Verdict (per rail)
 
@@ -19,8 +20,8 @@ that occurs **before** settlement, recorded as a checkpoint distinct from
 | R1 Base / R2 Stellar / R9 Solana (x402) | ✅ primary spec | Pass 1 — x402 `/verify` vs `/settle` |
 | R6 Google AP2 | ✅ primary spec | Pass 2 — mandate-verify → credential → dispatch, settlement out of scope |
 | R10 MPP-on-Tempo | ✅ primary spec (with a Charge/Session nuance) | Pass 2 — MPP normative Verify vs Settle procedures |
-| R11 MPP-on-Spark-Lightning (L402) | ❓ budget-starved both passes | needs a final narrow pass |
-| Prior-art / novelty | ❓ budget-starved | needs a final narrow pass (card ISO-8583 is strong *conceptual* precedent) |
+| R11 MPP-on-Spark-Lightning (L402) | ✅ primary spec | Pass 3 — L402 macaroon+invoice (auth) vs preimage (settle); Spark conditional-lock vs SSP finalize |
+| Prior-art / novelty | ✅ precedent found; novelty plausible | Pass 3 — ISO-8583 MTI 0100/0110 vs 0200/0220 = documented *conceptual* precedent; no prior "authorization-latency" benchmark surfaced |
 
 ## Verified findings (primary sources; 3-0 adversarial votes)
 
@@ -135,21 +136,59 @@ The *separability* from settlement is genuine and published, but **our
 and **no rail publishes a metric named "authorization latency"** or an
 authorization-step latency number for the per-transaction path. State this openly.
 
-## Gaps still open — need a final narrow pass
+## Pass-3 verified findings (2026-06-20, task `w2x1qieos`)
 
-Both were **budget-starved** (sources fetched, claims extracted, but crowded out of
-the top-25 verification by the AP2/Tempo claims) — *absence of evidence in these
-passes, not a negative finding*:
+**R11 — MPP-on-Spark-Lightning / L402 (authorization checkpoint confirmed).**
+- The L402 **402 challenge** carries **BOTH a macaroon and a BOLT11 invoice** in the
+  `WWW-Authenticate` header (both REQUIRED). The **macaroon is the authorization
+  credential**; the **preimage is the proof-of-payment / settlement proof**. The full
+  credential is literally `macaroon:preimage`.
+- The **macaroon is minted and issued by the server *before* payment** (at the
+  challenge); the **preimage is obtained only afterwards by paying the invoice** — so
+  the **authorization grant (macaroon + invoice issuance) is a distinct, earlier step
+  than preimage-release settlement.** LSAT makes this explicit: a *"partial"* token is
+  issued at the 402 (pre-payment); it becomes a *"complete"* token only after payment
+  reveals the preimage.
+- **Spark path specifically:** the Spark Lightning send flow has a **conditional
+  authorization step** (the agent agrees to conditionally transfer leaves; the Spark
+  Entity *locks* leaves until a deadline) that is distinct from and earlier than
+  **settlement** (the SSP supplies the Lightning proof-of-payment/preimage; the SE
+  finalizes the leaf transfer atomically). So the ~16.5s Spark FROST+SSP ceremony is
+  the *settlement* event, downstream of the conditional-lock authorization.
+- *Sources:* lightninglabs/L402 protocol-specification.md (+ introduction);
+  docs.lightning.engineering L402; lightning.engineering L402-for-agents (2026-03);
+  docs.spark.money/learn/lightning; spark.money lightning-invoice.
+- *Caveat:* one Spark *marketing* article documents neither HODL invoices nor the
+  auth-vs-settlement split nor any latency figures — the structure is in the L402 spec
+  + docs.spark.money, not the overview pages.
 
-- **R11 MPP-on-Spark-Lightning (L402)** — is the L402 challenge (402 + macaroon +
-  BOLT11 invoice issuance) an authorization checkpoint distinct from preimage-release
-  settlement, and is invoice-issuance separable/earlier than the Spark FROST+SSP
-  ceremony? L402 + Spark sources were fetched in both passes; **no claim survived**.
-- **Prior art / novelty** — no published "authorization latency" benchmark surfaced.
-  The card-network **ISO-8583 authorization (0100/0110) vs clearing/settlement**
-  distinction is **strong *conceptual* precedent** for the idea (and a useful framing
-  asset), but was not adversarially verified here. Run a dedicated prior-art pass
-  **before** asserting novelty.
+**Prior art / novelty.**
+- **Conceptual precedent confirmed:** ISO 8583 (Worldpay reference guide) defines
+  **distinct message-type identifiers for real-time authorization (0100 request /
+  0110 reply, 0120/0130 advice) vs settlement-bearing financial messages (0200/0210,
+  0220/0230)** — authorization and settlement are *separate, separately-coded message
+  classes*. This is **documented conceptual precedent**: PayBench's authorization
+  dimension ports a 50-year-old card-network distinction (real-time auth vs batch
+  clearing/settlement) to agentic rails — a framing asset, not a weakness.
+- **Novelty plausible:** across all three passes, **no prior academic / HELM-style /
+  vendor benchmark that defines or measures "authorization latency" as a dimension
+  separate from settlement finality was surfaced.** *Honest caveat:* Pass 3's
+  prior-art angle was **partly truncated** by a session token limit (two card-network
+  sub-claims about a bounded auth *response-time SLA* abstained rather than confirmed,
+  due to verifier errors — not a refutation). The core MTI separation is solid (3-0);
+  the "auth-latency-as-a-measured-metric SLA" sub-point is not nailed down. A defensible
+  novelty claim can stand, framed as *"no prior benchmark, conceptual precedent in
+  card networks."*
+
+## Cross-rail conclusion (all six rails)
+
+**Every rail in the set separates an authorization/accept grant from settlement** —
+x402 (`/verify` vs `/settle`), AP2 (mandate-verify → credential → dispatch; settlement
+out of scope), MPP-Tempo (Verify vs Settle procedures), and L402/Spark (macaroon +
+invoice vs preimage). This is a strong, primary-source-grounded vindication of both the
+**dimension's validity** (it is a real, published checkpoint on every rail, not an
+artifact we imposed) and the **A1 doctrine**. It is the evidence base the §8
+cross-lineage gate attacks.
 
 ## Implications for the doctrine
 
