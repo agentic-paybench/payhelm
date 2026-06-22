@@ -492,8 +492,9 @@ recommended package (RR3 as hardened-BT-with-survival-fallback). §2 updated. **
   k-ladder + power analysis + median/P95/P99 + KM curves; **Cox-PH/competing-risks pre-specified as
   the data-triggered fallback** (not swapped pre-emptively — would re-expose frozen D1 without
   evidence; see `dimension-design-lessons.md`).
-- **RR4 — Client-side, RTT-subtracted measurement** (client `send()`→first-byte, minus baseline
-  `/ping`), canonical geography + ≥2-topology sensitivity. *Supersedes DR3's "rail edge".*
+- **RR4 — Client-side, RTT-subtracted measurement** (client `send()`→**last byte** of the auth
+  response per FR3, minus a same-path app-layer baseline per FR4), canonical geography + ≥2-topology
+  sensitivity. *Supersedes DR3's "rail edge".*
 - **RR5 — Anti-gaming work-clause:** verification + a *fresh* balance/state read must be inside the
   timed response.
 - **RR6 — Labels:** per-row `client-visible: yes/no`; AP2 `scope = whole rail` qualifier.
