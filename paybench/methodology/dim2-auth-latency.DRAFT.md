@@ -246,6 +246,17 @@ finality's. All of the following are **pre-registered** before any scored run:
   yes/no`, so the instrumented-on-fused-topologies x402 rows are honest) and, for AP2, a
   **scope-coverage** qualifier (AP2's number is its *whole* scope; other rails' is the
   authorization *slice* of a larger flow).
+- **RPC / facilitator pinning (FR7 — pilot-informed, 2026-06-22).** The Q4 Base pilot showed the
+  accept (~777 ms, σ≈0.016) is **RPC-dominated** — it is the facilitator's *fresh balance read +
+  `eth_call` simulation round-trips to the chain RPC* (the work-clause), not crypto. So a rail on a
+  fast/co-located RPC would look "faster to authorize" — an **artifact of RPC choice**, not the rail.
+  Treat the **server→RPC hop like FR4 treats the client→server hop: disclose + diagnose, never hide,
+  never subtract** (the RPC read *is* authorization work): **(1)** pre-register + **pin a canonical
+  RPC endpoint per chain-backed rail**; **(2)** hold the **RPC tier roughly constant** across rails
+  (same provider class / region) so cross-rail deltas reflect rail+chain logic, not RPC luck;
+  **(3)** report a **server→RPC-RTT diagnostic** alongside the accept (don't subtract it). For
+  **hosted-facilitator** rails (Solana/Stellar via x402.org) the RPC reads happen *inside* the
+  facilitator we don't control → there, pin/disclose the **facilitator** endpoint instead.
 - **Companion agent-observed total latency (co-primary).** Alongside the primitive latency,
   report **time-from-pay-command-to-usable-signal** (accept + the accept→settle gap). The
   primitive ranking can *invert* the end-to-end experience (a fast-accept/slow-settle rail loses
