@@ -376,7 +376,80 @@ is the REVISED design pre-registerable, with what minimal remaining changes?
 
 ## ====== END ROUND-2 PROMPT ======
 
-# Round 2 — recorded <YYYY-MM-DD> (TO FILL after running)
+# Round 2 — recorded 2026-06-22
 
-> Synthesis of `Dim2-Review2-<Model>.md`: RC1/RC2/RC3 vote tallies, whether the category error is
-> confirmed-fixed, any new fatal, and the verdict that gates ratification. **Empty until run.**
+**Panel (4 lineages):** DeepSeek, Gemini, Kimi, Qwen (`dim2-review2-{model}.md`).
+**Headline:** the **SPLIT is validated 3–1** and **no new category error** was introduced — but the
+round surfaced a **bounded second tier** of required refinements (and one genuine dissent on
+presentation). The design *direction* is now sound; this is **converging**, not another teardown.
+
+## Vote tallies
+- **RC1 — does SPLIT cure the category error? YES, 3–1.** SPLIT: DeepSeek, Gemini, Qwen. Dissent:
+  **Kimi → KEEP-with-labels**, on the ground that a hard split leaves the grant league at **n≈1
+  (L402)** with no pairwise power — a *presentation/power* objection, not a claim that splitting
+  fails to resolve the incommensurability (all four agree the category error is real). → the SPLIT
+  stands, but **RC3 (the n=1 problem) is real and must be fixed.**
+- **RC2 — Tempo-Charge? EXCLUDE, ~4–0.** DeepSeek/Qwen/Kimi explicitly exclude Charge (it fuses
+  verify+settle ~500 ms — measuring it *is* measuring settlement); Gemini's fused-topology stance
+  aligns. Keep **Tempo-Session only**; Charge → appendix/disclosed, not in the raced set.
+- **RC3 — the n=1 grant sub-ranking?** Contested → **emergent fix: populate it as a real
+  "challenge-issuance latency" race.** Gemini reframes B as *"Challenge-Issuance Latency"* (x402/MPP
+  also issue 402 challenges → a commensurable cross-rail grant race); Kimi's n≈1 objection demands
+  exactly this; Qwen keeps L402 labelled rather than isolated; DeepSeek tolerates standalone as a
+  fallback. **→ make B a challenge-issuance race, not L402-alone.**
+
+## Confirmed-resolved (round-1 fatals)
+- **G2 category error — RESOLVED by SPLIT (3–1).** Validation-type vs grant-type sub-rankings, raced
+  within-group, is endorsed; the trust-class-label-on-a-unified-ranking approach the panel feared is
+  *not* what the revision does (it drops the unified ranking), so DeepSeek's "safety-washing" flaw is
+  pre-empted.
+- **G1 facilitator-internal accept — addressed** by the RAPL rename + companion agent-observed metric
+  (Qwen: "publish two numbers, label the internal one"); residual handled under RR4/RR6.
+
+## New / sharpened findings (the second tier)
+1. **The statistics may be mis-specified, not just under-gridded** (Kimi O2 strongest; Gemini Obj2;
+   Qwen Obj D). BT assumes a stable transitive 1-D strength; sub-second networked latencies are
+   continuous, skewed, heteroscedastic, **tie-heavy**, and **censored** (failed/timed-out auths) —
+   which can induce non-transitive cycles and uninterpretable rankings. Direction: handle **ties
+   (Davidson)** + **competing risks/censoring (reject/timeout)**; consider a **survival model (Cox
+   PH / Aalen-Johansen / mixed-effects on log-latency)** as the primary tool, Kaplan-Meier for
+   description; report **median/P95/P99**; pass@k **sensitivity over ≥3 k + variance-aware power
+   analysis**.
+2. **"pass@k" is the wrong name** (Gemini): pass@k means ≥1 success in k stochastic attempts (implies
+   re-sampling the same intent → breaks idempotency). We mean a latency **CDF `P(auth ≤ k)`** —
+   **rename the metric**.
+3. **`t=0` causal-offset is intrinsic** (Gemini NEW, Kimi O4): for verify-type rails t=0 is *after*
+   client-side signing (payload on the wire); for L402 t=0 is *before* the agent's real work (LN
+   routing). The offset can't be normalised away across kinds — which is **another reason the SPLIT
+   is correct** (never compare across the offset).
+4. **Client-side measurement + RTT subtraction** (all four): measure **client `send()` → first byte**,
+   and **subtract a baseline `/ping` RTT** to isolate compute; **pre-register topology** + ≥2-topology
+   sensitivity. (Refines §2.5 from "rail edge" → **client-side round-trip, RTT-subtracted**.)
+5. **Null-verify gaming** (Kimi O5): the checkpoint must **specify the work that precedes it**
+   (signature verification + fresh balance state in the timed response), else a rail games by
+   emitting `/verify` early.
+6. **Labels** (Qwen, DeepSeek): per-row **checkpoint-visibility** ("client-visible: yes/no") and an
+   **AP2 scope-coverage** qualifier (AP2's number is its *whole* scope; others' is a *slice*).
+
+## Net verdict
+**SPLIT direction validated (3–1); category error resolved.** Round 2 is a **"yes, and"** — the
+structure is right, but ratification needs a bounded refinement list (below). Per-lineage verdicts:
+DeepSeek "publishable if split + exclude Charge + client-side"; Qwen "publishable after 4 amendments";
+Kimi "pre-registerable if client-only + keep-with-labels + replace BT/Wilson with a survival model";
+Gemini "reject with major revisions — purge pass@k name, SPLIT". The disagreement is on
+*presentation + statistics*, not on the core SPLIT.
+
+## Round-2 refinements (RR — proposed, for founder sign-off)
+- **RR1 — Exclude Tempo-Charge** from the raced set (Session-only; Charge disclosed in an appendix). *(RC2.)*
+- **RR2 — Make sub-ranking B a "challenge-issuance latency" race** across the 402-issuing rails (fixes
+  the n=1 power problem). *(RC3.)*
+- **RR3 — Statistics rework:** ties (Davidson) + censoring/competing-risks; survival model (Cox PH)
+  as primary with KM description; report median/P95/P99; rename pass@k → `P(auth ≤ k)` with ≥3-k
+  sensitivity + power analysis.
+- **RR4 — Measurement = client-side round-trip, RTT-subtracted** (baseline `/ping`), pre-registered
+  topology + ≥2-topology sensitivity (supersedes §2.5 "rail edge").
+- **RR5 — Anti-gaming:** specify the work that must precede the checkpoint (verify + fresh balance state).
+- **RR6 — Labels:** per-row checkpoint-visibility + AP2 scope-coverage qualifier.
+
+These are concrete and bounded — implementable without another full teardown. A **short final
+confirmation** (or founder judgment) can close it after RR1–RR6 land.
