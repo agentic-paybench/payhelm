@@ -1,77 +1,77 @@
-# Session 1 — PayHELM Dimension-2 (authorization latency) — HANDOFF
+# PayHELM Dimension-2 (authorization latency / RAPL) — HANDOFF
 
-**Branch:** `paybench/dim2-auth-latency` (cut from `paybench/poc`). **Not** PR'd —
-that is a later founder step, once the dimension is calibrated + pre-registered.
+**Branch:** `paybench/dim2-auth-latency` (cut from `paybench/poc`). **Not** PR'd — that is a founder
+step, once the dimension is ratified + pre-registered.
 
-## What this session built (mechanical, autonomous)
+> **Status (2026-06-22): doctrine GATE-CLEARED and PRE-REGISTERABLE.** The dimension went through
+> three cross-lineage adversarial rounds (**0–4 → 3–1 → 4/4**); see "How we got here". What remains
+> is founder/credentialed work: confirm the FR1 thresholds, run the Q4 validation/calibration,
+> ratify, pre-register, PR.
 
-1. **Dimension-parametric harness.** `paybench/mockbench/dimensions.py` adds a
-   first-class `Dimension` descriptor; `fixtures.py`, `bench.py`, `cli.py` now
-   thread `dim=FINALITY` by default. CLI gained `--dimension {finality,auth-latency}`.
-2. **Auth-latency dimension.** 6 rails (R1, R2, R9, R10, R11, **+ R6/AP2 — debuts
-   here**, §8 Resolution B) → C(6,2) = 15 pairs → 7,500 trials. Seeded log-normal
-   fixtures, content-addressed, provenance written back.
-3. **Tests.** `tests/test_auth_latency.py` mirrors the finality suite + adds
-   cross-dimension RNG-isolation and a frozen-finality-hash pin. **21/21 green.**
-4. **DRAFT methodology** `methodology/dim2-auth-latency.DRAFT.md` (proposed, not
-   adopted).
+## The harness (mechanical, autonomous — built session 1)
 
-## Frozen-finality guarantee (verified)
+1. **Dimension-parametric harness.** `mockbench/dimensions.py` adds a first-class `Dimension`
+   descriptor; `fixtures.py`/`bench.py`/`cli.py` thread `dim=FINALITY` by default. CLI gained
+   `--dimension {finality,auth-latency}`. **21/21 tests green** (`tests/test_auth_latency.py`).
+2. **Frozen finality preserved bit-for-bit:** run_hash `sha256:895f99ed…b14ee0`, ranking
+   `R10,R1,R2,R9,R11`; pinned in CI + `test_finality_artefact_is_unperturbed_by_generalisation`.
 
-The dimension-1 settlement-finality artefact is **bit-for-bit unchanged**:
-- run_hash `sha256:895f99ed…b14ee0` (unchanged), ranking `R10, R1, R2, R9, R11`;
-- `cli verify` passes; no git diff on `paybench/{runs,fixtures,calibration/provenance}`
-  finality files;
-- pinned in CI (`.github/workflows/paybench-reproducibility.yml`) **and** in
-  `test_auth_latency.py::test_finality_artefact_is_unperturbed_by_generalisation`.
-
-## Reproduce
+> ⚠️ **The harness still runs the *pre-gate* single 6-rail / 15-pair placeholder race.** The doctrine
+> has since been redesigned (SPLIT, below); **re-aligning the harness** (two sub-rankings,
+> Tempo-Session-only, ms k-ladder, hardened-BT) is a **post-ratification** task — deliberately not
+> built against an un-ratified design. The harness's auth-latency numbers are a *working pipeline*,
+> **not a result** (all calibration is PLACEHOLDER).
 
 ```bash
 # finality (frozen) — must print run_hash 895f99…b14ee0
 python -m paybench.mockbench.cli run
-# auth-latency (placeholder) — 15 pairs / 7,500 trials
-python -m paybench.mockbench.cli generate -d auth-latency
-python -m paybench.mockbench.cli verify   -d auth-latency
-python -m paybench.mockbench.cli run      -d auth-latency
-# tests (isolated from HELM's root conftest)
+# auth-latency (PLACEHOLDER, pre-gate single-race pipeline)
+python -m paybench.mockbench.cli all -d auth-latency
 python -m pytest paybench/mockbench/tests/ --noconftest -c /dev/null -q
 ```
 
-## ⚠️ Everything calibration is PLACEHOLDER
+## How we got here (the methodology arc — the substantive work)
 
-Every `calibration/provenance/<rail>-auth-latency.provenance.yaml` is marked
-**"PLACEHOLDER — pending founder calibration"**. The `{median_s, sigma_log}` are
-illustrative, NOT measured. The auth-latency `run_hash`/ranking are deterministic
-functions of those placeholders — they are not a result, only a working pipeline.
+- **Research (3 passes):** all six rails' authorization checkpoints are **primary-source-validated**
+  (`dim2-auth-latency.research.md`); ISO-8583 auth-vs-settlement is conceptual precedent; no prior
+  "authorization latency" benchmark surfaced (novelty plausible — *re-check before publishing*).
+- **Cross-lineage gate (`dim2-adversarial-review.md`):**
+  - **Round 1 — refuted 0–4.** Racing all six rails as one ranking was a **category error** (L402's
+    macaroon is a *grant-to-pay*, not a validation of payment).
+  - **Round 2 — SPLIT validated 3–1**, + a refinement list (RR1–RR6).
+  - **Round 3 — PRE-REGISTERABLE 4/4**, conditional on fixes (FR1–FR5); the panel caught two real
+    bugs (RR5-on-Group-B, first-byte gaming) — both fixed.
+- **The doctrine now (`dim2-auth-latency.DRAFT.md` §2), renamed _Rail Authorization-Primitive
+  Latency_ (RAPL):** two within-group races — **A Payment-Validation** (x402×3, Tempo-Session, AP2;
+  Tempo-Charge excluded) and **B Challenge-Issuance** (x402×3, Tempo, L402); hardened-BT (Davidson
+  ties + censoring) with a **Cox-PH data-triggered fallback**; metric renamed `P(auth ≤ k)`; ms
+  k-ladder; client-side last-byte RTT-subtracted measurement; anti-gaming + visibility/scope labels.
 
-## What a founder must DECIDE / CALIBRATE next
+## What the founder must DECIDE / DO next (in order)
 
-| # | Decision (see DRAFT §6) | Why it's a founder call |
+| # | Step | Notes |
 |---|---|---|
-| Q1 | **AP2 (R6) scope** — time mandate-verify only, or verify + orchestration to first underlying-rail dispatch? | Defines what R6 means on this dimension |
-| Q2 | **Solana authorization point** — is `confirmed`-level (~2.27s, captured in the D1 run, deliberately *withheld* from the placeholder) the right signal? | §3 disavows `confirmed` for *finality*; authorization is a different question |
-| Q3 | **Ratify the per-rail authorization-point doctrine** (DRAFT §2 table), incl. the trust/equivalence-class column + named asymmetry | The D1 reliance-level analogue; doctrine, not mechanics |
-| Q4 | **Real calibration** — first-party measure isolating the *authorize* leg from *settle*, per rail (+ doc/telemetry spread), replacing every placeholder | Judgment + first-party sourcing (Hybrid-C) |
-| Q5 | **k-grid + BT prior** for sub-second separations | Pre-registered scoring constants |
+| 1 | **Confirm the FR1 fallback thresholds** | Numeric BT→Cox-PH triggers (proposed: tie>20% / censoring>5% / cyclic-triples>10%) — a statistician's call; **best set from the Q4 pilot** (below) |
+| 2 | **Run the Q4 validation/calibration** (credentialed) | Plan: `dim2-validation-run-plan.md`. Pilots FR1 + the power analysis **and** replaces PLACEHOLDER fixtures with real `{median,sigma}`. **Runs *before* pre-registration** (mirrors D1 calibrate-before-freeze). Needs a thin `/verify` route + RTT endpoint added to the POC adapters (`mblake4u/agentpay`). |
+| 3 | **Ratify the doctrine** | Fold the gate-cleared §2 into `methodology.md` as a real section (not DRAFT) |
+| 4 | **Pre-registration ceremony** | OSF / cosign / OpenTimestamps / signed tag — a founder ceremony, as for D1 |
+| 5 | **Harness re-alignment** | Re-build the harness to the SPLIT design (two sub-rankings, ms ladder, hardened-BT) |
+| 6 | **PR → `paybench/poc`** | Session-4 reproducibility CI already guards finality on the PR |
+| — | **Prior-art novelty re-check** | The round-3 prior-art pass was partly truncated; confirm before any *published* novelty claim |
 
-## Then (NOT this session — tripwires)
+## Discipline for Q4 → FR1 (don't undo the gate)
+The Q4 pilot **informs** principled FR1 thresholds; it must **not tune** them to flatter BT on the
+data that will be scored (that re-creates the post-hoc method-switching the panel rejected). Set →
+pre-register → honour the trigger even if it forces the survival model.
 
-- Fold the ratified doctrine into `methodology.md` as a real section (not a DRAFT).
-- Run the **pre-registration ceremony** (OSF / cosign / OpenTimestamps / signed
-  tag) for the dimension-2 design — a founder ceremony.
-- **PR `paybench/dim2-auth-latency` → `paybench/poc`** (CI from Session 4 already
-  guards finality on that PR).
+## Tripwires honoured this session
+No frozen v1.2 artefact touched (finality bit-for-bit); **nothing ratified or pre-registered**;
+doctrine remains DRAFT; **no real calibration committed** (placeholders only; the real Solana figure
+withheld); no adapters modified / nothing run against testnets. One-writer discipline maintained
+(one Syncthing index-desync incident this session, recovered via `git reset`, no data loss).
 
-## Tripwires honoured
-
-No frozen v1.2 artefact touched; nothing pre-registered; per-rail doctrine left as
-DRAFT for founder decision; no real calibration numbers committed (placeholders
-only, the Solana real figure intentionally withheld). One-writer discipline: all
-work on a single machine on this branch.
-
-## Commits on this branch
-
-1. `make MockBench dimension-parametric (finality frozen bit-for-bit)`
-2. `auth-latency dimension fixtures + PLACEHOLDER provenance + report`
-3. `auth-latency tests + DRAFT methodology addendum + handoff`
+## Key artefacts
+`dim2-auth-latency.DRAFT.md` (doctrine) · `dim2-auth-latency.research.md` (evidence) ·
+`dim2-adversarial-review.md` (3 gate rounds + verdicts) · `dim2-review{,2,3}-{model}.md` (raw
+replies) · `dim2-validation-run-plan.md` (Q4 plan) · `dimension-design-lessons.md` (cross-dimension
+knock-on + new-dimension checklist).
