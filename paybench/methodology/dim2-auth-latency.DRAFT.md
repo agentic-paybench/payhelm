@@ -20,10 +20,17 @@ any pre-registration.
 
 ## 1. What "authorization latency" measures
 
-**Proposed definition.** Authorization latency is the wall-clock time from a
-payment intent being *presented* to a rail to the point the rail returns an
-**authorization decision the agent may act on** — i.e. "this payment is approved
-to proceed" — **prior to and distinct from settlement finality** (§3).
+> **Renamed post-gate (DR2): _Rail Authorization-Primitive Latency_ (RAPL)** — provisional; alt
+> "Protocol-Accept Latency". It measures a rail/protocol *primitive*, not an agent-perceived
+> latency. A co-primary **agent-observed total-latency** metric is reported alongside (§2.5).
+> "Authorization latency" is kept below as the descriptive gloss.
+
+**Proposed definition.** Authorization(-primitive) latency is the wall-clock time from the agent
+issuing its **pay command** (the payment payload constructed and on the wire — the standardised
+`t = 0`, §2.5) to the point the rail returns an **authorization-primitive decision** — i.e. "this
+payment/mandate is validated / this payable grant is issued" — **prior to and distinct from
+settlement finality** (§3). The *kind* of decision differs by rail, which is why the dimension is
+**split** into validation-type and grant-type sub-rankings (§2).
 
 Where settlement-finality (§3) answers *"when can I rely on this payment as
 irreversible?"*, authorization latency answers *"how fast does this rail tell me
@@ -40,34 +47,52 @@ envelope is bundled in, because that is what the agent actually waits on.
 therefore identical and the existing BT/pass@k/Wilson machinery applies unchanged
 (see §4).
 
-## 2. Per-rail operationalisation — the reliance-level analogue (PROPOSED, evidence-grounded)
+## 2. Per-rail operationalisation — the SPLIT design (revised post-gate, evidence-grounded)
 
-> ⚠️ **SUPERSEDED PENDING REVISION (cross-lineage gate, 2026-06-22).** The §8 gate
-> returned a hard verdict (`dim2-adversarial-review.md`): **DA2-keep refuted 0–4** and the
-> **L402 (R11) pin is a unanimous category error** — the macaroon is the *challenge*, not an
-> authorization of a submitted payment, so it cannot share a single race with the
-> validation-type rails. The doctrine below is **not pre-registerable as written**; it awaits
-> founder decisions **DR1 (SPLIT into payment-validation vs permission-grant sub-rankings)**,
-> **DR2 (rename to a rail-*primitive* latency + agent-observed companion)**, and **DR3
-> (Tempo Charge/Session bifurcation, `t=0` standard, ms k-ladder, AP2 auth-only tag, network
-> normalisation)**. Read §2 as the *pre-gate* draft.
+> **REVISED post-gate (2026-06-22), DR1–DR3 adopted.** The §8 cross-lineage gate
+> (`dim2-adversarial-review.md`) **refuted the single-race doctrine 0–4** and found the L402
+> pin a **category error**. §2 below is the **rewritten SPLIT design** that resolves it. The
+> pre-gate single-race draft is preserved in git history + the review doc. Adopted founder
+> decisions: **DR1 SPLIT** (payment-validation vs permission-grant sub-rankings), **DR2 rename**
+> (rail-*primitive* latency + an agent-observed companion metric), **DR3** (Tempo Charge/Session
+> bifurcation, standardised `t=0`, ms k-ladder, AP2 auth-only tag, network normalisation).
+> Still DRAFT — not ratified, not pre-registered; a short second gate round on this revised
+> design is advisable before ratification.
 
-§3 (finality) pins each rail to its **ecosystem-canonical reliance level**. The Day-30
-analogue pins each rail to its **canonical authorization point** — the protocol step at
-which the rail issues the **go-ahead that the payment is *authorized to proceed toward
-settlement*** (explicitly **not** the point of irreversible reliance; §1). As in §3 this
-is per-rail (rails do not share one authorization model) and — as in §3 — the asymmetry
-is **named, not hidden**, via a trust/equivalence-class column. **Every row below is
-primary-source-validated** (three research passes 2026-06-20, `dim2-auth-latency.research.md`).
+**Dimension renamed (DR2): _Rail Authorization-Primitive Latency_ (RAPL)** — provisional;
+alt "Protocol-Accept Latency". The rename is load-bearing: the metric times a rail/protocol
+**authorization primitive**, *not* an agent-perceived latency (the accept is facilitator/server-
+side, and on fused topologies an agent never sees it pre-settlement — §2.5/G1). A **companion
+agent-observed total-latency** metric is reported alongside (DR2; §2.5).
 
-| Rail | Authorization point — *pinned* | Trust / equivalence class |
+**The dimension is SPLIT (DR1)** because authorization is *not one shared concept* across these
+rails — the gate showed (0–4) that racing them together is a category error. Each rail is raced
+**only against rails whose authorization point is the same kind of object**:
+
+**Sub-ranking A — Payment-Validation Authorization** (the primitive *validates a payment/mandate
+the payer has submitted*). Raced with BT + pass@k **within this group**; MPP-on-Tempo is
+**bifurcated into two pseudo-rails** (DR3), so C(6,2)=15 pairs:
+
+| Pseudo-rail | Authorization point (validates submitted payment/mandate) | Trust / equivalence class |
 |---|---|---|
-| x402-Base (R1) | Facilitator **`/verify` accept** of the payer's signed EIP-3009 payload (off-chain: sig recovery + balance + simulation), before the on-chain `transferWithAuthorization` settle | Facilitator off-chain **validation of a payer-signed payment authorization** |
-| x402-Stellar (R2) | Facilitator **`/verify` accept** (decode XDR, check Soroban auth-entry signatures, simulate), before OZ-Relayer submission | Facilitator off-chain **validation of a payer-signed payment authorization** |
-| x402-Solana (R9) | Facilitator **`/verify` accept** of the signed SVM payload (off-chain) — **earlier than** Solana `confirmed` | Facilitator off-chain **validation of a payer-signed payment authorization** |
-| MPP-on-Tempo (R10) | Server **`Verify` procedure** (validate the `Authorization: Payment` credential) before broadcast | **Payee/server** off-chain **validation of a payer credential** |
-| MPP-on-Spark-Lightning (R11) | Server **issuance of the macaroon authorization grant + BOLT11 invoice** (the 402 challenge), before the payer pays / the Spark FROST+SSP preimage-release ceremony | **Server-issued authorization *grant* (token)** — *grant-to-pay*, **not** verify-of-payment ⚠ |
-| GCP + AP2 (R6) | Authorization-layer **mandate verification → payment-credential issuance → dispatch** to the Merchant/processor | **Dedicated authorization layer** — cryptographic mandate proof, rail-agnostic, **does not settle** |
+| x402-Base (R1) | Facilitator `/verify` accept of the signed EIP-3009 payload (off-chain) | Facilitator off-chain validation of a payer-signed payment |
+| x402-Stellar (R2) | Facilitator `/verify` accept (Soroban auth-entry signatures, simulate) | Facilitator off-chain validation of a payer-signed payment |
+| x402-Solana (R9) | Facilitator `/verify` accept of the signed SVM payload (off-chain; **earlier than `confirmed`**) | Facilitator off-chain validation of a payer-signed payment |
+| **Tempo-Charge (R10a)** | Server `Verify` of the one-time `Authorization: Payment` credential (**verify+settle fused at ~500 ms**) | Payee/server validation — **fused with settlement** (disclose) |
+| **Tempo-Session (R10b)** | Server `Verify` of an off-chain signed voucher (**near-zero**) | Payee/server validation — off-chain voucher (credential reuse) |
+| GCP + AP2 (R6) | Mandate verification → credential issuance (the dispatch hop **decomposed out**, §2.5) | **Auth-only / no funds-check** — dedicated layer, **does not settle** |
+
+**Sub-ranking B — Permission-Grant Authorization** (the primitive *issues a payable challenge
+before the payer commits*):
+
+| Rail | Authorization point (issues a grant-to-pay) | Trust / equivalence class |
+|---|---|---|
+| MPP-on-Spark-Lightning (R11) | Server issuance of the **macaroon + BOLT11 invoice** (the 402 challenge), before the payer pays | **Server-issued grant-to-pay** — not a validation of payment |
+
+Sub-ranking B currently has **one member**, so it is **reported as a standalone quantity, not
+raced** (a BT race needs ≥2). *Natural extension:* the x402/MPP **402-challenge issuance** is also
+a grant-type event; measuring it would populate B with a real race — flagged for the founder, not
+assumed. **L402 is NOT placed in A** (see §2.3 — that is the category-error fix).
 
 All `{median_s, sigma_log}` are `TODO(calibration)` PLACEHOLDERS (footnote¹).
 
@@ -88,7 +113,7 @@ not measurements, not for publication or pre-registration.
 - **R11 (L402/Spark): a grant, not a verify.** The macaroon (authorization credential) +
   invoice are issued **before** the payer pays; the **preimage** is the settlement proof,
   obtained only by paying. Spark's **conditional-lock** step precedes the SSP-preimage
-  finalize (the ~16.5s ceremony = settlement). See the named asymmetry in §2.3.
+  finalize (the ~16.5s ceremony = settlement). → **Sub-ranking B** (§2.3 explains why).
 - **R6 (AP2): the two-process timer.** Authorization = mandate-verify **+** orchestration
   to dispatchable; the **total** is raced, the **verify** and **orchestration** components
   are recorded separately (Q1, §9). AP2 does not settle (settlement out of AP2 scope).
@@ -108,27 +133,32 @@ The **accept → finalized gap** is itself a publishable quantity (e.g. Solana �
 (research caveat C2) — some integrations call only `/settle` (which verifies internally),
 so a fused HTTP 200 does **not** expose the accept.
 
-### 2.3 Named asymmetries (the §3-analogue — do not average away)
+### 2.3 Why the SPLIT (and not a trust-class label) — the category-error fix
 
-Authorization points are **not equi-conservative**, and the research showed the security
-*object* differs across rails. Name it, exactly as §3 names the finality reliance-level
-asymmetry:
+The pre-gate draft put all six rails in one race and *named* the asymmetry with a
+trust/equivalence-class column. The cross-lineage gate (0–4) rejected that: a label **names** a
+category error without **removing** it, and a single Bradley-Terry race implicitly treats the
+items as differing in *degree* along one latent axis when they differ in *kind*. The security
+*object* genuinely differs:
 
-- **Validation-of-payer vs grant-to-payer vs mandate-verify.** R1/R2/R9/R10 time the
-  **validation of the payer's submitted payment authorization** ("your payment is valid").
-  **R11 (L402)** times the **issuance of an authorization *grant*** (the macaroon — "here
-  is your authorization to pay"), which sits **earlier in the flow** and is a *different
-  security object* (server grants vs facilitator validates). **R6 (AP2)** times a
-  **dedicated authorization layer's** mandate verification + credential issuance. The
-  published table must carry the trust/equivalence-class column above and flag that R11's
-  point is a grant, not a verify — a candidate **cross-lineage-gate question** (§8): is
-  macaroon-issuance the right race analogue of an x402 facilitator-accept, or should R11
-  be pinned to a later "payment-accepted" signal for apples-to-apples?
-- **Off-chain vs on-chain.** All accepts are **off-chain** except R10's *Charge* path,
-  where verify+settle fuse at the ~500ms on-chain point.
-- **Per-rail structural variants are expected** (the §9 roadmap note): the timer will need
-  rail-specific checkpoints (component splits, grant-vs-verify) — AP2's verify/orchestration
-  split is the first instance, not a one-off.
+- **Validation-of-payment** (Sub-ranking A) — x402 `/verify`, MPP `Verify`, AP2 mandate-verify
+  all validate *something the payer has already submitted* (a signed payload / credential /
+  mandate). "Is this payment/mandate valid?"
+- **Grant-to-pay** (Sub-ranking B) — L402's macaroon+invoice is the server *issuing a payable
+  challenge before the payer has committed anything*. "Here is what to pay." In ISO-8583 terms it
+  is the merchant's `0100` *request*, not the issuer's `0110` *response* — measured at an earlier
+  protocol step than A's checkpoint.
+
+**Why not REPIN-R11 into A.** L402 has **no pre-settlement payment-validation checkpoint**: in
+Lightning, *payment is settlement* (the preimage is revealed by paying). Re-pinning L402 to a
+"payment-accepted" signal would land on preimage-verification — i.e. **settlement (dimension 1)**,
+not authorization. So L402 cannot join A without collapsing into D1; it belongs in its own
+grant-type sub-ranking B. This is the gate's unanimous fatal finding, resolved.
+
+**AP2 stays in A but tagged.** AP2 validates a *mandate* (not an on-chain payment) and **does not
+settle**, so it is labelled **auth-only / no-funds-check** (load-bearing, not cosmetic) and its
+**external dispatch hop is decomposed out** of the raced quantity (§2.5), so A races the
+comparable mandate-verify+credential-issuance step, not a party-to-party network call.
 
 ### 2.4 Terminology honesty
 
@@ -140,6 +170,39 @@ PayBench's framing** over those primitives. Conceptual precedent exists — the 
 **ISO-8583** split of real-time authorization (MTI 0100/0110) from settlement (0200/0220)
 — so the dimension ports a long-standing distinction rather than inventing one; but **no
 prior benchmark measures it** (novelty plausible, re-check before any published claim, §8).
+
+### 2.5 Measurement & statistics package (DR3 — gate-mandated)
+
+The sub-100 ms regime is unforgiving; the gate required a tighter measurement contract than
+finality's. All of the following are **pre-registered** before any scored run:
+
+- **`t = 0` standard.** Start the clock when **the agent issues the ultimate pay command —
+  the payment payload constructed and on the wire** (not an empty GET that merely triggers a
+  402). Measure every checkpoint at the **rail edge** (first ingress), uniformly across rails,
+  so one rail is not penalised by payload-construction or network RTT that another avoids.
+- **Network normalisation.** Fix a **canonical client geography**, publish the **min-RTT floor
+  per rail/endpoint**, and report **network-adjusted latency** (`observed − min-RTT`) alongside
+  raw — otherwise AP2's anycast endpoints get a systematic edge and the ranking is not
+  reproducible across run locations.
+- **Warm vs cold start.** Pre-register **warm-start-only** (discard the first *N* calls: TLS +
+  connection-pool warmup) vs cold-inclusive, and report both.
+- **pass@k in the right regime.** A **millisecond k-ladder** (e.g. `{20, 50, 100, 250, 500} ms`,
+  not finality's seconds grid), reported with a **rank-stability heatmap** (the headline `k` is
+  load-bearing and can invert the order; fix it before data collection).
+- **BT only *within* a sub-ranking.** Bradley-Terry's single-latent-axis assumption holds only
+  among same-kind items, so it is run **per sub-ranking**, never across A and B. Report
+  **Kaplan-Meier survival curves** alongside, since the generative processes (local crypto vs
+  networked-consensus RPC) are mechanistically heterogeneous.
+- **Assurance normalisation — `P(settled | accept)`.** Record, per rail, the probability that an
+  accept actually leads to settlement (and the assurance depth). A near-instant accept that
+  frequently fails downstream is **not** comparable to a slower, near-certain one; without this
+  covariate the lower-is-better race is gameable by "doing less" at the boundary.
+- **Companion agent-observed total latency (co-primary).** Alongside the primitive latency,
+  report **time-from-pay-command-to-usable-signal** (accept + the accept→settle gap). The
+  primitive ranking can *invert* the end-to-end experience (a fast-accept/slow-settle rail loses
+  overall); the two must be displayed together so the headline is not optimised against the
+  outcome agents actually care about. (On fused topologies this companion equals settlement time,
+  i.e. collapses into dimension 1 — which is itself the honest disclosure for those rails.)
 
 ## 3. How AP2 (R6) is measured here
 
@@ -160,25 +223,32 @@ must be pre-registered. The placeholder times mandate-verify + orchestration as 
 single envelope (median set above the settling rails to reflect the extra
 round-trips) — illustrative only.
 
-## 4. Statistics — reused unchanged (no new methodology)
+## 4. Statistics — core methods reused, but **not** unchanged (see §2.5)
 
-Authorization latency is another **lower-is-better, race-the-pair** dimension, so
-the §5 methods transfer **without modification**:
+> **Pre-gate this section read "reused unchanged."** The cross-lineage gate corrected that: the
+> BT/pass@k/Wilson *core* transfers, but **§2.5 (DR3) imposes real changes** — BT/pass@k run
+> **per sub-ranking only**, the **k-grid moves to milliseconds**, and **Kaplan-Meier survival
+> curves + a `P(settled|accept)` covariate** are added. Read §4 with §2.5.
 
-- **Bradley-Terry MLE** over pairwise authorization races (lower latency wins;
-  ties split 0.5/0.5) — same `bradley_terry_mle`, same `prior=1.0` smoothing.
-- **pass@k = P(authorization ≤ k s)** — same estimator; the k-grid is finer/tighter
-  than finality's `[2..20]s` because authorization is sub-second-to-a-few-seconds
-  (proposed placeholder grid `[0.25, 0.5, 1, 2, 3, 5]s`, `TODO(calibration)`).
+Authorization-primitive latency is still **lower-is-better, race-the-pair**, so the §5 core
+methods apply *within a sub-ranking*:
+
+- **Bradley-Terry MLE** over pairwise races (lower wins; ties 0.5/0.5) — same `bradley_terry_mle`,
+  `prior=1.0` — **but only among same-kind rails** (a single latent axis is invalid across the
+  grant/validation kinds; §2.3). Report **survival curves** alongside (heterogeneous processes).
+- **pass@k = P(authorization ≤ k)** — same estimator, **millisecond k-ladder** (not finality's
+  seconds grid), pre-registered with a rank-stability heatmap (§2.5). *(The earlier placeholder
+  grid `[0.25..5]s` is superseded.)*
 - **Wilson lower-bound CIs** — unchanged.
 
-**Nothing in the statistical layer needed to change** to support this dimension —
-the only generalisation was making the *dimension* (name, unit, rail set,
-seed-namespace, k-grid, provenance/fixture paths) a first-class parameter. If a
-future founder calibration shows authorization-latency distributions are *not*
-adequately log-normal (e.g. bimodal from a verify-vs-cache-hit split), that is a
-genuine non-transfer to flag for review — **not** something to paper over; the
-fixture generator currently assumes log-normal (`family: lognormal`), as finality does.
+The harness *generalisation* (making the dimension a first-class parameter — name, unit, rail
+set, seed-namespace, k-grid, paths) is unchanged and correct. But the **scoring contract is not
+a clean reuse**: per §2.5 it is per-sub-ranking, ms-gridded, survival-curve-augmented, and
+assurance-normalised. The gate also confirmed the **bimodality risk**: Tempo is *genuinely*
+bimodal (Charge ~500 ms vs Session ~0), which is exactly why DR3 **bifurcates it into two
+pseudo-rails** rather than fitting one log-normal — a single mixture would make BT/Wilson
+meaningless. The generator still assumes `family: lognormal` per (pseudo-)rail; any further
+non-log-normal shape is flagged for review, not papered over.
 
 ## 5. Reproducibility / seed-namespace design (PROPOSED)
 
@@ -207,13 +277,10 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   *Solana clarified:* the accept is the facilitator `/verify`, **earlier** than
   `confirmed` (~2.27s); `confirmed`/`finalized` are recorded as separate checkpoints
   (§2.1–§2.2). Real numbers withheld pending Q4 calibration.
-- **Q3 — per-rail authorization-point doctrine.** ⚠️ **GATE FAILED (2026-06-22) — needs
-  rework.** The §2 draft was drafted then run through the §8 cross-lineage gate, which
-  **refuted DA2-keep 0–4** and flagged the **L402 pin as a category error**
-  (`dim2-adversarial-review.md`). Now superseded by founder decisions **DR1–DR3** (SPLIT;
-  rename to a rail-primitive latency + agent-observed companion; Tempo bifurcation + `t=0`
-  standard + ms k-ladder + AP2 tag + network normalisation). Re-draft §2 after DR1–DR3,
-  then (optionally) a short second gate round, then ratify.
+- **Q3 — per-rail authorization-point doctrine.** ♻️ **GATE-FAILED then RE-DRAFTED
+  (2026-06-22).** The single-race draft was refuted 0–4 (`dim2-adversarial-review.md`); §2 is
+  now the **revised SPLIT design** with DR1–DR3 adopted (§9). **Remaining:** (optionally) a
+  short second cross-lineage round on the *revised split* before founder ratification.
 - **Q4 — calibration sourcing.** ⏳ **OPEN.** First-party measurement isolating the
   *authorize* leg from the *settle* leg per rail — invoke the verify primitive
   **explicitly** (research caveat C2); the D1 harnesses already capture
@@ -327,3 +394,30 @@ ratified** — all remain subject to the deep research, the validation run, and 
   each rail — AP2's verify/orchestration split is the **first instance, not a
   one-off**. The provenance schema's optional `components:` block is the generalisation
   point.
+
+### Post-gate resolutions — DR1–DR3 (founder-directed 2026-06-22, after the §8 gate)
+
+The cross-lineage gate refuted the single-race doctrine 0–4 (`dim2-adversarial-review.md`).
+Founder adopted the recommended package; §2 re-drafted accordingly. **Still DRAFT — a short
+second gate round on the revised split is advisable before ratification.**
+
+- **DR1 — SPLIT (adopted).** Two ontological sub-rankings: **A Payment-Validation** (x402×3,
+  Tempo-Charge, Tempo-Session, AP2) and **B Permission-Grant** (L402). BT/pass@k run **within**
+  a sub-ranking only. L402 is **not** re-pinned into A — it has no pre-settlement
+  payment-validation point (payment = settlement in Lightning), so a re-pin collapses into D1.
+  B currently has one member → reported standalone (a 402-issuance race could populate it later).
+  *This supersedes the Q2 "all six rails, one race" framing above.*
+- **DR2 — RENAME + companion (adopted).** Dimension renamed **Rail Authorization-Primitive
+  Latency (RAPL)** (provisional; alt "Protocol-Accept Latency") to make explicit it measures a
+  rail/protocol primitive, **not** an agent-perceived latency (G1). A **co-primary
+  agent-observed total-latency** metric is reported alongside (addresses fast-path inversion).
+- **DR3 — measurement/stats package (adopted, §2.5).** Tempo bifurcated into **Charge/Session**
+  pseudo-rails; **`t = 0`** standardised to payload-on-the-wire measured at the rail edge;
+  **network-adjusted** latency + canonical geography + RTT floor; **warm/cold** pre-registered;
+  **millisecond k-ladder** + rank-stability heatmap (supersedes Q5's placeholder grid); **BT
+  within-sub-ranking + Kaplan-Meier** survival curves; **`P(settled|accept)`** assurance
+  covariate; **AP2 tagged auth-only** with the dispatch hop decomposed out.
+- **Harness re-alignment (follow-up, not yet done).** The placeholder harness still runs the
+  *pre-gate* single 6-rail race with the seconds k-grid. Re-aligning it to the split (two
+  sub-rankings), the bifurcated Tempo pseudo-rails, and the ms k-ladder is a **post-ratification
+  implementation task** — deliberately deferred so it is not built against an un-ratified design.
