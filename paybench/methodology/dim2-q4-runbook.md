@@ -6,6 +6,59 @@ real `{median, sigma}`. Pairs with `dim2-validation-run-plan.md` (the plan) and 
 the `dim2-rapl-instrumentation` branch of `mblake4u/agentpay`. **Nothing here runs until you, the
 founder, execute it with credentials.**
 
+## ⚡ QUICK START — Base (R1), copy-paste (the one rail runnable TODAY)
+
+> R2/R9/R10/R11 follow after the TS fan-out; R6/AP2 needs the build-or-doc-source decision.
+> Everything below is absolute-path and copy-paste. Two terminals.
+
+**A. One-time setup**
+```bash
+# 1. get on the instrumentation branch
+cd /home/michael/dev/github/mblake4u/agentpay && git checkout dim2-rapl-instrumentation
+
+# 2. confirm creds + deps exist
+ls -l /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/.env
+/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/venv/bin/python -c "import requests; print('requests OK')"
+```
+If `.env` is missing → copy `poc/rail-x402-base/.env.example` to `.env` and fill the CDP keys + RPC.
+If `requests` errors → `/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/venv/bin/pip install requests`
+
+**B. Terminal 1 — start the server (leave running)**
+```bash
+cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base
+./venv/bin/python seller_server.py
+```
+Wait for: `Listening on : http://0.0.0.0:8082`. Keep this terminal open.
+
+**C. Terminal 2 — run the measurement**
+```bash
+cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base
+./venv/bin/python measure_rapl.py --trials 30 --warmup 5 --rtt-burst 12 --sleep 1.0
+```
+
+**D. What you should see**
+- `min-RTT floor (warm, n=12): X.XXX ms`  (small + stable)
+- 30 lines: `[  i] accept=…ms challenge=…ms`
+- a summary block: `outcomes: {...}`, `FR1 censoring-rate = …`, and `ACCEPT`/`CHALLENGE` RAW + corrected.
+
+**E. PASS gate — only trust the numbers if ALL hold**
+- [ ] `harness_error: 0`  (any > 0 = instrumentation bug — fix before the numbers count)
+- [ ] `ok` is most of the 30  (a wall of `rejected` = wallet/payment misconfigured, not a result)
+- [ ] min-RTT floor is sub-ms-to-few-ms and stable  (else keep-alive isn't pooling — check the server)
+
+**F. Output file**
+```
+/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/samples/R1-x402-base.rapl.samples.jsonl
+```
+
+**G. Record + send me** (from the summary), for ACCEPT (A) and CHALLENGE (B):
+`median_s_lognormal`, `sigma_log`, plus the `FR1 censoring-rate`. Paste them back — I'll sanity-check,
+help set the FR1 thresholds, and write them into provenance.
+
+**H. Stop:** `Ctrl+C` in Terminal 1.
+
+---
+
 ## 0. Before you start — preconditions
 - [ ] **Decide the AP2 (R6) path** — there is **no AP2 POC adapter** in `poc/`. Either build one, or
       source AP2 calibration from docs/telemetry (placeholder stays). R6 is **not** measurable by this
