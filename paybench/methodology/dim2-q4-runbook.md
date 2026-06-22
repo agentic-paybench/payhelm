@@ -60,9 +60,9 @@ help set the FR1 thresholds, and write them into provenance.
 ---
 
 ## 0. Before you start — preconditions
-- [ ] **Decide the AP2 (R6) path** — there is **no AP2 POC adapter** in `poc/`. Either build one, or
-      source AP2 calibration from docs/telemetry (placeholder stays). R6 is **not** measurable by this
-      runbook as-is. (See §"Per-rail status".)
+- [ ] **AP2 (R6):** no adapter yet, but **buildable locally** — see `dim2-ap2-build-plan.md` (Google's
+      AP2 reference impl, instrument the Credentials Provider verify→issue directly, LLM-free). Build
+      decision: **yes** (scoping `w56fqhjyl`). Needs a free Google AI Studio API key for the agent runtime.
 - [ ] **One-writer:** do this on a single machine; agentpay syncs via Syncthing. Confirm no other
       session is mid-write in agentpay before you start.
 - [ ] **Branch:** `git -C ~/dev/github/mblake4u/agentpay checkout dim2-rapl-instrumentation`.
@@ -142,4 +142,4 @@ Per rail, per sub-ranking (A, B):
 | **R2 x402-Stellar** | `rail-stellar-x402` (TS, Express, hosted) | ⏳ to fan out | mirrors Solana |
 | **R10 MPP-Tempo** | `rail-tempo-mpp` (TS, `route()` handler) | ⏳ rail-specific | **Charge excluded**; Session-only accept; non-Express shape |
 | **R11 MPP-Spark-Lightning** | `rail-lightning-mpp` (TS, `route()`) | ⏳ rail-specific | **B only** (macaroon+invoice issuance); `rail-lightning-l402/` is empty |
-| **R6 GCP+AP2** | **none in `poc/`** | ❌ blocked | build an AP2 adapter or doc/telemetry-source — founder decision |
+| **R6 GCP+AP2** | none yet — **buildable locally** | ⏳ build per plan | `dim2-ap2-build-plan.md`: instrument Google's AP2 reference impl (Credentials Provider verify→issue, LLM-free), dispatch decomposed out |
