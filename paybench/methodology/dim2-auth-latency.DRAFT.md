@@ -331,11 +331,17 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
 - **Q3 — per-rail authorization-point doctrine.** ✅ **GATE-CLEARED, PRE-REGISTERABLE (2026-06-22).**
   Three cross-lineage rounds: 0–4 (category error) → 3–1 (SPLIT validated) → **4/4 pre-registerable**.
   RR1–RR6 + FR1–FR5 applied (§9). **Remaining: founder ratification**, then pre-registration.
-- **Q4 — calibration sourcing.** ⏳ **OPEN.** First-party measurement isolating the
-  *authorize* leg from the *settle* leg per rail — invoke the verify primitive
-  **explicitly** (research caveat C2); the D1 harnesses already capture
-  confirmed/finalized, so the new work is the **accept timestamp** (validation run,
-  credentialed testnet). Plus doc/telemetry spread, mirroring Hybrid (C).
+- **Q4 — calibration sourcing.** ⏳ **OPEN — scoped, runs *before* FR1/pre-registration.**
+  Plan in `dim2-validation-run-plan.md`. First-party measurement isolating the *authorize* leg per
+  sub-ranking — A: explicit `/verify` accept (client-side, last-byte, RTT-subtracted, with the
+  work-clause); B: `402`-challenge issuance — capturing failures as censored events. **Sequencing
+  (mirrors D1 calibrate-before-freeze):** this run is the **pilot that informs the FR1 fallback
+  thresholds + the power analysis** (the tie/censoring/transitivity pathologies cannot appear on the
+  mock log-normal fixtures, so the *live* run is the only place to observe them) — *informing*
+  principled thresholds, **not** tuning them to the scored data. Then it replaces the PLACEHOLDER
+  fixtures with real `{median, sigma}`. **Instrumentation gap:** POC servers expose only the fused
+  `/resource`; a thin standalone `/verify` route + a same-path RTT-baseline endpoint must be added
+  (founder/credentialed step, `mblake4u/agentpay`).
 - **Q5 — k-grid + scoring constants.** ✅ **RESOLVED via RR3 (§2.5/§4).** ms k-ladder
   ({20,50,100,250,500} ms) + rank-stability heatmap + power analysis; metric renamed
   **`P(auth ≤ k)`** (latency CDF, not pass@k); BT within-sub-ranking only, **hardened** (Davidson
