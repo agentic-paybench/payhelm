@@ -189,7 +189,9 @@ settlement is genuine and published on every rail*, but **"authorization latency
 PayBench's framing** over those primitives. Conceptual precedent exists — the card-network
 **ISO-8583** split of real-time authorization (MTI 0100/0110) from settlement (0200/0220)
 — so the dimension ports a long-standing distinction rather than inventing one; but **no
-prior benchmark measures it** (novelty plausible, re-check before any published claim, §8).
+prior benchmark measures it** (novelty **checked & defensible** — Pass 4, `wktco3m7a`,
+`research.md`: card-network limits are *SLAs*, not a comparative benchmark, so the
+benchmark *dimension* is new; state as "no prior we identified").
 
 ### 2.5 Measurement & statistics package (DR3 + round-2 RR3–RR6 — gate-mandated)
 
@@ -523,4 +525,5 @@ and closed the arc (0–4 → 3–1 → pre-registerable). Fixes applied to §2.
   Charge (1-RTT) profile.
 
 **Status:** doctrine is **ready for founder ratification → pre-registration**. No round 4 expected.
-Deferred to post-ratification: harness re-alignment (§9 above) and the prior-art novelty re-check.
+Deferred to post-ratification: harness re-alignment (§9 above). *(Prior-art novelty re-check —
+**done** 2026-06-22, Pass 4 `wktco3m7a`: novelty defensible; see `research.md`.)*

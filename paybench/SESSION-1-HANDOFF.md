@@ -57,7 +57,7 @@ python -m pytest paybench/mockbench/tests/ --noconftest -c /dev/null -q
 | 4 | **Pre-registration ceremony** | OSF / cosign / OpenTimestamps / signed tag — a founder ceremony, as for D1 |
 | 5 | **Harness re-alignment** | Re-build the harness to the SPLIT design (two sub-rankings, ms ladder, hardened-BT) |
 | 6 | **PR → `paybench/poc`** | Session-4 reproducibility CI already guards finality on the PR |
-| — | **Prior-art novelty re-check** | The round-3 prior-art pass was partly truncated; confirm before any *published* novelty claim |
+| ✅ | **Prior-art novelty re-check** | **Done** (Pass 4 `wktco3m7a`, 2026-06-22): novelty **defensible** — no prior benchmark measures authorization latency; card-network ISO-8583/SLAs are conceptual precedent (an SLA, not a benchmark). See `research.md`. |
 
 ## Discipline for Q4 → FR1 (don't undo the gate)
 The Q4 pilot **informs** principled FR1 thresholds; it must **not tune** them to flatter BT on the

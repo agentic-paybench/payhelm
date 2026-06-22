@@ -21,7 +21,7 @@ that occurs **before** settlement, recorded as a checkpoint distinct from
 | R6 Google AP2 | ✅ primary spec | Pass 2 — mandate-verify → credential → dispatch, settlement out of scope |
 | R10 MPP-on-Tempo | ✅ primary spec (with a Charge/Session nuance) | Pass 2 — MPP normative Verify vs Settle procedures |
 | R11 MPP-on-Spark-Lightning (L402) | ✅ primary spec | Pass 3 — L402 macaroon+invoice (auth) vs preimage (settle); Spark conditional-lock vs SSP finalize |
-| Prior-art / novelty | ✅ precedent found; novelty plausible | Pass 3 — ISO-8583 MTI 0100/0110 vs 0200/0220 = documented *conceptual* precedent; no prior "authorization-latency" benchmark surfaced |
+| Prior-art / novelty | ✅ **novelty defensible** (dedicated Pass 4) | ISO-8583 + Visa/MC SLAs = documented *conceptual* precedent for the authorize-vs-settle split; **no prior benchmark** measures authorization latency as a dimension (24/25 claims, `wktco3m7a`) |
 
 ## Verified findings (primary sources; 3-0 adversarial votes)
 
@@ -170,15 +170,27 @@ authorization-step latency number for the per-transaction path. State this openl
   classes*. This is **documented conceptual precedent**: PayBench's authorization
   dimension ports a 50-year-old card-network distinction (real-time auth vs batch
   clearing/settlement) to agentic rails — a framing asset, not a weakness.
-- **Novelty plausible:** across all three passes, **no prior academic / HELM-style /
-  vendor benchmark that defines or measures "authorization latency" as a dimension
-  separate from settlement finality was surfaced.** *Honest caveat:* Pass 3's
-  prior-art angle was **partly truncated** by a session token limit (two card-network
-  sub-claims about a bounded auth *response-time SLA* abstained rather than confirmed,
-  due to verifier errors — not a refutation). The core MTI separation is solid (3-0);
-  the "auth-latency-as-a-measured-metric SLA" sub-point is not nailed down. A defensible
-  novelty claim can stand, framed as *"no prior benchmark, conceptual precedent in
-  card networks."*
+- **Novelty — DEFENSIBLE (dedicated Pass 4, `wktco3m7a`, 24/25 claims confirmed).** A
+  focused prior-art pass over the leading A2A/crypto-payments literature found **no prior
+  benchmark defines or measures authorization latency as a dimension distinct from
+  settlement/confirmation/finality.** Closest works *name* an authorization step but never
+  isolate/time it: SoK arXiv:2604.03733 (authorization = lifecycle stage, no measurement);
+  A402 arXiv:2603.01179 (end-to-end latency + throughput only); FastPay arXiv:2003.11506 +
+  Gromit arXiv:2208.11254 (confirmation/finality latency only); AP2-verification
+  arXiv:2602.06345 (~3.8 ms verification overhead, no taxonomy); L402/LSAT (partial-vs-
+  complete split, untimed).
+- **Precedent — strengthened:** Visa/Mastercard/Worldpay + a Federal Reserve paper document
+  authorization-response time as a **measured, SLA-bounded** operational metric (Visa Table
+  7-1 limits + 5 s monthly average; Mastercard Stand-In triggers; ~130 ms avg network
+  response) on top of the ISO-8583 0100/0110-vs-0200/0220 split.
+- **Claim wording (per the pass's caveats):** state it as *"to our knowledge, no prior
+  benchmark defines/measures authorization latency as a dimension; the authorize-vs-settle
+  **split** is long-standing in card networks (ISO 8583; Visa/MC response-time **SLAs**),
+  which we cite as conceptual precedent — but card-network limits are reliability **SLAs**,
+  not a comparative cross-rail **benchmark**, so the benchmark *dimension* is new."*
+  Two precision points: (a) it is an absence-of-evidence claim → "no prior we identified",
+  not absolute; (b) define the term carefully — FastPay/Gromit/A402 use
+  "authorization"/"confirmation" with *different* meanings (a reviewer could conflate).
 
 ## Cross-rail conclusion (all six rails)
 
