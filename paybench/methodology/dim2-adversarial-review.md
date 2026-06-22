@@ -543,7 +543,59 @@ most important remaining change.
 
 ## ====== END ROUND-3 PROMPT ======
 
-# Round 3 — recorded <YYYY-MM-DD> (TO FILL after running)
+# Round 3 — recorded 2026-06-22
 
-> Synthesis of `Dim2-Review3-<Model>.md`: FC1–FC4 tallies, any new fatal, and the
-> pre-registerable? verdict that gates founder ratification. **Empty until run.**
+**Panel (4 lineages):** DeepSeek, Gemini, Kimi, Qwen (`dim2-review3-{model}.md`).
+**Headline: PRE-REGISTERABLE**, conditional on a small, bounded fix-list (FR1–FR5). **No new
+category error, no redesign.** The three-round arc converged: round 1 refuted the single race 0–4
+(category error) → round 2 validated the SPLIT 3–1 + a refinement list → round 3 confirms the
+as-built design closes it. The panel also caught **two real bugs the refinements introduced** (good
+— that is the gate working).
+
+## FC tallies
+- **FC1 — exclude Tempo-Charge: YES (4/4)** (Gemini/Kimi add: disclose the exclusion in the *main
+  text*, not only an appendix, and warn devs who need the 1-RTT Charge profile → **FR5**).
+- **FC2 — Challenge-Issuance race B + x402-in-both: YES (4/4).** x402 in both A and B is "correct,
+  not confusing" — two distinct primitives (like read vs write latency); A/B stay firewalled.
+  **Round-1 n=1 problem closed.**
+- **FC3 — hardened-BT + Cox-PH data-triggered fallback: ADEQUATE (4/4).** Endorsed as "mature
+  adaptive analysis, not p-hacking." **Unanimous condition: the fallback trigger thresholds must be
+  *numerically* pre-specified** (tie-rate / censoring-rate / transitivity-violation cutoffs), not
+  prose → **FR1** (the gating fix).
+- **FC4 — RR4/RR5/RR6: sufficient with caveats** — but two lineages found genuine **new fatals**:
+
+## New issues the refinements introduced (both real, both bounded)
+- **Gemini — RR5 mis-applied to Group B (fatal-as-written).** The "fresh balance/state read"
+  work-clause is right for **Group A** (validation) but a *category error* for **Group B**: issuing a
+  402/L402 challenge (macaroon + BOLT11 invoice) is a **stateless crypto** op; forcing a ledger read
+  would break native L402 or inflate latency artificially. → **FR2: restrict RR5 to Group A only.**
+- **Kimi — RR4 first-byte vs RR5 work-scope timing gap (fatal-as-written).** Stopping the clock at
+  *first byte* lets a rail emit early HTTP framing before finishing the mandated sig-verify + state
+  read — gameable. → **FR3: stop the clock at the *last byte of the authorization response payload*
+  (or an explicit end-of-auth marker), not first byte.**
+- **DeepSeek + Qwen — RTT-baseline validity (non-fatal spec fix).** ICMP `/ping` ≠ TCP/TLS app-layer
+  RTT, and the baseline must traverse the **same path + TLS termination** as the auth endpoint. →
+  **FR4: same-path app-layer baseline probe; report raw *and* RTT-corrected; add a TCP/TLS-handshake
+  sensitivity check.**
+
+## Per-lineage verdicts
+DeepSeek "PRE-REGISTERABLE — required fix: numeric fallback thresholds"; Gemini "PRE-REGISTERABLE
+provided RR5 restricted to Group A"; Qwen "Pre-registerable — condition on numeric fallback
+thresholds"; Kimi "NOT pre-registerable until RR4 re-anchored to last-byte — a *single* alignment
+fix." Net: **all four are one-or-two bounded fixes from yes; none ask for redesign.**
+
+## Final refinements (FR — to apply, then ratify)
+- **FR1 (gating, unanimous):** numerically pre-specify the BT→Cox-PH fallback triggers. *Proposed
+  defaults (founder to confirm at pre-reg):* switch if, in any sub-ranking, **tie-rate > 20%** OR
+  **auth-failure/censoring-rate > 5%** for any rail OR **transitivity-cyclic triples > 10%** (or a
+  BT goodness-of-fit LR test p < 0.05).
+- **FR2:** restrict the RR5 work-clause (sig-verify + fresh state read) to **Group A**; Group B is a
+  pure stateless-issuance measurement.
+- **FR3:** re-anchor the RR4 stopwatch to **last byte of the authorization response** (end-of-auth
+  marker), not first byte.
+- **FR4:** RTT baseline = same-path app-layer probe; report **raw + corrected**; TCP/TLS sensitivity.
+- **FR5:** disclose the Tempo-Charge exclusion in the **main text** + a dev-facing note on the
+  Charge (1-RTT) profile.
+
+After FR1–FR5 (mechanical, no contested choices left), the design is **ready for founder
+ratification → pre-registration**. No round 4 is expected.

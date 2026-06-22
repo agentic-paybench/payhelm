@@ -56,13 +56,13 @@ therefore identical and the existing BT/pass@k/Wilson machinery applies unchange
 > decisions: **DR1 SPLIT** (payment-validation vs permission-grant sub-rankings), **DR2 rename**
 > (rail-*primitive* latency + an agent-observed companion metric), **DR3** (Tempo Charge/Session
 > bifurcation, standardised `t=0`, ms k-ladder, AP2 auth-only tag, network normalisation).
-> **Round 2 (2026-06-22) — SPLIT validated 3–1; refinements RR1–RR6 applied.** The confirmatory
-> round endorsed the SPLIT and added a bounded refinement list, now folded in: **RR1** Tempo-Charge
-> excluded from the raced set; **RR2** sub-ranking B is now a real *challenge-issuance* race (fixes
-> the *n*=1 problem); **RR3** hardened-BT (ties + censoring) with a survival-model *fallback*
-> (§2.5/§4); **RR4** client-side RTT-subtracted measurement; **RR5** anti-gaming work-clause; **RR6**
-> visibility + AP2 scope labels (in the tables). Still DRAFT — not ratified; a *short final*
-> confirmation after RR1–RR6 is advisable before founder ratification.
+> **Rounds 2–3 (2026-06-22) — SPLIT validated 3–1, then PRE-REGISTERABLE (4/4).** Round 2 endorsed
+> the SPLIT + a refinement list (**RR1–RR6**, folded in); round 3 confirmed the as-built design is
+> **pre-registerable** conditional on a small fix-list (**FR1–FR5**, also folded in): FR1 numeric
+> fallback triggers, FR2 RR5-clause restricted to Group A, FR3 last-byte stopwatch, FR4 same-path
+> RTT baseline, FR5 main-text Charge disclosure. **Status: ready for founder ratification →
+> pre-registration** (still DRAFT until the founder ratifies). Full arc + verdicts:
+> `dim2-adversarial-review.md`.
 
 **Dimension renamed (DR2): _Rail Authorization-Primitive Latency_ (RAPL)** — provisional;
 alt "Protocol-Accept Latency". The rename is load-bearing: the metric times a rail/protocol
@@ -83,7 +83,9 @@ a validation primitive (no 402 challenge), so only in A.
 **Sub-ranking A — Payment-Validation Authorization** (the primitive *validates a payment/mandate the
 payer has submitted*). Raced within-group → C(5,2)=10 pairs. **Tempo-*Charge* is excluded** from the
 raced set (RR1): its verify+settle are fused at ~500 ms, so racing it would measure settlement, not
-authorization — it is disclosed in an appendix, not ranked.
+authorization. The exclusion is stated **here in the main text** (not buried — FR5), with a
+**developer-facing note**: a one-shot 1-RTT *Charge* flow does **not** inherit the Group-A latency
+profile (Session does); Charge's fused ~500 ms is reported in an appendix, not ranked.
 
 | Member | Validation primitive (validates submitted payment/mandate) | Trust / equivalence class · visibility |
 |---|---|---|
@@ -197,11 +199,16 @@ finality's. All of the following are **pre-registered** before any scored run:
 - **`t = 0` standard.** Start the clock when **the agent issues the ultimate pay command —
   the payment payload constructed and on the wire** (not an empty GET that merely triggers a
   402), uniformly across rails so no rail is advantaged by excluded payload-construction work.
-- **Client-side, RTT-subtracted measurement (RR4 — supersedes "rail edge").** Measure
-  **client `send()` → first byte of response** (what the agent actually observes), and **subtract
-  a baseline `/ping` RTT** to isolate compute from network. Fix a **canonical client geography**,
-  publish the **min-RTT floor per endpoint**, and report a **≥2-topology sensitivity** (co-located
-  + cross-region) — at this timescale a 50 ms probe-placement difference can flip a pair.
+- **Client-side, RTT-subtracted measurement (RR4 + FR3/FR4).** Measure **client `send()` → the
+  *last byte of the authorization response payload*** (an explicit end-of-auth marker) — **not first
+  byte** (FR3): a first-byte stopwatch lets a rail emit early HTTP framing before finishing the
+  mandated work (RR5/FR2) and game the metric. Subtract a **baseline RTT from a same-path,
+  app-layer (TCP/TLS) probe** that traverses the **same route + TLS termination** as the auth
+  endpoint (FR4 — an ICMP `/ping` is invalid here: it neither matches the TLS path nor the
+  handshake cost); **report raw *and* RTT-corrected**, with a TCP/TLS-handshake sensitivity check.
+  Fix a **canonical client geography**, publish the **min-RTT floor per endpoint**, and report a
+  **≥2-topology sensitivity** (co-located + cross-region) — at this timescale a 50 ms probe-placement
+  difference can flip a pair.
 - **Warm vs cold start.** Pre-register **warm-start-only** (discard the first *N* calls: TLS +
   connection-pool warmup) vs cold-inclusive, and report both.
 - **`P(auth ≤ k)` in the right regime (RR3 — *not* "pass@k").** The metric is a latency **CDF**,
@@ -215,14 +222,20 @@ finality's. All of the following are **pre-registered** before any scored run:
   races tie often within clock jitter) and an explicit **censoring / competing-risks rule** for
   authorization *failures* (reject / timeout) — they must enter the model, not be silently dropped.
   Report **Kaplan-Meier survival curves** for description. **Pre-specify a survival model (Cox PH /
-  Aalen-Johansen competing-risks) as the *data-triggered fallback*:** if the real-data checks
-  (transitivity, tie-rate, censoring-rate) show BT is pathological, switch to it. We do **not**
-  swap the engine pre-emptively — that would fragment the one-method-across-dimensions story and
-  re-expose frozen D1 to the same critique without evidence the pathology bites (D1 is mock-fixture,
-  seconds-scale, tie-free; the pathologies are a *live sub-second* phenomenon).
-- **Anti-gaming work-clause (RR5).** The checkpoint must **specify the work that precedes it** —
-  signature verification + a *fresh* balance/state read must be inside the timed response — else a
-  rail games the metric by emitting `/verify` early and deferring the real checks to settle.
+  Aalen-Johansen competing-risks) as the *data-triggered fallback*** with **numeric triggers (FR1 —
+  unanimous round-3 condition; values pre-registered):** switch to it if, in any sub-ranking, the
+  **tie-rate > 20%**, OR any rail's **auth-failure/censoring-rate > 5%**, OR **> 10% of triples are
+  cyclic** (transitivity violation) / a BT goodness-of-fit LR test gives **p < 0.05**. *(Proposed
+  defaults — founder confirms/tunes at pre-reg.)* We do **not** swap the engine pre-emptively — that
+  would fragment the one-method-across-dimensions story and re-expose frozen D1 to the same critique
+  without evidence the pathology bites (D1 is mock-fixture, seconds-scale, tie-free; the pathologies
+  are a *live sub-second* phenomenon).
+- **Anti-gaming work-clause (RR5 — *Group A only*, FR2).** For **Sub-ranking A (validation)** the
+  timed response must include **signature verification + a *fresh* balance/state read**, else a rail
+  games it by emitting `/verify` early and deferring real checks to settle. **This clause does NOT
+  apply to Sub-ranking B** — challenge issuance (e.g. an L402 macaroon + BOLT11 invoice) is a
+  **stateless cryptographic** operation; mandating a ledger read there would break native L402 or
+  inflate latency artificially (round-3 FR2). B is timed as pure issuance work.
 - **Assurance normalisation — `P(settled | accept)`.** Record, per rail, the probability that an
   accept actually leads to settlement (and the assurance depth). A near-instant accept that
   frequently fails downstream is **not** comparable to a slower, near-certain one; without this
@@ -315,10 +328,9 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   *Solana clarified:* the accept is the facilitator `/verify`, **earlier** than
   `confirmed` (~2.27s); `confirmed`/`finalized` are recorded as separate checkpoints
   (§2.1–§2.2). Real numbers withheld pending Q4 calibration.
-- **Q3 — per-rail authorization-point doctrine.** ♻️ **RE-DRAFTED + round-2-confirmed
-  (2026-06-22).** Round 1 refuted the single-race draft 0–4; §2 re-drafted as the SPLIT, which
-  **round 2 validated 3–1**; refinements **RR1–RR6 applied** (§9). **Remaining:** a *short final*
-  cross-lineage confirmation on RR1–RR6, then founder ratification.
+- **Q3 — per-rail authorization-point doctrine.** ✅ **GATE-CLEARED, PRE-REGISTERABLE (2026-06-22).**
+  Three cross-lineage rounds: 0–4 (category error) → 3–1 (SPLIT validated) → **4/4 pre-registerable**.
+  RR1–RR6 + FR1–FR5 applied (§9). **Remaining: founder ratification**, then pre-registration.
 - **Q4 — calibration sourcing.** ⏳ **OPEN.** First-party measurement isolating the
   *authorize* leg from the *settle* leg per rail — invoke the verify primitive
   **explicitly** (research caveat C2); the D1 harnesses already capture
@@ -485,3 +497,23 @@ recommended package (RR3 as hardened-BT-with-survival-fallback). §2 updated. **
 - **RR5 — Anti-gaming work-clause:** verification + a *fresh* balance/state read must be inside the
   timed response.
 - **RR6 — Labels:** per-row `client-visible: yes/no`; AP2 `scope = whole rail` qualifier.
+
+### Round-3 resolutions — FR1–FR5 (final confirmation, 2026-06-22)
+
+Round 3 returned **PRE-REGISTERABLE** (4/4, conditional), caught two real bugs in the refinements,
+and closed the arc (0–4 → 3–1 → pre-registerable). Fixes applied to §2.5/§2:
+
+- **FR1 (gating, unanimous):** the BT→Cox-PH fallback triggers are now **numeric** (tie-rate > 20%,
+  censoring-rate > 5%, cyclic-triples > 10% / LR p < 0.05) — *proposed defaults, founder confirms at
+  pre-reg.*
+- **FR2:** the RR5 work-clause (sig-verify + fresh state read) is **restricted to Group A**; Group B
+  (stateless challenge issuance) is exempt (Gemini caught RR5-on-B would break native L402).
+- **FR3:** the measurement stopwatch stops at the **last byte of the authorization response** (not
+  first byte) — closes Kimi's framing-byte gaming gap.
+- **FR4:** RTT baseline is a **same-path app-layer (TCP/TLS) probe**, **raw + corrected** reported,
+  with a handshake sensitivity check (ICMP `/ping` was invalid).
+- **FR5:** the Tempo-Charge exclusion is stated in the **main text** + a developer note on the
+  Charge (1-RTT) profile.
+
+**Status:** doctrine is **ready for founder ratification → pre-registration**. No round 4 expected.
+Deferred to post-ratification: harness re-alignment (§9 above) and the prior-art novelty re-check.
