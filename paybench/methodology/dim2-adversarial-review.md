@@ -215,9 +215,80 @@ DELIVER:
 
 ---
 
-# Cross-lineage review round — recorded <YYYY-MM-DD> (TO FILL after running)
+# Cross-lineage review round — recorded 2026-06-22
 
-> Synthesis of the external lineages' replies (`Dim2-Review-<Model>.md`), mirroring the dim-1
-> "Cross-LLM review round" format: per-decision vote tally (e.g. "DA2 — keep HOLDS 3–1"), any new
-> HIGH findings, consensus prose fixes (zero-regen), defer-to-calibration items, and the net verdict
-> that gates founder ratification. **Empty until the founder runs the prompt above.**
+**Panel (4 lineages):** DeepSeek, Gemini, Kimi, Qwen (raw replies: `dim2-review-{deepseek,gemini,kimi,qwen}.md`).
+**Headline:** a **hard** result — harder than dimension-1's 3–1 uphold. **DA2-keep is refuted 0–4**, and
+the **L402 authorization pin is a unanimous FATAL category error**. The doctrine is **not
+pre-registerable as drafted**; all four agree it is *salvageable* with a defined set of structural changes.
+
+## Vote tallies
+- **DA1 (facilitator-internal accept) — KEEP holds 3–1.** Keep: DeepSeek, Kimi, Qwen. Client-only: Gemini.
+  *But all four — including the keepers — make it conditional on a **rename** (the dimension measures a
+  rail/protocol **primitive**, not an agent-perceived latency) plus a **companion agent-observed
+  metric**.* So "keep the verify-primitive definition" survives only with an honest reframe.
+- **DA2 (heterogeneous authorization objects) — KEEP FAILS 0–4.** Split: DeepSeek, Kimi, Qwen.
+  Repin-R11: Gemini. **Keep: none.** The per-rail-canonical doctrine that held for finality (D1)
+  **does not transfer** to authorization. Decisive.
+
+## The unanimous FATAL finding — the L402 category error (refutes the §2 R11 pin)
+All four lineages, independently: L402's **macaroon + invoice issuance is the *challenge*** ("here is
+what to pay" — the analogue of x402's `402` `WWW-Authenticate`), **not** an authorization of a
+*submitted* payment (x402 `/verify`). In ISO-8583 terms it is the **merchant's 0100 request, not the
+issuer's 0110 response**. Racing it against x402 `/verify` is *invoice-generation vs payment-validation*
+— a **category error a trust-class label cannot cure** (it names the asymmetry without removing it).
+And **L402 genuinely has no pre-settlement payment-validation checkpoint** (in Lightning, payment *is*
+settlement), so **REPIN-R11 collapses into dimension-1** → **SPLIT is the only coherent option**.
+> This directly refutes the DRAFT §2 R11 row and the §2.3 "named asymmetry cures it" defence.
+
+## New HIGH findings the self-pass under-weighted or missed
+1. **MPP-Tempo bimodality = a ~500× researcher degree of freedom** (garden-of-forking-paths). BT MLE
+   converges on a spurious mean over the Charge(~500 ms)/Session(~0) mixture; Wilson CIs become
+   meaningless. → **Bifurcate into `Tempo-Charge` / `Tempo-Session` pseudo-rails, pre-registered**
+   (all four).
+2. **`t=0` / clock-start is undefined cross-rail** — for x402 it's a signed payload on the wire; for
+   L402 an empty GET that triggers the 402; for AP2 a mandate presentation. → **Standardise `t=0` to
+   "the agent issues the ultimate pay command (payload constructed, on the wire)", measured at the
+   rail edge** (DeepSeek, Gemini, Qwen).
+3. **Network / co-location + warm-vs-cold-start confound** dominate the sub-100 ms regime; AP2's
+   Google anycast endpoints get a systematic ~10–30 ms edge. → **Canonical client geography, published
+   RTT floor per rail, network-adjusted latency, and warm/cold pre-registration** (Qwen NEW-1/NEW-2).
+4. **Deferred-workload / "empty-promise" asymmetry** — a rail "wins" by doing *less* at the measured
+   boundary (AP2 doesn't settle; L402 defers liquidity/routing; x402 defers inclusion). → **Normalise
+   or bound by `P(settled | accept)` / assurance depth** (Kimi, Qwen, DeepSeek).
+5. **pass@k is in the wrong regime** — borrowing finality's seconds k-grid for a 1–200 ms quantity;
+   `k` is load-bearing and can invert the ranking. → **Pre-register a millisecond k-ladder
+   (e.g. {20,50,100,250,500} ms) + a rank-stability heatmap; consider Kaplan-Meier survival curves
+   alongside BT** (Qwen, Kimi, Gemini). *(This effectively answers Q5: the placeholder k-grid is wrong.)*
+6. **Fast-path inversion** — an authorization-only ranking can *invert* agent-experienced total
+   latency (a slow-auth/fast-settle rail beats a fast-auth/slow-settle rail end-to-end). → **Co-primary
+   "agent-experienced total latency" metric, displayed with the auth ranking** (DeepSeek).
+
+## Consensus mandatory changes (before ratification / pre-registration)
+1. **SPLIT** into ontological sub-rankings — *payment-validation authorization* (x402×3, MPP-Tempo,
+   AP2) vs *permission-grant* (L402); BT/pass@k **only within** a sub-ranking. *(DA2: 3–4.)*
+2. **RENAME** to a rail/protocol **authorization-primitive** latency (candidates: "Protocol-Accept
+   Latency", "Rail Authorization Primitive Latency") + a **companion agent-observed column**. *(DA1
+   condition: 4/4.)*
+3. **Bifurcate MPP-Tempo** Charge/Session, intent pre-registered.
+4. **Standardise `t=0` + edge instrumentation + network-adjusted latency + warm/cold** policy.
+5. **Move the k-grid to milliseconds** and pre-register a k-ladder + rank-stability check.
+6. **Tag AP2 auth-only / non-settling** as a *load-bearing* label; consider decomposing its dispatch hop.
+
+## Net verdict
+**Not pre-registerable as drafted.** Unanimous that the dimension is *salvageable* but needs the
+structural changes above — most fundamentally the **SPLIT** (DA2-keep refuted 0–4) and the **L402
+re-pin / category-error fix**, plus the **rename**. The gate did exactly its job: it caught a
+category error before anything was anchored.
+
+## Founder decisions now required (the gate's output)
+- **DR1 — SPLIT vs drop-L402 vs repin.** Adopt ontological sub-rankings (panel 3–4 SPLIT), drop L402
+  from this dimension, or Gemini's minority repin. *Recommend SPLIT.*
+- **DR2 — rename + agent-observed companion metric.** Accept the reframe to a "primitive latency"
+  title + companion column? *(All four require it.)*
+- **DR3 — instrumentation/stats package.** Adopt Tempo bifurcation + `t=0` standard + ms k-ladder +
+  AP2 tagging + network/warm-cold normalisation as a bundle?
+
+Then: revise §2 doctrine accordingly → (optionally) a short second cross-lineage round on the revised
+split design → founder ratification → pre-registration. **Nothing is ratified; the DRAFT §2 doctrine
+and the placeholder fixtures stand pending DR1–DR3.**

@@ -42,6 +42,16 @@ therefore identical and the existing BT/pass@k/Wilson machinery applies unchange
 
 ## 2. Per-rail operationalisation — the reliance-level analogue (PROPOSED, evidence-grounded)
 
+> ⚠️ **SUPERSEDED PENDING REVISION (cross-lineage gate, 2026-06-22).** The §8 gate
+> returned a hard verdict (`dim2-adversarial-review.md`): **DA2-keep refuted 0–4** and the
+> **L402 (R11) pin is a unanimous category error** — the macaroon is the *challenge*, not an
+> authorization of a submitted payment, so it cannot share a single race with the
+> validation-type rails. The doctrine below is **not pre-registerable as written**; it awaits
+> founder decisions **DR1 (SPLIT into payment-validation vs permission-grant sub-rankings)**,
+> **DR2 (rename to a rail-*primitive* latency + agent-observed companion)**, and **DR3
+> (Tempo Charge/Session bifurcation, `t=0` standard, ms k-ladder, AP2 auth-only tag, network
+> normalisation)**. Read §2 as the *pre-gate* draft.
+
 §3 (finality) pins each rail to its **ecosystem-canonical reliance level**. The Day-30
 analogue pins each rail to its **canonical authorization point** — the protocol step at
 which the rail issues the **go-ahead that the payment is *authorized to proceed toward
@@ -197,19 +207,23 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   *Solana clarified:* the accept is the facilitator `/verify`, **earlier** than
   `confirmed` (~2.27s); `confirmed`/`finalized` are recorded as separate checkpoints
   (§2.1–§2.2). Real numbers withheld pending Q4 calibration.
-- **Q3 — per-rail authorization-point doctrine.** ✅ **DRAFTED** in §2 — the pinned
-  authorization point + trust/equivalence-class column + named asymmetries (§2.3),
-  every row evidence-grounded. **Pending the §8 cross-lineage gate** (the open
-  sub-question it must settle: is R11's macaroon *grant* the right race analogue of an
-  x402 *verify*, or should R11 be pinned to a later accepted signal?) **then founder
-  ratification**.
+- **Q3 — per-rail authorization-point doctrine.** ⚠️ **GATE FAILED (2026-06-22) — needs
+  rework.** The §2 draft was drafted then run through the §8 cross-lineage gate, which
+  **refuted DA2-keep 0–4** and flagged the **L402 pin as a category error**
+  (`dim2-adversarial-review.md`). Now superseded by founder decisions **DR1–DR3** (SPLIT;
+  rename to a rail-primitive latency + agent-observed companion; Tempo bifurcation + `t=0`
+  standard + ms k-ladder + AP2 tag + network normalisation). Re-draft §2 after DR1–DR3,
+  then (optionally) a short second gate round, then ratify.
 - **Q4 — calibration sourcing.** ⏳ **OPEN.** First-party measurement isolating the
   *authorize* leg from the *settle* leg per rail — invoke the verify primitive
   **explicitly** (research caveat C2); the D1 harnesses already capture
   confirmed/finalized, so the new work is the **accept timestamp** (validation run,
   credentialed testnet). Plus doc/telemetry spread, mirroring Hybrid (C).
-- **Q5 — k-grid + scoring constants.** ⏳ **OPEN.** Confirm the finer pass@k grid and
-  that the BT smoothing prior (1.0) suits sub-second separations.
+- **Q5 — k-grid + scoring constants.** ⏳ **OPEN, gate-informed.** The cross-lineage panel
+  says the k-grid must move to the **millisecond** regime (finality's seconds grid is wrong
+  for a 1–200 ms quantity), be a **pre-registered k-ladder** (e.g. {20,50,100,250,500} ms)
+  reported with a **rank-stability heatmap**, and that **BT is only valid *within* a
+  sub-ranking** (post-SPLIT) — consider **Kaplan–Meier survival curves** alongside it.
 
 ## 7. What is done vs. what a founder must do
 
