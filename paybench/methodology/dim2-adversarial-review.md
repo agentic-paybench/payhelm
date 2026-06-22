@@ -292,3 +292,91 @@ category error before anything was anchored.
 Then: revise §2 doctrine accordingly → (optionally) a short second cross-lineage round on the revised
 split design → founder ratification → pre-registration. **Nothing is ratified; the DRAFT §2 doctrine
 and the placeholder fixtures stand pending DR1–DR3.**
+
+> **Update 2026-06-22:** DR1 (SPLIT), DR2 (rename + companion), DR3 (bundle) all **adopted**; §2
+> re-drafted as the SPLIT design (commit `19213d50`). Round 2 below confirms the *revised* design.
+
+---
+
+# Cross-lineage review round 2 — the revised SPLIT design (confirmation)
+
+**Gate:** revised §2 (SPLIT / RAPL / DR3) → **round-2 cross-lineage round** → founder ratification →
+pre-registration. **Purpose:** confirm the rework actually *resolves* round-1's fatal findings (the
+L402 category error G2, the agent-DX/facilitator-internal concern G1) **without introducing new
+ones**, and settle the residuals the rework exposed (Tempo-Charge's validity in sub-ranking A; the
+n=1 grant sub-ranking B). This is a *narrower, confirmatory* round, not a fresh teardown.
+
+## What round 2 must pressure-test (residuals the rework exposes)
+1. Does **SPLIT into validation-type (A) vs grant-type (B)** genuinely cure the G2 category error, or
+   just relocate it? Is BT-within-a-sub-ranking now apples-to-apples?
+2. Does the **rename to RAPL (rail-primitive) + the co-primary agent-observed metric** adequately
+   answer G1, or is the dimension still mislabelled?
+3. **Tempo-Charge in sub-ranking A** — round 1 said Charge *fuses verify+settle (~500 ms)* and has no
+   separable accept. Is keeping `Tempo-Charge` as a pseudo-rail in A legitimate, or does it smuggle
+   settlement into an authorization ranking (→ exclude Charge, keep only `Tempo-Session`)?
+4. **Sub-ranking B has one member (L402).** Is "report standalone, not raced" acceptable; or populate
+   B with a real **402-challenge-issuance** race (x402/MPP issuance times); or drop L402 from RAPL?
+5. Does the **DR3 package** (t=0 at the wire/edge, network-adjusted + canonical geography, ms
+   k-ladder + rank-stability, BT-within-group + Kaplan-Meier, `P(settled|accept)`, warm/cold) close
+   the measurement/stats objections — any gap left?
+6. Any **new fatal** the SPLIT introduces.
+
+## ====== ROUND-2 CROSS-LINEAGE PROMPT — paste verbatim to each lineage ======
+
+> Paste to each model (save replies as `Dim2-Review2-<Model>.md`). Self-contained.
+
+```
+You are an adversarial methodology reviewer (CRFM/HELM maintainer + statistician + payments expert).
+This is ROUND 2 — a CONFIRMATION review of a REVISED benchmark dimension. In round 1 you (a 4-model
+panel) refuted the original design 0–4 for a category error. The authors revised it. Your job: decide
+whether the revision actually fixes the problem WITHOUT introducing new ones, settle two residuals,
+and give a verdict. Be concise; do not re-litigate settled points.
+
+WHAT THE DIMENSION MEASURES. "Rail Authorization-Primitive Latency" (RAPL): the time from an agent
+issuing its pay command (payload constructed and on the wire) to the rail's authorization-primitive
+decision — distinct from settlement finality (a separate, frozen dimension). It is named a
+"primitive" latency (NOT agent-perceived) and is reported with a co-primary AGENT-OBSERVED
+total-latency metric. Six rails: x402-on-Base, x402-on-Stellar, x402-on-Solana, MPP-on-Tempo,
+MPP-on-Spark-Lightning (L402), Google AP2.
+
+ROUND-1 VERDICT (already accepted): racing all six under one ranking was a CATEGORY ERROR — the
+authorization "accept" is a different KIND of object per rail (x402 /verify VALIDATES a submitted
+payment; L402's macaroon GRANTS permission to pay, issued before the payer commits; AP2 verifies a
+MANDATE). L402 has no pre-settlement payment-validation point (in Lightning, payment IS settlement).
+
+THE REVISION (what you are reviewing):
+1. SPLIT into two sub-rankings, raced/scored only WITHIN each:
+   - A "Payment-Validation": x402-Base, x402-Stellar, x402-Solana, Tempo-Charge, Tempo-Session,
+     AP2 — all validate something the payer submitted. (MPP-on-Tempo is bifurcated into two
+     pseudo-rails: Charge = one-time, Session = voucher.)
+   - B "Permission-Grant": L402 only (macaroon + invoice issuance). Because B has ONE member it is
+     reported as a standalone number, NOT raced.
+2. RENAME to RAPL + a co-primary agent-observed total-latency metric (auth + accept→settle gap).
+3. AP2 stays in A but tagged "auth-only / no funds-check", with its external dispatch hop DECOMPOSED
+   OUT so A races the comparable mandate-verify+credential-issuance step, not a party-to-party hop.
+4. Measurement/stats package: t=0 = payload-on-the-wire measured at the rail EDGE; network-adjusted
+   latency with a canonical client geography + published RTT floor; warm-vs-cold pre-registered;
+   pass@k on a MILLISECOND k-ladder ({20,50,100,250,500} ms) with a rank-stability heatmap;
+   Bradley-Terry only WITHIN a sub-ranking + Kaplan-Meier survival curves; an assurance covariate
+   P(settled | accept) so a rail can't win by doing less; lower-is-better.
+
+ADJUDICATE (pick an option each, with brief reasoning):
+- RC1 (category error fixed?): does SPLIT A-vs-B genuinely cure it — (a) YES, resolved; (b) NO, the
+  problem persists or moves; (c) YES but only with a further change you specify.
+- RC2 (Tempo-Charge): Charge fuses verify+settle (~500 ms, no separable accept). (a) KEEP Tempo-Charge
+  in A as-is; (b) EXCLUDE Charge, keep only Tempo-Session in A; (c) keep but flag/asterisk as
+  settlement-contaminated.
+- RC3 (the n=1 grant sub-ranking B): (a) report L402 standalone (not raced); (b) POPULATE B with a
+  402-challenge-issuance race across the other rails too; (c) DROP L402 from RAPL entirely.
+
+DELIVER: (1) does the revision fix round-1's category error — yes/no/conditional, one paragraph;
+(2) votes on RC1/RC2/RC3 with reasons; (3) any NEW fatal the SPLIT introduces; (4) one-line verdict:
+is the REVISED design pre-registerable, with what minimal remaining changes?
+```
+
+## ====== END ROUND-2 PROMPT ======
+
+# Round 2 — recorded <YYYY-MM-DD> (TO FILL after running)
+
+> Synthesis of `Dim2-Review2-<Model>.md`: RC1/RC2/RC3 vote tallies, whether the category error is
+> confirmed-fixed, any new fatal, and the verdict that gates ratification. **Empty until run.**
