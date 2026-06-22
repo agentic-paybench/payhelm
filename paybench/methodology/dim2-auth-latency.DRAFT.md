@@ -226,13 +226,19 @@ signed tag). See `SESSION-1-HANDOFF.md`.
 
 ## 8. Planned validation gate — cross-lineage adversarial review (PRE-PRE-REGISTRATION)
 
+> **Drafted and ready to run:** `dim2-adversarial-review.md` carries the self-pass
+> (severity-ranked findings G1–G7, the two contested decisions DA1/DA2, and the
+> "what to pressure-test" list) **plus the self-contained cross-lineage prompt** for
+> the founder to paste to each external lineage. The synthesis section there is empty,
+> awaiting the run.
+
 **This dimension must pass a cross-lineage adversarial review before
 pre-registration**, mirroring the gate dimension-1 cleared — the methodology
 records a *four-model cross-LLM adversarial review (2026-06-06) that upheld the
 finality doctrine 3–1* on the Solana `confirmed`-vs-`finalized` question
 (artefacts: `Pre-reg-{Deepseek,Gemini,Kimi,Qwen}`, `pre-reg-adversarial-review.md`).
-Dimension 2 has *more* contestable surface than dimension 1, so the gate is not
-optional.
+Dimension 2 has *more* contestable surface than dimension 1 (G1 facilitator-internal
+accept, G2 heterogeneous authorization objects), so the gate is not optional.
 
 **Position in the sequence (§7):** after the doctrine is drafted and (ideally)
 after the validation test run that confirms A1's empirical claim, **before** the
