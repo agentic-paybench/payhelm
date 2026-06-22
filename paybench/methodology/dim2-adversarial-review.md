@@ -453,3 +453,97 @@ Gemini "reject with major revisions — purge pass@k name, SPLIT". The disagreem
 
 These are concrete and bounded — implementable without another full teardown. A **short final
 confirmation** (or founder judgment) can close it after RR1–RR6 land.
+
+> **Update 2026-06-22:** RR1–RR6 adopted (RR3 as hardened-BT-with-survival-fallback) and folded
+> into §2 (commit `298ecfeb`). Round 3 below is the final confirmation on the as-built design.
+
+---
+
+# Cross-lineage review round 3 — final confirmation (RR1–RR6 as built)
+
+**Gate:** §2 with RR1–RR6 applied → **round-3 confirmation** → founder ratification → pre-registration.
+**Purpose:** a *short* sign-off, not a teardown. Round 1 found a category error (0–4); round 2
+validated the SPLIT (3–1) + a refinement list; this round asks only **"do RR1–RR6 actually close
+it — is the as-built design pre-registerable?"** and catches any residual fatal the refinements
+introduced.
+
+## What round 3 must confirm
+1. **FC1** — does **excluding Tempo-Charge** (Session-only in A; Charge → appendix) remove the
+   settlement-contamination, without cherry-picking the fast path misleadingly?
+2. **FC2** — does the **Challenge-Issuance race (B)** across the 402-issuers both *fix the n=1
+   problem* and *preserve the category-error fix* (A and B never compared), or does putting x402 in
+   both A and B confuse readers?
+3. **FC3** — is **hardened-BT (Davidson ties + censoring/competing-risks) with a Cox-PH
+   *data-triggered fallback*** an adequate answer to the statistics objection, or does correctness
+   require the survival model **up front** (not as a fallback)?
+4. **FC4** — are RR4 (client-side, RTT-subtracted), RR5 (anti-gaming work-clause), RR6 (visibility +
+   AP2 scope labels) sufficient, or is anything still gameable / confounded?
+5. Any **new fatal** the refinements introduced; and the **pre-registerable? verdict**.
+
+## ====== ROUND-3 CONFIRMATION PROMPT — paste verbatim to each lineage ======
+
+> Paste to each model (save replies as `Dim2-Review3-<Model>.md`). Self-contained. This is a SHORT
+> confirmation round — do not re-open settled points; focus on whether the fixes close the issues.
+
+```
+You are an adversarial methodology reviewer (CRFM/HELM maintainer + statistician + payments expert).
+This is ROUND 3, a FINAL CONFIRMATION of a benchmark dimension you have reviewed twice. Be concise.
+Do NOT re-litigate settled points — only judge whether the applied fixes close the issues and whether
+the as-built design is pre-registerable.
+
+HISTORY (settled):
+- Round 1: racing all six rails under one "authorization latency" ranking was a CATEGORY ERROR
+  (refuted 0–4) — the rails' authorization checkpoints are different KINDS of object.
+- Round 2: the authors SPLIT the dimension; you validated the split 3–1 and asked for a refinement
+  list. They have now applied it.
+
+THE AS-BUILT DESIGN (what you are confirming):
+- Name: "Rail Authorization-Primitive Latency" (RAPL) — a rail/protocol primitive, NOT agent-perceived;
+  reported with a co-primary agent-observed total-latency metric. Lower-is-better.
+- SPLIT into two within-group races (A and B are NEVER compared to each other):
+  * A "Payment-Validation" (validates a payment/mandate the payer submitted): x402-Base,
+    x402-Stellar, x402-Solana, Tempo-Session, AP2. C(5,2)=10 pairs. [RR1] MPP-on-Tempo "Charge"
+    intent is EXCLUDED from the race (its verify+settle are fused ~500ms = settlement) and only
+    disclosed in an appendix.
+  * B "Challenge-Issuance" (issues a payable 402 challenge before the payer commits): x402-Base,
+    x402-Stellar, x402-Solana, MPP-on-Tempo, MPP-on-Spark-Lightning/L402 (macaroon + BOLT11 invoice).
+    C(5,2)=10 pairs. [RR2] This fixes round-1's n=1 grant-league problem.
+  * x402 rails appear in BOTH A and B (two distinct primitives); AP2 in A only (no 402 challenge);
+    L402 in B only (it has no pre-settlement validation point — payment IS settlement in Lightning).
+- Statistics [RR3]: Bradley-Terry kept as the within-sub-ranking comparative spine (consistent with
+  the project's frozen dimension-1), HARDENED with a Davidson ties term + an explicit
+  censoring/competing-risks rule for authorization failures (reject/timeout). The "pass@k" metric is
+  renamed P(auth <= k) (it is a latency CDF). A millisecond k-ladder ({20,50,100,250,500} ms) with a
+  rank-stability heatmap + variance-aware power analysis; median/P95/P99 + Kaplan-Meier curves
+  reported. A Cox-PH / competing-risks SURVIVAL MODEL is pre-specified as a DATA-TRIGGERED FALLBACK:
+  adopted only if real-data checks (transitivity, tie-rate, censoring-rate) show BT is pathological.
+  (Rationale for fallback-not-default: swapping the engine pre-emptively would fragment the
+  one-method-across-dimensions story and re-expose the frozen dimension-1 to the same critique
+  without evidence the pathology bites — D1 is mock-fixture, seconds-scale, tie-free.)
+- Measurement [RR4]: client-side send()->first-byte, MINUS a baseline /ping RTT to isolate compute;
+  canonical client geography + published RTT floor + >=2-topology sensitivity.
+- Anti-gaming [RR5]: the timed checkpoint MUST include signature verification + a fresh balance/state
+  read (so a rail cannot game it by emitting /verify early and deferring real checks).
+- Labels [RR6]: every row tagged client-visible: yes/no; AP2 tagged scope = whole-rail (its number
+  is its entire scope; other rails' is the authorization slice of a larger flow).
+
+CONFIRM (one short answer + reasoning each):
+- FC1: Does excluding Tempo-Charge (Session-only in A) remove the settlement-contamination without
+  misleadingly cherry-picking the fast path? yes / no / yes-with-caveat.
+- FC2: Does the Challenge-Issuance race (B) fix the n=1 problem while preserving the category-error
+  fix (A and B never compared)? Is x402-in-both-A-and-B clear or confusing? yes / no / yes-with-caveat.
+- FC3: Is hardened-BT (Davidson + censoring) with a Cox-PH DATA-TRIGGERED FALLBACK adequate, or must
+  the survival model be the PRIMARY method up front? adequate / survival-required-now.
+- FC4: Are RR4/RR5/RR6 sufficient, or is something still gameable/confounded?
+
+DELIVER: (1) yes/no per FC1–FC4 with one or two sentences each; (2) any NEW fatal the refinements
+introduced; (3) one-line verdict: is the as-built design PRE-REGISTERABLE — and if not, the single
+most important remaining change.
+```
+
+## ====== END ROUND-3 PROMPT ======
+
+# Round 3 — recorded <YYYY-MM-DD> (TO FILL after running)
+
+> Synthesis of `Dim2-Review3-<Model>.md`: FC1–FC4 tallies, any new fatal, and the
+> pre-registerable? verdict that gates founder ratification. **Empty until run.**
