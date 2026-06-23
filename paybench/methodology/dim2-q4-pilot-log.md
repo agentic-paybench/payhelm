@@ -66,3 +66,51 @@ harness (`poc/rail-ap2/measure_rapl_ap2.py`) **replayed through `_verify_payment
 
 **Caveats:** mock-issuance excluded (above); pin the AP2 repo commit; **review** (independent
 measurement review) like Base/Solana before calibration write-back. Pilot data only — not the scored set.
+
+## R10 MPP-on-Tempo — 2026-06-23 (run-validated ✅, Sub-ranking B only)
+
+First live run of the R10 B harness (`rail-tempo-mpp/src/measure-rapl.ts`, branch
+`dim2-rapl-instrumentation`). Server booted on :8404 (Moderato 42431, keyless-funded seller); unpaid
+`GET /data` → 402. **Gate passed:** harness_error 0, socket connects **2** (keep-alive pooled),
+min-RTT floor 1.68 ms, 30/30 `ok`.
+
+| Sub-ranking | primitive | n | median (raw) | σ_log | corrected median |
+|---|---|---|---|---|---|
+| **B — Challenge-Issuance** | `GET /data` → 402 (MPP charge challenge) | 30 | **0.00295 s (2.95 ms)** | 0.14 | 0.00127 s |
+
+- **Outcomes:** ok 30 / timeout 0 / harness_error 0. **FR1 censoring-rate = 0%.**
+- **A (Tempo-Session) not run** — adapter not built (deferred founder decision). Tempo-Charge fuses
+  verify+settle → excluded from A (RR1).
+- **Finding:** Tempo's B is a **local template emit** (~3 ms, no node hop) — ≈ x402-Base's local 402.
+  Confirms Base's B regime, and sets up the contrast with R11 below.
+
+## R11 MPP-on-Lightning (Spark) — 2026-06-23 (run-validated ✅, Sub-ranking B only)
+
+First live run of the R11 B harness (`rail-lightning-mpp/src/measure-rapl.ts`). Server on :8411 (Spark
+regtest); unpaid `GET /data` → 402 carrying a freshly-minted BOLT11 invoice. **Gate passed:**
+harness_error 0, socket connects **2**, min-RTT floor 1.20 ms, 15/15 `ok`.
+
+| Sub-ranking | primitive | n | median (raw, warm) | σ_log | corrected median |
+|---|---|---|---|---|---|
+| **B — Challenge-Issuance** | `GET /data` → 402 (mint BOLT11 invoice via Spark) | 15 | **1.252 s** | 0.12 | 1.251 s |
+
+- **Outcomes:** ok 15 / timeout 0 / harness_error 0. **FR1 censoring-rate = 0%.** (n=15 for a quick
+  instrument-validate; each trial pays a real Spark round-trip. Scale n later for calibration.)
+- **Cold-start:** the very first unpaid `/data` took **10.2 s** (lazy Spark wallet init) — absorbed by
+  the harness warmup; the warm steady-state is ~1.25 s and tight (σ_log 0.12).
+- **min-RTT floor (1.2 ms) is negligible vs the signal** — the correction removes only the localhost
+  HTTP hop, NOT the intrinsic invoice-mint, exactly as designed (no over-correction).
+
+### Headline — heterogeneous-B is now PROVEN with data (founder doctrine question)
+Within Sub-ranking B: **Tempo 2.95 ms vs Lightning 1252 ms — a ~420× gap** for the *same* "issue a
+payable challenge" primitive. This is not noise and not a bug: Tempo emits a local 402 template, while
+Lightning must **mint a BOLT11 invoice** (a Spark/LND round-trip). Both are the genuine
+challenge-issuance work for their rail (RR5/FR2 work-clause), so neither number is "wrong."
+
+**But it forces a doctrine decision** (parallel to the original A/B category-error the cross-lineage gate
+caught): is **Sub-ranking B a single valid race with per-rail disclosure** (work-clause owns the gap —
+"issuing a Lightning challenge genuinely costs an invoice-mint"), **or does B need a further split**
+(local-issuance vs backing-service-issuance) so we don't rank "has a local 402" against "must mint an
+invoice"? **Recommendation:** keep B as one race but **mandate per-rail disclosure of the issuance
+work-type** (local-emit vs node-round-trip) in §2.5, and report the backing-service hop as a diagnostic
+(as for Base's A→RPC). Surface to founder before pre-reg — this is a ratify-level call, not autonomous.
