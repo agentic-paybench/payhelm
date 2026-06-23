@@ -94,7 +94,18 @@ summaries for **A (accept)** and **B (challenge)**. Samples → `samples/R1-x402
   hop*, which is the real authorization work. (Same measurement structure, different work.)
 - **Tempo/Lightning (R10/R11):** **MPP**, not x402 — the server is a `route()` handler, the accept is
   the MPP `Verify` (Tempo, Session-only) / the macaroon+invoice issuance (L402 = **B only**). Distinct
-  shape (see §"Per-rail status").
+  shape (see §"Per-rail status"). Both POC servers use `mppx.charge()`, which **fuses verify+settle**
+  (Charge intent) → **no separable accept → excluded from Sub-ranking A** (RR1). Tempo *could* join A
+  via an unbuilt **Tempo-Session** flow (deferred, founder decision); Lightning is **B-only by
+  methodology** so there's no A to build. Both B harnesses are built (fixed shape) and type-check.
+- **Finding — B is not always local (heterogeneous challenge-issuance work).** x402's 402 is a local
+  template emit (~3 ms, Base R1). But **L402/Lightning's B includes a Spark/LND round-trip to GENERATE
+  the BOLT11 invoice** — so its challenge-issuance is **node-RTT-bound**, the B-side analogue of Base's
+  RPC-dominated A (R1 pilot). Implication: within Sub-ranking B, rails are NOT all measuring the same
+  *kind* of work — disclose per-rail what the issuance entails (local template vs invoice-generation
+  hop), and note the min-RTT floor removes the **localhost HTTP** hop but **not** the intrinsic
+  server→node invoice hop (it's part of the RR5/FR2 work-clause). Flag for founder review alongside the
+  R1 server→RPC finding — both push toward §2.5 disclosure of the *backing-service hop* per rail.
 
 ## 2. Sanity checks BEFORE trusting any numbers (the runtime-check list)
 On the **first** run of each rail, verify (these could not be exercised at draft time):
@@ -141,5 +152,5 @@ Per rail, per sub-ranking (A, B):
 | **R9 x402-Solana** | `rail-solana-x402` (TS, Express, **hosted** facilitator) | ✅ built + reviewed + fixed → first-run-validate | `npx ts-node src/server.ts` + `src/measure-rapl.ts` (devnet `BUYER_PRIVATE_KEY`) |
 | **R2 x402-Stellar** | `rail-stellar-x402` (TS, Express, OZ hosted facilitator) | ✅ built (fixed shape) → first-run-validate | `npx ts-node src/server.ts` + `src/measure-rapl.ts` (`STELLAR_BUYER_SECRET` + `OZ_X402_TESTNET_KEY`) |
 | **R10 MPP-Tempo** | `rail-tempo-mpp` (TS, `route()` handler) | ✅ **B built** (fixed shape) → first-run-validate · ⏳ A=Session deferred | `npx ts-node src/server.ts` + `src/measure-rapl.ts` — **B only** (unpaid `GET /data`→402, no signer). **Charge excluded from A** (verify+settle fused); A=**Tempo-Session** needs an unbuilt mppx session flow (founder decision). ESM/nodenext |
-| **R11 MPP-Spark-Lightning** | `rail-lightning-mpp` (TS, `route()`) | ⏳ rail-specific | **B only** (macaroon+invoice issuance); `rail-lightning-l402/` is empty |
+| **R11 MPP-Spark-Lightning** | `rail-lightning-mpp` (TS, `route()`) | ✅ **B built** (fixed shape) → first-run-validate (needs Spark regtest wallet up) | `npx tsx src/server.ts` + `src/measure-rapl.ts` — **B only** (unpaid `GET /data`→402 = BOLT11 invoice + macaroon issuance; no buyer wallet). **B-only by methodology** (no A). Discloses an intrinsic Spark invoice-generation hop (cf. x402's local 402). ESM/nodenext. (NB `rail-lightning-l402/` is a separate older Python "Rail 3" L402, not this dim-2 rail) |
 | **R6 GCP+AP2** | `poc/rail-ap2` (Python, capture-replay) | ✅ **done + run-validated** (~1.68 ms, n=30) → review | `measure_rapl_ap2.py` replays a captured PaymentMandate SD-JWT through `_verify_payment_mandate` n× (LLM-free). **A only** (in-process; no B, no RTT floor). Mock issuance excluded+disclosed; pin AP2 commit. See `dim2-q4-pilot-log.md` R6 |
