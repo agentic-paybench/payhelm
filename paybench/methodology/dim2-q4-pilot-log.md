@@ -38,3 +38,31 @@ Implications for the methodology:
 
 **Status:** Base reference **run-validated**; safe to fan out the (review-fixed) pattern. Real
 calibration write-back deferred (needs ≥2 topology + the other rails + FR1 confirmation).
+
+## R6 GCP-AP2 — 2026-06-23 (run-validated ✅, via capture-replay)
+
+First first-party AP2 measurement. The interactive cards run (Google's AP2 reference impl, founder
+drove a purchase with the Gemini key) produced a **signed PaymentMandate SD-JWT**, which the LLM-free
+harness (`poc/rail-ap2/measure_rapl_ap2.py`) **replayed through `_verify_payment_mandate` n=30**.
+
+| Sub-ranking | primitive | n | median (raw) | σ_log |
+|---|---|---|---|---|
+| **A — Payment-Validation** | PaymentMandate SD-JWT verify (ES256) | 30 | **0.00168 s (1.68 ms)** | 0.14 |
+
+- **Outcomes:** ok 30 / rejected 0 / harness_error 0. **FR1 censoring-rate = 0%.**
+- **AP2 is in-process** (no HTTP, no chain RPC, no settlement) → **A only** (no Sub-ranking B / no 402
+  challenge), **no RTT floor**, **dispatch decomposed out**, **scope = whole rail**.
+
+### Findings from the live run
+- The cards flow **failed at the MPP/dispatch step on a Gemini free-tier 429** (15 req/min), **not**
+  the OTP (`123` was correct). Dispatch is the decomposed-out hop, so this did not block the capture —
+  the signed mandate is produced upstream of it.
+- **The timed primitive is the mandate *verify* (real local ES256 crypto), not verify→issue.** The
+  credential-issuance lookup (`account_manager`) needs the live CP's per-process state (absent in a
+  fresh harness) and is a negligible mock dict lookup → **excluded + disclosed** (like the dispatch
+  hop). The `checkout_jwt_hash` nonce isn't exposed in the trace; the no-nonce verify path is the one
+  the live flow ran. **So AP2's number is authorization-LOGIC latency** (ES256 SD-JWT verification),
+  excluding any production issuer round-trip — disclose this, alongside the whole-scope tag.
+
+**Caveats:** mock-issuance excluded (above); pin the AP2 repo commit; **review** (independent
+measurement review) like Base/Solana before calibration write-back. Pilot data only — not the scored set.
