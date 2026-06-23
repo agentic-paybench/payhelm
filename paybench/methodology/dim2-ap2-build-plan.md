@@ -67,3 +67,37 @@ is needed to stand the scenario up, but the **timed path stays local + LLM-free.
 **Build it.** Modest effort, first-party, closes the R6 gap properly before pre-registration. The one
 non-obvious thing — instrument the CP functions directly so Gemini isn't in the timed path — is the
 make-or-break measurement decision.
+
+---
+
+## Grounded findings (repo read 2026-06-23 — refines the effort estimate)
+
+Repo cloned to `~/dev/github/google-agentic-commerce/AP2`. The verify→issue is **more than two
+function calls** — the timed loop needs a *valid signed mandate + matching keys* as input:
+
+- **Verify** = `credentials_provider_agent/tools.py::_verify_payment_mandate(sdjwt, expected_aud,
+  expected_nonce)` — real SD-JWT crypto (`MandateClient().verify(...)`). It requires:
+  - a valid, **signed `PaymentMandate` SD-JWT** string,
+  - the **agent-provider public key** (`AGENT_PROVIDER_PUBLIC_KEY_PATH`), and
+  - the **trusted root cert** `certs/issuer_cert_sdjwt.pem`.
+- **Issue** = the `account_manager` credential/token lookup behind
+  `handle_create_payment_credential_token` (mock, in-memory).
+- The signed SD-JWT is produced by the **Shopping Agent** (`shopping_agent/tools.py::create_payment_mandate`,
+  Gemini-driven); **certs/keys are generated into a temp dir at run time** by the scenario's `run.sh`.
+
+**→ This is a real multi-step sub-project, not an x402-style "add 2 routes."** The recommended LLM-free
+design is **capture-and-replay**:
+1. **Setup:** `uv` install the python sample; run the human-present/cards scenario **once** (with the
+   Google AI Studio key) to (a) generate the certs/keys and (b) emit a **real, valid `PaymentMandate`
+   SD-JWT** (from the trace / `watch.log`, or by calling `create_payment_mandate` directly with the
+   run's signing key).
+2. **Capture** that SD-JWT + the cert + the agent-provider pubkey + the `account_manager` state.
+3. **Time (LLM-free):** a harness that calls `_verify_payment_mandate(captured_sdjwt)` **+** the
+   `account_manager` token mint, **N trials**, in the Base/Solana review-fixed shape (warm-up,
+   raw-primary, outcome taxonomy ok/rejected/timeout/harness_error). Gemini is used **once** (step 1),
+   never in the timed loop. The MPP dispatch (:8003) is never invoked → decomposed out.
+
+**Effort:** materially bigger than the x402 rails (the SD-JWT capture + certs/env setup is the work;
+the timing harness itself is small). Needs the AP2 `uv` env + the one-time Gemini-driven capture; the
+timed primitive is then pure local crypto + mock lookup. **First-run-validate + review like the other
+rails.** Pin the AP2 repo commit (terminology drift).
