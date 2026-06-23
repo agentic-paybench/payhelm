@@ -138,8 +138,8 @@ Per rail, per sub-ranking (A, B):
 | Rail | Adapter | Instrumentation | Notes |
 |---|---|---|---|
 | **R1 x402-Base** | `rail-x402-base` (Python) | ✅ done + review-fixed | the reference |
-| **R9 x402-Solana** | `rail-solana-x402` (TS, Express, **hosted** facilitator) | ⏳ to fan out | clean mirror — add `/rapl/verify` proxy + `/rapl/rtt` + `measure_rapl.ts` |
-| **R2 x402-Stellar** | `rail-stellar-x402` (TS, Express, hosted) | ⏳ to fan out | mirrors Solana |
+| **R9 x402-Solana** | `rail-solana-x402` (TS, Express, **hosted** facilitator) | ✅ built + reviewed + fixed → first-run-validate | `npx ts-node src/server.ts` + `src/measure-rapl.ts` (devnet `BUYER_PRIVATE_KEY`) |
+| **R2 x402-Stellar** | `rail-stellar-x402` (TS, Express, OZ hosted facilitator) | ✅ built (fixed shape) → first-run-validate | `npx ts-node src/server.ts` + `src/measure-rapl.ts` (`STELLAR_BUYER_SECRET` + `OZ_X402_TESTNET_KEY`) |
 | **R10 MPP-Tempo** | `rail-tempo-mpp` (TS, `route()` handler) | ⏳ rail-specific | **Charge excluded**; Session-only accept; non-Express shape |
 | **R11 MPP-Spark-Lightning** | `rail-lightning-mpp` (TS, `route()`) | ⏳ rail-specific | **B only** (macaroon+invoice issuance); `rail-lightning-l402/` is empty |
 | **R6 GCP+AP2** | none yet — **buildable locally** | ⏳ build per plan | `dim2-ap2-build-plan.md`: instrument Google's AP2 reference impl (Credentials Provider verify→issue, LLM-free), dispatch decomposed out |
