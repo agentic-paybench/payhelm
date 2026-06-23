@@ -170,3 +170,25 @@ timeline.
 | Signed git tag | **DONE — landed 2026-06-14** | `paybench-prereg-v1.2` (tag obj `225c26a8…`) on `aeab0640`; signer `mblake@everydayai.link`, key `887BEAFA…` on keys.openpgp.org |
 | OSF DOI | in progress | DOI: — (register under embargo to 2026-07-17, early-release permitted) |
 | arXiv | pending | paper drafted (`paper/payhelm-methods.tex`); category cs.CR; needs endorsement |
+
+## Provenance posture (what the anchors prove — and what they do not)
+
+The anchors above (OpenTimestamps / cosign→Rekor / signed tag / OSF DOI / arXiv) prove **precedence,
+integrity, and signer-identity** — **not authorship or originality** of the cryptographic primitives.
+Concede the commodity ground explicitly and point the precedence at the real moat:
+
+> JCS (RFC 8785), SHA-256 (FIPS 180-4), cosign, and OpenTimestamps are commodity public standards used
+> here as-is and claimed by no one; PayBench's original contribution is the per-rail-canonical
+> reliance-level finality doctrine (D1) and the calibrated mock-fixture methodology (BT-MLE with a
+> symmetric smoothing prior + pass@k as P(finality ≤ k) + Wilson lower-bound CIs), for which this
+> pre-registration establishes precedence.
+
+This inoculates against an AlgoVoi-style ownership claim over the JCS/SHA-256 primitives (fails on its
+face) and names what the anchors *do* defend. **Never** frame the canonicalisation / content-addressing
+technique as the contribution. *Residual caveat:* precedence loses to an earlier timestamp — if the
+contribution were ever (wrongly) framed as the *JCS-over-finality-fixtures technique* and the
+`draft-hopley-x402-canonicalisation-jcs` / `-settlement-attestation` drafts predate the v1.2 hash
+(`a5f6feb4…`, 2026-06-06), PayBench would be the later filer; mitigation is the framing above (optionally
+check the datatracker first-revision dates). Mirrored into the arXiv methods paper
+(`paper/payhelm-methods.tex`, Pre-registration §). Source: Session-5 VCX deep-read; ADR-005; Decisions
+DB 2026-06-22. **The frozen v1.2 manifest set is untouched** (editing it would break the `a5f6feb4…` anchors).

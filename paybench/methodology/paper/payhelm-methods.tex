@@ -240,6 +240,15 @@ written into the report). \textbf{This verification hash certifies pipeline repr
 real-rail ranking result.} Only version~1 of this preprint is the canonical frozen artefact; later
 revisions, if any, are post-freeze errata.
 
+\paragraph{Provenance posture.} The cryptographic primitives used here---JCS (RFC~8785), SHA-256
+(FIPS~180-4), cosign, and OpenTimestamps---are commodity public standards, used as-is and claimed by no
+one; the anchors establish \emph{precedence, integrity, and signer-identity}, not authorship of those
+primitives. PayBench's original contribution is the per-rail-canonical reliance-level finality doctrine
+(\S\ref{sec:finality}) and the calibrated mock-fixture methodology (Bradley--Terry MLE with a symmetric
+smoothing prior, $\mathrm{pass}@k = P(\text{finality} \le k)$, and Wilson lower-bound intervals), for
+which this pre-registration establishes precedence. We do not frame the canonicalisation or
+content-addressing technique as the contribution.
+
 \section{Related work}
 Adjacent efforts touch this ground---registries of payment-capable services, multi-rail routing and
 analytics layers, and service-discovery surfaces. PayBench's distinct contribution is
