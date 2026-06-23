@@ -114,3 +114,67 @@ caught): is **Sub-ranking B a single valid race with per-rail disclosure** (work
 invoice"? **Recommendation:** keep B as one race but **mandate per-rail disclosure of the issuance
 work-type** (local-emit vs node-round-trip) in §2.5, and report the backing-service hop as a diagnostic
 (as for Base's A→RPC). Surface to founder before pre-reg — this is a ratify-level call, not autonomous.
+
+## R2 x402-Stellar — 2026-06-23 (run-validated ✅, Sub-ranking A + B)
+
+First live run of the R2 harness (`rail-stellar-x402/src/measure-rapl.ts`). Server :8403 (testnet);
+buyer pre-checked funded via Horizon (USDC 19.97, trustline to the testnet issuer). **Gate passed:**
+harness_error 0, **rejected 0** (funding sufficient — OZ `/verify` accepted), socket connects 2,
+min-RTT floor 1.23 ms, 30/30 `ok`.
+
+| Sub-ranking | primitive | n | median (raw) | σ_log | corrected median |
+|---|---|---|---|---|---|
+| **A — Payment-Validation** | OZ hosted facilitator `/verify` accept | 30 | **0.464 s** | 0.089 | 0.463 s |
+| **B — Challenge-Issuance** | `GET /data` → 402 | 30 | **0.0022 s (2.2 ms)** | 0.052 | 0.00097 s |
+
+- **Outcomes:** ok 30 / rejected 0 / timeout 0 / harness_error 0. **FR1 censoring-rate = 0%.**
+- A is the **OZ hosted-facilitator network round-trip** (the real authorization work for a hosted-
+  facilitator rail); B is a **local 402 emit** (joins Base/Tempo ~2–3 ms).
+
+## R9 x402-Solana — 2026-06-23 (run-validated ✅, Sub-ranking A + B)
+
+First live run of the R9 harness (`rail-solana-x402/src/measure-rapl.ts`). Server :3402 (devnet); free
+`x402.org/facilitator` (no key). **Gate passed:** harness_error 0, **rejected 0** (buyer devnet USDC
+sufficient), 30/30 `ok`. Minor: socket connects **3** (one recycle mid-burst; ≪ trial count, so pooling
+held — acceptable, not the broken regime).
+
+| Sub-ranking | primitive | n | median (raw) | σ_log | corrected median |
+|---|---|---|---|---|---|
+| **A — Payment-Validation** | x402.org facilitator `/verify` accept | 30 | **0.400 s** | 0.131 | 0.398 s |
+| **B — Challenge-Issuance** | `GET /data` → 402 | 30 | **0.0022 s (2.2 ms)** | 0.051 | 0.00098 s |
+
+- **Outcomes:** ok 30 / rejected 0 / timeout 0 / harness_error 0. **FR1 censoring-rate = 0%.**
+
+## SYNTHESIS — full single-topology sweep complete (all 6 rails) · 2026-06-23
+
+Every rail now has run-validated pilot data on one topology (devbox, localhost servers). Two findings
+generalize across the whole set:
+
+| Sub-ranking A (Payment-Validation) | median | kind |
+|---|---|---|
+| AP2 (ES256 SD-JWT verify) | **1.68 ms** | **local crypto** (in-process) |
+| x402-Solana (`/verify`) | 400 ms | facilitator network round-trip |
+| x402-Stellar (OZ `/verify`) | 464 ms | facilitator network round-trip |
+| x402-Base (`/verify`) | 777 ms | facilitator → chain-RPC round-trips |
+
+| Sub-ranking B (Challenge-Issuance) | median | kind |
+|---|---|---|
+| x402-Solana 402 | 2.2 ms | **local emit** |
+| x402-Stellar 402 | 2.2 ms | **local emit** |
+| x402-Base 402 | 3.0 ms | **local emit** |
+| MPP-Tempo 402 | 3.0 ms | **local emit** |
+| MPP-Lightning 402 | **1252 ms** | mint BOLT11 invoice (Spark round-trip) |
+
+**The heterogeneity is in BOTH sub-rankings, not just B.** Each race spans a *local-logic* member and
+*backing-service-round-trip* members:
+- **A:** AP2 (local ES256, 1.68 ms) vs the x402 rails (facilitator network, 400–777 ms) — a ~250–460× gap.
+- **B:** the four local-402 rails (~2–3 ms) vs Lightning (invoice-mint, 1252 ms) — a ~420× gap.
+
+So the doctrine question raised under R11 is **not Lightning-specific** — it's the general shape of
+RAPL: within a sub-ranking, the work-clause spans pure-local-crypto vs an intrinsic backing-service hop
+(facilitator, chain-RPC, or Lightning node). **Recommendation (unchanged, now generalized):** keep each
+sub-ranking as one race, but **§2.5 must mandate a per-rail "work-type" disclosure** (local vs
+backing-service) and report the backing-service hop as a published diagnostic — NOT subtracted (it is
+the real authorization work). This is the headline Q4 result for founder review at pre-reg. Still pilot
+data: single topology; needs the FR4 ≥2-location pass + independent measurement review before any
+calibration write-back.
