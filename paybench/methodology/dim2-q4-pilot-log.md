@@ -98,6 +98,13 @@ harness_error 0, socket connects **2**, min-RTT floor 1.20 ms, 15/15 `ok`.
   instrument-validate; each trial pays a real Spark round-trip. Scale n later for calibration.)
 - **Cold-start:** the very first unpaid `/data` took **10.2 s** (lazy Spark wallet init) — absorbed by
   the harness warmup; the warm steady-state is ~1.25 s and tight (σ_log 0.12).
+
+> **UPDATE — n=30 re-run, 2026-06-24 (measurement-review action + DR4 tail mandate):** 30/30 ok,
+> censoring 0%. **median 936 ms (lognormal), p50 850 ms, p95 1113 ms, p99 1487 ms, σ_log 0.157.** The
+> median **shifted ~25% from the n=15 run (1252 ms → 936 ms)** — direct evidence for the cross-lineage
+> panel's n-adequacy + tail concern (round 4): the network-bound rail's median is run-to-run unstable and
+> the p99 (~1.5 s) is well above the median. Reinforces DR4 — report P50/P95/P99 (not median-only) and
+> the ≥2-topology mandate; treat the single-topology median as indicative, not a point estimate.
 - **min-RTT floor (1.2 ms) is negligible vs the signal** — the correction removes only the localhost
   HTTP hop, NOT the intrinsic invoice-mint, exactly as designed (no over-correction).
 
