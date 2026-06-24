@@ -535,6 +535,35 @@ and closed the arc (0–4 → 3–1 → pre-registerable). Fixes applied to §2.
 - **FR5:** the Tempo-Charge exclusion is stated in the **main text** + a developer note on the
   Charge (1-RTT) profile.
 
-**Status:** doctrine is **ready for founder ratification → pre-registration**. No round 4 expected.
-Deferred to post-ratification: harness re-alignment (§9 above). *(Prior-art novelty re-check —
-**done** 2026-06-22, Pass 4 `wktco3m7a`: novelty defensible; see `research.md`.)*
+**Status (pre-Q4):** doctrine was *ready for founder ratification*. **SUPERSEDED by round 4 (DR4) below**
+— the Q4 validation runs surfaced a new finding that re-opened §2.5. Deferred to post-ratification:
+harness re-alignment. *(Prior-art novelty re-check — **done** 2026-06-22, Pass 4 `wktco3m7a`: novelty
+defensible; see `research.md`.)*
+
+### Round-4 resolution — DR4 (work-type heterogeneity; PENDING founder ratification, 2026-06-24)
+
+The Q4 first-party runs (all 6 rails; `dim2-q4-pilot-log.md`) showed that **within each sub-ranking the
+rails span 2–3 orders of magnitude of *work-class*** — A: AP2 local crypto 1.68 ms / Tempo-Session
+local+periodic-RPC ~19.5 ms / x402 facilitator 400–777 ms; B: local-402 ~2–3 ms / Lightning invoice-mint
+1252 ms. A confirmatory cross-lineage scan (round 4; prompt `dim2-worktype-scan.md`, replies
+`dim2-worktype-{deepseek,gemini,kimi,qwen}.md`, synthesis `dim2-worktype-synthesis.md`) **refuted 4/4**
+the proposal "one race + scalar 3-bucket disclosure + median-only + never-subtract" (2 REJECT, 2
+RATIFY-WITH-CHANGES). Does **not** reopen the A/B SPLIT or invalidate any rail/pilot number — a §2.5
+reporting/analysis-layer revision only.
+
+- **DR4 (proposed, founder ratifies):** revise §2.5 to (1) report **P50/P95/P99 + N + timestamp +
+  topology** (not median-only); (2) a **per-rail decomposition** `(local_compute_floor,
+  backing_service_component, E2E)` — E2E headline, decomposition = protocol-design view; (3) **group by
+  work-class** (Local-complete / Network-dependent), rank within, compare across via the decomposition —
+  no single cross-class ordinal; (4) treat **Tempo's TTL as ref-impl config** → report L_hot/L_cold +
+  arrival distribution (or a TTL sweep), delete the "periodic/amortized" bucket; (5) **≥2 topologies
+  mandatory** for network-bound rails (promotes FR4 from advisory to required); (6) disclose **workload
+  constants** (macaroon caveats, payload sizes) + the **AP2 in-process/sidecar** deployment assumption.
+- **One OPEN axis for the founder:** "group-and-decompose" (recommended; reconciles all four) vs the
+  harder "two separate leaderboards" split (DeepSeek/Gemini/Kimi, 3/4). 
+- Much is already in place: harnesses record raw samples (→ P95/P99), the min-RTT floor (decomposition
+  start), B1 keep-alive assertion (handshake concern), and the Tempo warm/cold split are all built.
+
+**Status:** doctrine **back to founder ratification**, now gated on DR4 (the §2.5 revision + the open
+split-vs-decompose axis) in addition to the prior FR1 threshold confirmation. Pre-registration follows
+ratification.
