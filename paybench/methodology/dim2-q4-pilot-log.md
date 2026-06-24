@@ -85,12 +85,30 @@ measurement review) like Base/Solana before calibration write-back. Pilot data o
 >   1 ES256 check. The founder-chosen **2-check "full verify"** (issuer + holder KB) does **not** occur in
 >   this flow — it requires AP2's **DPC / delegated `~~`-chain** scenario (a different flow). So the
 >   earlier "full verify" decision rested on an assumption the evidence overturns.
-> - **OPEN founder decision:** (a) accept **0.68 ms issuer-only** as the faithful AP2 human-present number
->   (recommended — it's what the flow does), with the full 2-check verify noted as a separate *delegated-
->   payment variant*; or (b) drive the **DPC/`~~`-chain** flow to measure the 2-check verify (more work —
->   identify + run the delegated scenario). Either way the blocker fix stands and supersedes 1.68 ms.
 > - Pin: AP2 capture via the cards flow; signing key from the run's `.temp-db`. Independent re-review
 >   before scoring. The capture artifact `captured-kb.json` is gitignored.
+
+> **UPDATE 2 — DPC chain (2-check) captured + measured, 2026-06-24.** The 2-check "full verify" the
+> founder chose is NOT in the human-present cards flow — it's the **human-not-present / delegated (DPC)**
+> flow (MCP roles, `merchant_payment_processor_mcp/server.py:250`, `token=payment_mandate_chain`). Drove
+> that scenario (web-client + price-drop trigger), captured a real `~~` chain (2 hops, nonce len 20) and
+> measured it (harness matches the MCP's plain-key-lambda verify; agent-provider key is a JWK-JSON from
+> the HNP run's `.temp-db`):
+>
+> | AP2 mode | verify | n | median (raw) | σ_log | p99 |
+> |---|---|---|---|---|---|
+> | **human-present** (issuer-only) | 1 ES256 | 30 | **0.68 ms** | 0.023 | 0.75 ms |
+> | **delegated / DPC** (chain) | 2 ES256 (issuer + holder KB) | 30 | **1.58 ms** | 0.020 | 1.74 ms |
+>
+> - The 2-check is **~2.3× the 1-check** (0.68 → 1.58 ms) — consistent with one extra ES256 verify +
+>   chain parse/binding. Both tight (σ_log ~0.02), blocker-fixed (crypto-only window).
+> - **AP2 has TWO authorization variants**, both local-crypto, both ≪ x402 (400–777 ms) — A-heterogeneity
+>   unchanged/reinforced. For an *agentic* benchmark the **DPC/delegated (1.58 ms)** is arguably the more
+>   representative headline (autonomous agent acting on a delegated credential), with human-present
+>   (0.68 ms) as the user-signs-each-purchase variant.
+> - **Founder decision (lighter now — we have both numbers):** report AP2 as **two variants** (rec) and
+>   pick which is the headline, OR collapse to one. Feeds DR4 (AP2 itself spans two work-modes within the
+>   local-crypto class). Pin the AP2 commit; independent re-review before scoring.
 
 ## R10 MPP-on-Tempo — 2026-06-23 (run-validated ✅, Sub-ranking B only)
 
