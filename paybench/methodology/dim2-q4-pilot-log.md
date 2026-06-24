@@ -202,7 +202,8 @@ generalize across the whole set:
 
 | Sub-ranking A (Payment-Validation) | median | kind |
 |---|---|---|
-| AP2 (ES256 SD-JWT verify) | **1.68 ms** | **local crypto** (in-process) |
+| AP2 — human-present (1 ES256) | **0.68 ms** | **local crypto** (in-process; blocker-fixed) |
+| AP2 — delegated/DPC (2 ES256) | **1.58 ms** | **local crypto** (in-process; blocker-fixed) |
 | x402-Solana (`/verify`) | 400 ms | facilitator network round-trip |
 | x402-Stellar (OZ `/verify`) | 464 ms | facilitator network round-trip |
 | x402-Base (`/verify`) | 777 ms | facilitator → chain-RPC round-trips |
@@ -257,7 +258,7 @@ intent fuses verify+settle, so Tempo joins A via the **session** intent: open an
 
 ### SYNTHESIS UPDATE - Sub-ranking A now has THREE classes
 With Tempo-Session, A is no longer a clean local-vs-network dichotomy:
-- **pure local crypto:** AP2 (1.68 ms, in-process; being re-measured per the measurement review).
+- **pure local crypto:** AP2 (blocker-fixed: 0.68 ms human-present / 1.58 ms delegated-DPC, in-process).
 - **local crypto + periodic RPC refresh:** Tempo-Session (~19.5 ms warm; ~360 ms on the ~5 s TTL tick).
 - **backing-service round-trip every call:** x402-Solana 400 ms / Stellar 464 ms / Base 777 ms.
 Reinforces (does not change) the 2.5 work-type-disclosure recommendation - but the disclosure taxonomy
