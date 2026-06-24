@@ -306,9 +306,10 @@ structurally new. **Pending founder ratification + the open fork at the end.**
   2026-06-24.** The 400/464/777 ms A-numbers are functions of the measuring host's network path; a single
   topology measures the harness, not the rail. A second network-distinct vantage (e.g. a named cloud region)
   is **required** (no longer advisory) before any network-dependent number is scored. Local-complete rails
-  being topology-invariant is the built-in control. Operational plan: devbox (topology 1) + a named-region
-  cloud VM, e.g. OCI Always-Free (topology 2); the single-topology pilot numbers are indicative, not scored,
-  until topology 2 lands.
+  being topology-invariant is the built-in control. Operational plan: devbox = topology 1; a **GitHub
+  Codespaces (Azure)** pass as a fast robustness check, then a **named-region cloud VM (e.g. OCI Always-Free,
+  ARM64)** as the documented/citable topology 2. The single-topology pilot numbers are indicative, not
+  scored, until topology 2 lands. (Both vantages are still in play; neither was closed out.)
 - **(D4f) Workload + deployment disclosure (NEW).** Hold and disclose **workload constants** — macaroon
   caveat count (L402 verify is superlinear in caveats), voucher / x402-header / payload sizes. Disclose the
   **AP2 in-process vs sidecar** deployment assumption (the in-process number omits an IPC hop a sidecar
@@ -415,9 +416,13 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   `confirmed` (~2.27s); `confirmed`/`finalized` are recorded as separate checkpoints
   (§2.1–§2.2). Real numbers withheld pending Q4 calibration.
 - **Q3 — per-rail authorization-point doctrine.** ✅ **GATE-CLEARED, PRE-REGISTERABLE (2026-06-22).**
-  Three cross-lineage rounds: 0–4 (category error) → 3–1 (SPLIT validated) → **4/4 pre-registerable**.
-  RR1–RR6 + FR1–FR5 applied (§9). **Remaining: founder ratification**, then pre-registration.
-- **Q4 — calibration sourcing.** ⏳ **OPEN — scoped, runs *before* FR1/pre-registration.**
+  **Four** cross-lineage rounds: 0–4 (category error) → 3–1 (SPLIT validated) → 4/4 pre-registerable →
+  round-4 work-type (4/4 refute → DR4). RR1–RR6 + FR1–FR5 + **DR4** applied (§9). ✅ **FOUNDER-RATIFIED
+  2026-06-24** (DR4 group-and-decompose, FR1 thresholds, FR4 ≥2-topology). Remaining: pre-registration ceremony.
+- **Q4 — calibration sourcing.** ◑ **PILOT DONE (2026-06-24); remaining: topology-2 + scored write-back.**
+  All 6 rails instrumented + run-validated single-topology (`dim2-q4-pilot-log.md`); pilots informed FR1
+  (now confirmed) + DR4. **Remaining:** the FR4 ≥2-topology run (D4e) → then real `{median,P95,P99}` replaces
+  the placeholders. Original scoping retained below for context.
   Plan in `dim2-validation-run-plan.md`. First-party measurement isolating the *authorize* leg per
   sub-ranking — A: explicit `/verify` accept (client-side, last-byte, RTT-subtracted, with the
   work-clause); B: `402`-challenge issuance — capturing failures as censored events. **Sequencing
@@ -425,9 +430,11 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   thresholds + the power analysis** (the tie/censoring/transitivity pathologies cannot appear on the
   mock log-normal fixtures, so the *live* run is the only place to observe them) — *informing*
   principled thresholds, **not** tuning them to the scored data. Then it replaces the PLACEHOLDER
-  fixtures with real `{median, sigma}`. **Instrumentation gap:** POC servers expose only the fused
-  `/resource`; a thin standalone `/verify` route + a same-path RTT-baseline endpoint must be added
-  (founder/credentialed step, `mblake4u/agentpay`).
+  fixtures with real `{median, sigma}`. ~~**Instrumentation gap:** POC servers expose only the fused
+  `/resource`; a thin standalone `/verify` route + a same-path RTT-baseline endpoint must be added.~~
+  ✅ **CLOSED (2026-06-24)** — `/rapl/verify` + `/rapl/rtt` (or capture-replay for AP2) built + run-validated
+  on all 6 rails in the review-fixed shape (`dim2-q4-runbook.md`; harnesses on `mblake4u/agentpay`
+  branch `dim2-rapl-instrumentation`).
 - **Q5 — k-grid + scoring constants.** ✅ **RESOLVED via RR3 (§2.5/§4).** ms k-ladder
   ({20,50,100,250,500} ms) + rank-stability heatmap + power analysis; metric renamed
   **`P(auth ≤ k)`** (latency CDF, not pass@k); BT within-sub-ranking only, **hardened** (Davidson
@@ -442,11 +449,23 @@ auth-latency benchmark runs end-to-end on placeholder fixtures; content-addresse
 fixtures + provenance; tests mirroring the finality suite; finality still
 reproduces bit-for-bit.
 
-**Founder, next (judgment), in order:** resolve Q1–Q5; replace every placeholder
-with real calibration; draft the doctrine into this addendum; **pass it through the
-cross-lineage adversarial review gate (§8)**; revise; ratify into the methodology;
-*then* (separately) the pre-registration ceremony (OSF / cosign / OpenTimestamps /
-signed tag). See `SESSION-1-HANDOFF.md`.
+**Founder, next (judgment), in order — UPDATED 2026-06-24:** ✅ Q1–Q5 resolved; ✅ doctrine drafted; ✅
+cross-lineage gate passed (4 rounds, §8); ✅ revised (DR4); ✅ **ratified into the methodology (2026-06-24)**.
+**Remaining:** (a) the **FR4 topology-2 run** (D4e — devbox + Codespaces/OCI; see `dim2-topology2-run-plan.md`)
+→ replace placeholders with scored `{median,P95,P99}`; then (b) the **pre-registration ceremony**.
+
+**Pre-registration scope (dim-2 RAPL) — what the ceremony freezes (the checklist):**
+- [ ] **Doctrine §2 (SPLIT) + §2.5 (measurement/stats) + §2.5.1 (DR4 — group-and-decompose, D4a–D4g)** —
+      the ratified methodology text. *(DR4/§2.5.1 is in scope: it was ratified 2026-06-24 and must be in the
+      frozen set, not left as a later addendum.)*
+- [ ] **FR1 numeric thresholds** (tie>20% / censoring>5% / cyclic>10% / LR p<0.05) — confirmed values frozen.
+- [ ] **FR4 ≥2-topology** requirement + the named topologies actually used (devbox + topology-2).
+- [ ] **Scored per-rail `{median,P95,P99}`** per the group-and-decompose tuple — *only after* topology-2
+      (the single-topology pilots are indicative, not scored).
+- [ ] Ceremony mechanics per `CEREMONY-RUNBOOK.md` (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI →
+      arXiv), as a **dim-2 pass** distinct from the landed dim-1/v1.2 finality pre-reg.
+
+See `SESSION-1-HANDOFF.md`.
 
 ## 8. Planned validation gate — cross-lineage adversarial review (PRE-PRE-REGISTRATION)
 
