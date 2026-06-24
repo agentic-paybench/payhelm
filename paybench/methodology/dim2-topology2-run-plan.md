@@ -1,5 +1,10 @@
 # Dim-2 RAPL — FR4 topology-2 run plan
 
+> **Turnkey runsheet + driver:** `mblake4u/agentpay` (branch `dim2-rapl-instrumentation`)
+> `poc/topology2/` — `RUNSHEET.md` (steps + the 15-secret table + OCI variant), `set-codespaces-secrets.sh`
+> (push secrets from the devbox rail `.env`s), `run-topology2.sh` (one-command driver: deps → `.env` →
+> server → harness n=30 → tagged results + `SUMMARY.txt`). This doc is the *why*; that dir is the *how*.
+
 **Purpose (FR4 / D4e, founder-confirmed 2026-06-24):** a second **network-distinct** vantage to test that
 the RAPL ranking is robust to the measuring host's network path. The single-topology pilots
 (`dim2-q4-pilot-log.md`) are **indicative, not scored**, until this lands. This is the last gate before the
