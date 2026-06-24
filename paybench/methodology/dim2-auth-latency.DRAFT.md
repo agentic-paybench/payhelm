@@ -60,9 +60,11 @@ therefore identical and the existing BT/pass@k/Wilson machinery applies unchange
 > the SPLIT + a refinement list (**RR1–RR6**, folded in); round 3 confirmed the as-built design is
 > **pre-registerable** conditional on a small fix-list (**FR1–FR5**, also folded in): FR1 numeric
 > fallback triggers, FR2 RR5-clause restricted to Group A, FR3 last-byte stopwatch, FR4 same-path
-> RTT baseline, FR5 main-text Charge disclosure. **Status: ready for founder ratification →
-> pre-registration** (still DRAFT until the founder ratifies). Full arc + verdicts:
-> `dim2-adversarial-review.md`.
+> RTT baseline, FR5 main-text Charge disclosure. A round-4 work-type scan (post-Q4) added **DR4**
+> (§2.5.1). **Status (2026-06-24): FOUNDER-RATIFIED** — DR4 fork = group-and-decompose, FR1 thresholds
+> confirmed, FR4 ≥2-topology confirmed (see §9). Only the **pre-registration ceremony** remains; stays
+> labelled DRAFT until the signed tag lands. Full arc + verdicts: `dim2-adversarial-review.md`,
+> `dim2-worktype-synthesis.md`.
 
 **Dimension renamed (DR2): _Rail Authorization-Primitive Latency_ (RAPL)** — provisional;
 alt "Protocol-Accept Latency". The rename is load-bearing: the metric times a rail/protocol
@@ -227,8 +229,9 @@ finality's. All of the following are **pre-registered** before any scored run:
   Aalen-Johansen competing-risks) as the *data-triggered fallback*** with **numeric triggers (FR1 —
   unanimous round-3 condition; values pre-registered):** switch to it if, in any sub-ranking, the
   **tie-rate > 20%**, OR any rail's **auth-failure/censoring-rate > 5%**, OR **> 10% of triples are
-  cyclic** (transitivity violation) / a BT goodness-of-fit LR test gives **p < 0.05**. *(Proposed
-  defaults — founder confirms/tunes at pre-reg.)* We do **not** swap the engine pre-emptively — that
+  cyclic** (transitivity violation) / a BT goodness-of-fit LR test gives **p < 0.05**. **FOUNDER-CONFIRMED
+  2026-06-24** — these four numeric triggers are ratified as the pre-registered values (no longer
+  proposed-defaults); they freeze at the pre-registration ceremony. We do **not** swap the engine pre-emptively — that
   would fragment the one-method-across-dimensions story and re-expose frozen D1 to the same critique
   without evidence the pathology bites (D1 is mock-fixture, seconds-scale, tie-free; the pathologies
   are a *live sub-second* phenomenon).
@@ -299,11 +302,13 @@ structurally new. **Pending founder ratification + the open fork at the end.**
   inter-arrival distribution disclosed**, and/or a **TTL sweep** {0, 5 s, 60 s, ∞} or a cache-disabled
   protocol-baseline (minimum required backing hops per call). Tempo then appears in *both* groups by its
   warm (Local-complete) and cold (Network-dependent) numbers, each annotated.
-- **(D4e) ≥2 topologies MANDATORY for network-dependent rails (promotes FR4 from advisory).** The 400/464/
-  777 ms A-numbers are functions of the measuring host's network path; a single topology measures the
-  harness, not the rail. A second network-distinct vantage (e.g. a named cloud region) is **required**
-  before any network-dependent number is scored. Local-complete rails being topology-invariant is the
-  built-in control.
+- **(D4e) ≥2 topologies MANDATORY for network-dependent rails (promotes FR4 from advisory) — FOUNDER-CONFIRMED
+  2026-06-24.** The 400/464/777 ms A-numbers are functions of the measuring host's network path; a single
+  topology measures the harness, not the rail. A second network-distinct vantage (e.g. a named cloud region)
+  is **required** (no longer advisory) before any network-dependent number is scored. Local-complete rails
+  being topology-invariant is the built-in control. Operational plan: devbox (topology 1) + a named-region
+  cloud VM, e.g. OCI Always-Free (topology 2); the single-topology pilot numbers are indicative, not scored,
+  until topology 2 lands.
 - **(D4f) Workload + deployment disclosure (NEW).** Hold and disclose **workload constants** — macaroon
   caveat count (L402 verify is superlinear in caveats), voucher / x402-header / payload sizes. Disclose the
   **AP2 in-process vs sidecar** deployment assumption (the in-process number omits an IPC hop a sidecar
@@ -319,15 +324,18 @@ structurally new. **Pending founder ratification + the open fork at the end.**
   as a variant. This is the D4c grouping at finer grain — *within* a work-class, disclose the
   authorization *mode* too. (The superseded 1.68 ms was disk-I/O-contaminated, per the measurement review.)
 
-**OPEN FORK — founder decision (the one axis the panel split on):**
-- **(recommended) group-and-decompose** — one table per sub-ranking, grouped by work class (D4c) with the
-  decomposition tuple (D4b) carrying the cross-group story. Reconciles all four reviewers.
-- **(harder) two separate leaderboards** per sub-ranking, split on intrinsic network-dependency, no
-  cross-leaderboard comparison in text or figure (DeepSeek/Gemini/Kimi, 3/4). Cleaner separation, but Qwen's
-  objection (a Local-complete-A leaderboard is n=2) bites.
+**FORK RESOLVED — founder-confirmed 2026-06-24: GROUP-AND-DECOMPOSE.**
+- **Adopted:** one table per sub-ranking, **grouped by work class** (D4c: Local-complete / Network-dependent),
+  with the **decomposition tuple** (D4b) carrying the cross-group story. Rank within a group; compare across
+  groups only via the decomposition — no single cross-class ordinal. Reconciles all four round-4 reviewers.
+- **Not adopted:** the "two separate leaderboards" split (DeepSeek/Gemini/Kimi, 3/4) — rejected because
+  Qwen's objection (a Local-complete-A group is n=2) bites and grouping-within-one-table preserves the
+  same anti-misleading guarantee without fragmenting into n=1/n=2 "races."
 
-Until ratified, **D4a–D4f are proposed, not adopted**; the rails + pilot numbers are unaffected (this is a
-reporting/analysis-layer change). Tracked as **DR4** in §9.
+**DR4 status: founder-RATIFIED 2026-06-24** (D4a–D4g + the group-and-decompose fork). The rails + pilot
+numbers are unaffected (a reporting/analysis-layer change). **Remaining before the doctrine is fully
+adopted: the pre-registration ceremony itself** (signed tag, per `CEREMONY-RUNBOOK.md`) — not another
+review round. Tracked as **DR4** in §9.
 
 ## 3. How AP2 (R6) is measured here
 
@@ -629,6 +637,10 @@ reporting/analysis-layer revision only.
 - Much is already in place: harnesses record raw samples (→ P95/P99), the min-RTT floor (decomposition
   start), B1 keep-alive assertion (handshake concern), and the Tempo warm/cold split are all built.
 
-**Status:** doctrine **back to founder ratification**, now gated on DR4 (the §2.5 revision + the open
-split-vs-decompose axis) in addition to the prior FR1 threshold confirmation. Pre-registration follows
-ratification.
+**Status (2026-06-24): doctrine FOUNDER-RATIFIED.** The three open ratification items are confirmed:
+**(1) DR4 fork → group-and-decompose** (§2.5.1 FORK RESOLVED); **(2) FR1 numeric thresholds confirmed**
+(tie-rate>20% / censoring>5% / cyclic>10% / LR p<0.05 — no longer proposed-defaults); **(3) FR4 ≥2-topology
+mandate confirmed** (D4e). No further review round is required (the round-4 cross-lineage scan was the
+adversarial gate). **The only remaining gate is the pre-registration ceremony itself** — the signed
+pre-reg tag per `CEREMONY-RUNBOOK.md` (a founder act; not yet performed). The doctrine stays labelled DRAFT
+until that tag lands, but is content-frozen pending the ceremony.
