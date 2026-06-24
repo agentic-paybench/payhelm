@@ -178,3 +178,37 @@ backing-service) and report the backing-service hop as a published diagnostic �
 the real authorization work). This is the headline Q4 result for founder review at pre-reg. Still pilot
 data: single topology; needs the FR4 ≥2-location pass + independent measurement review before any
 calibration write-back.
+
+## R10b MPP-on-Tempo SESSION — 2026-06-24 (run-validated, Sub-ranking A)
+
+First live run of the Tempo-Session A harness (`rail-tempo-mpp/src/measure-rapl-session.ts`). The Charge
+intent fuses verify+settle, so Tempo joins A via the **session** intent: open an on-chain channel ONCE
+(not timed), then time the per-request **voucher** accept. Channel opened on Moderato (`0x148131c8...`),
+20/20 ok, 0 rejected. Gate passed: harness_error 0, censoring 0%.
+
+| Sub-ranking | primitive | n | median (raw, warm) | sigma_log | corrected |
+|---|---|---|---|---|---|
+| **A - Payment-Validation** | session voucher accept (EIP-712 sign + secp256k1 verify) | 20 | **0.0195 s (19.5 ms)** | 0.053 | 0.0184 s |
+
+- **Outcomes:** ok 20 / rejected 0 / timeout 0 / harness_error 0. **FR1 censoring-rate = 0%.** (n=20
+  fast-burst; the n=10 validation run was also clean.)
+- **KEY FINDING - Tempo-A is local-crypto with a PERIODIC RPC refresh.** The voucher accept is local
+  (EIP-712 + secp256k1, no per-call RPC) - but the server caches on-chain channel state for
+  `channelStateTtl` (~5 s); when it expires it re-reads on-chain (one RPC hop). The `--sleep 1` run showed
+  this exactly: trials 1-5 ~ 22 ms, trial 6 = **359 ms** (TTL expiry -> RPC), then re-cached. A fast burst
+  (`--sleep 0`, whole run inside one TTL window) removed all spikes -> 19.5 ms, sigma_log 0.053. So
+  **Tempo-Session sits BETWEEN AP2 (pure in-process, 1.68 ms) and x402 (RPC every call, 400-777 ms):
+  local-crypto accept + amortized periodic RPC** - a novel third class.
+- **CAVEAT (harness, disclosed):** the mppx SessionManager does 402-then-retry per request, so the
+  ~19.5 ms window includes the challenge hop + 2 localhost round-trips (every trial `saw_challenge=true`),
+  NOT the bare voucher verify. To isolate the verify, subtract the B challenge median (~3 ms) + one
+  localhost hop, or build a low-level single-hop voucher-POST harness. **So 19.5 ms is an UPPER BOUND on
+  the Tempo voucher accept; the bare verify is smaller.** Independent measurement review before scoring.
+
+### SYNTHESIS UPDATE - Sub-ranking A now has THREE classes
+With Tempo-Session, A is no longer a clean local-vs-network dichotomy:
+- **pure local crypto:** AP2 (1.68 ms, in-process; being re-measured per the measurement review).
+- **local crypto + periodic RPC refresh:** Tempo-Session (~19.5 ms warm; ~360 ms on the ~5 s TTL tick).
+- **backing-service round-trip every call:** x402-Solana 400 ms / Stellar 464 ms / Base 777 ms.
+Reinforces (does not change) the 2.5 work-type-disclosure recommendation - but the disclosure taxonomy
+needs a THIRD bucket ("amortized/periodic backing-service"), not just local-vs-network. Founder review.
