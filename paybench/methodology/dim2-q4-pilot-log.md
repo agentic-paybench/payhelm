@@ -263,3 +263,50 @@ With Tempo-Session, A is no longer a clean local-vs-network dichotomy:
 - **backing-service round-trip every call:** x402-Solana 400 ms / Stellar 464 ms / Base 777 ms.
 Reinforces (does not change) the 2.5 work-type-disclosure recommendation - but the disclosure taxonomy
 needs a THIRD bucket ("amortized/periodic backing-service"), not just local-vs-network. Founder review.
+
+## FR4 TOPOLOGY-2 — T2a GitHub Codespaces (Azure), 2026-06-24
+
+First second-topology pass (`poc/topology2/run-topology2.sh`, `TOPOLOGY=T2a-codespaces`). 30/30 ok, 0
+rejected on all rails that ran (buyers funded, same wallets, different host). **Verdict: the RANKING
+HOLDS — FR4 pass on T2a** (T2b/OCI still pending for the citable point).
+
+### Sub-ranking A (network-dependent) — the test
+
+| Rail | T1 devbox median | T2a Codespaces median | T2a p95 / p99 | order |
+|---|---|---|---|---|
+| x402-Solana | 400 ms | **180 ms** | 257 / 300 ms | 1st (both) |
+| x402-Stellar | 464 ms | **364 ms** | 631 / 754 ms | 2nd (both) |
+| x402-Base | 777 ms | **420 ms** | 494 / 521 ms | 3rd (both) |
+
+**Order preserved: Solana < Stellar < Base at BOTH topologies.** Absolute numbers compressed (Azure host
+is closer to the facilitators/RPC than devbox); Solana dropped most proportionally (×0.45). The *spacing*
+shifted but the *order* (the FR4 question) is robust. → **A ranking robust to topology.**
+
+### Sub-ranking B
+
+- **Lightning (network, invoice-mint):** 936 ms (T1 n=30) → **771 ms** (T2a), p99 1357 ms — still ≫
+  local-402; B heterogeneity holds.
+- **local-402 (Base/Solana/Stellar):** **medians ~invariant** (Base 4.6 / Solana 3.7 / Stellar 3.0 ms vs
+  T1 ~2–3 ms — control passes on the median) **BUT tails EXPLODED**: σ_log **0.05 → ~0.83–0.91**, p99 up to
+  **40–63 ms** (vs T1 ~2–3 ms tight). This is **cloud-host CPU-scheduling jitter** (a shared Azure VM vs the
+  dedicated devbox).
+
+### NEW FINDING — local-compute MEDIANS are host-invariant, TAILS are not
+The local-crypto rails' *medians* barely moved (the control passes), but a shared cloud host fattens their
+*tails* by ~20× (σ_log 0.05→0.9). **Implication for §2.5/DR4:** for local-compute rails the **median is the
+topology-robust statistic; the tail is host-dependent** — so (a) D4a's P95/P99 reporting is essential
+*and* must be read as host-conditioned for local rails, and (b) the decomposition (D4b) should treat
+host-scheduling-jitter as distinct from the rail's compute floor. Network rails, by contrast, move in the
+*median* (the path) — the opposite signature. Useful diagnostic: **local→tail-sensitive, network→median-sensitive.**
+
+### Issues / gaps
+- **Tempo server did NOT boot on Codespaces** (`:8404` no-show; `setup-accounts` succeeded) → no Tempo-A/B
+  at T2a. Tempo-A is local-crypto (expected invariant; T1 = 19.5 ms). **Need `tempo.server.log`** to
+  diagnose (likely ts-node/ESM or boot timing on the stock image). Re-run Tempo at T2b.
+- Socket connects 3 on Solana/Lightning (≈ ok; the local-402 tail noise is host jitter, not pooling break —
+  medians confirm pooling held).
+- AP2 invariant by construction (skipped) — use the devbox 0.68 / 1.58 ms.
+
+**Status:** T2a (Codespaces) = ranking robust (A order held, B heterogeneity held, local medians invariant)
++ the host-tail-jitter finding. **Pending: T2b (OCI named region)** — the citable topology-2 + re-run
+Tempo there. Still pilot, not scored, until T2b lands.
