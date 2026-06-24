@@ -264,6 +264,62 @@ finality's. All of the following are **pre-registered** before any scored run:
   outcome agents actually care about. (On fused topologies this companion equals settlement time,
   i.e. collapses into dimension 1 — which is itself the honest disclosure for those rails.)
 
+### 2.5.1 Work-type decomposition & grouping (DR4 — PROPOSED, founder-ratify-pending, 2026-06-24)
+
+The Q4 first-party runs (`dim2-q4-pilot-log.md`, all 6 rails) showed that **within each sub-ranking the
+rails span 2–3 orders of magnitude of *work-class*** — A: AP2 local crypto 1.68 ms / Tempo-Session
+local+periodic-RPC ~19.5 ms / x402 facilitator 400–777 ms; B: local-402 ~2–3 ms / Lightning invoice-mint
+~0.9–1.25 s. A confirmatory cross-lineage scan (round 4; `dim2-worktype-{scan,synthesis}.md`) **refuted
+4/4** the original "one race + scalar work-type label + median-only + never-subtract" framing. The panel's
+convergent fixes are folded in below. Most *sharpen* existing §2.5 bullets; one (work-class grouping) is
+structurally new. **Pending founder ratification + the open fork at the end.**
+
+- **(D4a) Tail as headline, not "alongside" (sharpens the RR3 bullet).** Promote **P50 / P95 / P99 + N +
+  measurement-timestamp + topology** to the *reported headline tuple* per rail (not a fixed-`k` Wilson
+  headline with percentiles in a footnote). Live evidence: the Lightning median moved **1252 ms (n=15) →
+  936 ms (n=30)** with p99 ≈ 1.49 s — the median alone is not a point estimate for network-bound rails.
+- **(D4b) Per-rail decomposition tuple (NEW — extends the FR4/FR7 raw+corrected + RPC-diagnostic).** Report,
+  per rail, **`(local_compute_floor, backing_service_component, E2E)`**: the local crypto/state-machine
+  cost in isolation, the backing-service component (facilitator / chain-RPC / Lightning-node / session
+  TTL-refresh), and the end-to-end. **E2E stays the headline** (what the agent feels; we still never
+  subtract from it — RR5/FR2/FR7 work-clause). The decomposition is the **protocol-design view** that the
+  panel's "subtract for protocol comparison" camp (Gemini/Kimi) needs, served as a *secondary* number, not
+  the headline. The min-RTT floor (FR4) and server→RPC-RTT diagnostic (FR7) are the inputs to
+  `local_compute_floor` / `backing_service_component`.
+- **(D4c) Work-class grouping (NEW — the structural change).** Within a sub-ranking, **group rails by work
+  class** — *Local-complete* (no network round-trip in the primitive's critical path) vs *Network-dependent*
+  (≥1 intrinsic backing-service round-trip per call). **Rank within a group; compare across groups only via
+  the decomposition tuple (D4b) — never as a single cross-class ordinal.** Rationale: when between-class
+  spread (250–800×) dwarfs within-class spread (≤~2×), a single ordinal encodes class membership, not rail
+  quality, and a bare leaderboard misleads any reader who skips the label.
+- **(D4d) Tempo TTL is reference-impl config, not a rail class (resolves the R10b caveat).** The
+  ~19.5 ms-warm / ~360 ms-on-the-~5 s-TTL-tick behaviour is the *reference server's* `channelStateTtl`, not a
+  Tempo-protocol property. **Do NOT give it a third taxonomy bucket** (gaming-prone: TTL=∞ → looks local).
+  Instead report **`L_hot` (cache-hit) and `L_cold` (cache-miss → chain read) with the request
+  inter-arrival distribution disclosed**, and/or a **TTL sweep** {0, 5 s, 60 s, ∞} or a cache-disabled
+  protocol-baseline (minimum required backing hops per call). Tempo then appears in *both* groups by its
+  warm (Local-complete) and cold (Network-dependent) numbers, each annotated.
+- **(D4e) ≥2 topologies MANDATORY for network-dependent rails (promotes FR4 from advisory).** The 400/464/
+  777 ms A-numbers are functions of the measuring host's network path; a single topology measures the
+  harness, not the rail. A second network-distinct vantage (e.g. a named cloud region) is **required**
+  before any network-dependent number is scored. Local-complete rails being topology-invariant is the
+  built-in control.
+- **(D4f) Workload + deployment disclosure (NEW).** Hold and disclose **workload constants** — macaroon
+  caveat count (L402 verify is superlinear in caveats), voucher / x402-header / payload sizes. Disclose the
+  **AP2 in-process vs sidecar** deployment assumption (the in-process number omits an IPC hop a sidecar
+  deployment would add — RR6 scope label, extended). Note **concurrency / throughput** as explicitly
+  out-of-scope (latency-only).
+
+**OPEN FORK — founder decision (the one axis the panel split on):**
+- **(recommended) group-and-decompose** — one table per sub-ranking, grouped by work class (D4c) with the
+  decomposition tuple (D4b) carrying the cross-group story. Reconciles all four reviewers.
+- **(harder) two separate leaderboards** per sub-ranking, split on intrinsic network-dependency, no
+  cross-leaderboard comparison in text or figure (DeepSeek/Gemini/Kimi, 3/4). Cleaner separation, but Qwen's
+  objection (a Local-complete-A leaderboard is n=2) bites.
+
+Until ratified, **D4a–D4f are proposed, not adopted**; the rails + pilot numbers are unaffected (this is a
+reporting/analysis-layer change). Tracked as **DR4** in §9.
+
 ## 3. How AP2 (R6) is measured here
 
 Per §8 Resolution B, AP2 does **not** settle independently and is therefore
