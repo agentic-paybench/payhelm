@@ -310,6 +310,15 @@ structurally new. **Pending founder ratification + the open fork at the end.**
   deployment would add — RR6 scope label, extended). Note **concurrency / throughput** as explicitly
   out-of-scope (latency-only).
 
+- **(D4g) AP2 worked example — within-class work-modes (founder-confirmed: DPC headline, 2026-06-24).**
+  AP2 itself spans two authorization modes *inside* the Local-complete class, both blocker-fixed
+  (crypto-only window): **delegated / DPC** (`~~` KB chain, human-not-present flow — **2 ES256** checks,
+  **1.58 ms**, σ_log 0.020) and **human-present** (issuer-only single token — **1 ES256**, **0.68 ms**,
+  σ_log 0.023). **Founder pick: the DPC/delegated number is the AP2 headline** (an agent acting
+  autonomously on a *delegated* credential is the agentic-representative case); human-present is reported
+  as a variant. This is the D4c grouping at finer grain — *within* a work-class, disclose the
+  authorization *mode* too. (The superseded 1.68 ms was disk-I/O-contaminated, per the measurement review.)
+
 **OPEN FORK — founder decision (the one axis the panel split on):**
 - **(recommended) group-and-decompose** — one table per sub-ranking, grouped by work class (D4c) with the
   decomposition tuple (D4b) carrying the cross-group story. Reconciles all four reviewers.
