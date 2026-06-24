@@ -67,6 +67,31 @@ harness (`poc/rail-ap2/measure_rapl_ap2.py`) **replayed through `_verify_payment
 **Caveats:** mock-issuance excluded (above); pin the AP2 repo commit; **review** (independent
 measurement review) like Base/Solana before calibration write-back. Pilot data only — not the scored set.
 
+> **UPDATE — blocker-fixed re-measurement, 2026-06-24 (`measure_rapl_ap2_full.py`):** the measurement
+> review found the old 1.68 ms timed window included per-trial PEM reads + SDK log-writes (blockers
+> #1/#2). Fixed (keys/provider pre-loaded once; `_log_event` no-op'd → crypto-only window) and re-run on
+> a fresh capture (n=30):
+>
+> | mode | n | median (raw) | σ_log | p99 |
+> |---|---|---|---|---|
+> | **issuer-signature-only (1 ES256)** | 30 | **0.00068 s (0.68 ms)** | **0.023** | 0.75 ms |
+>
+> - The clean number is **0.68 ms vs the contaminated 1.68 ms (~2.5× inflation)**, and **σ_log
+>   0.14 → 0.023 (~6× tighter)** — the disk I/O the review flagged was real and material. Makes AP2's A
+>   even more extreme vs x402 (0.68 ms vs 400–777 ms) — *reinforces* the A-heterogeneity finding.
+> - **FINDING — the AP2 human-present CARD flow verify is ISSUER-SIGNATURE-ONLY.** The fresh capture
+>   (driven through the cards flow, both MPP + CP hooks) has **no key-binding JWT** (empty trailing `~`)
+>   and an **empty `checkout_jwt_hash`** — so the aud/nonce binding is never enforced; the real verify is
+>   1 ES256 check. The founder-chosen **2-check "full verify"** (issuer + holder KB) does **not** occur in
+>   this flow — it requires AP2's **DPC / delegated `~~`-chain** scenario (a different flow). So the
+>   earlier "full verify" decision rested on an assumption the evidence overturns.
+> - **OPEN founder decision:** (a) accept **0.68 ms issuer-only** as the faithful AP2 human-present number
+>   (recommended — it's what the flow does), with the full 2-check verify noted as a separate *delegated-
+>   payment variant*; or (b) drive the **DPC/`~~`-chain** flow to measure the 2-check verify (more work —
+>   identify + run the delegated scenario). Either way the blocker fix stands and supersedes 1.68 ms.
+> - Pin: AP2 capture via the cards flow; signing key from the run's `.temp-db`. Independent re-review
+>   before scoring. The capture artifact `captured-kb.json` is gitignored.
+
 ## R10 MPP-on-Tempo — 2026-06-23 (run-validated ✅, Sub-ranking B only)
 
 First live run of the R10 B harness (`rail-tempo-mpp/src/measure-rapl.ts`, branch
