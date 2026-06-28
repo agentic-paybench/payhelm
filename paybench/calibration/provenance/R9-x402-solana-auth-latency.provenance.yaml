@@ -1,0 +1,44 @@
+# PayBench calibration provenance — R9 x402-Solana AUTHORIZATION LATENCY
+# Dimension 2 (Day-30, §11). PLACEHOLDER — pending founder calibration.
+#
+# !!! PLACEHOLDER — pending founder calibration !!!
+# The {median_s, sigma_log} below are illustrative placeholders chosen only to
+# exercise the harness end-to-end. They are NOT measured and MUST NOT be
+# published or pre-registered. See methodology/dim2-auth-latency.DRAFT.md.
+#
+# NOTE for the founder: the dimension-1 calibration run captured a Solana
+# `confirmed`-level latency (~2.27s) "for free" and the calibration-plan flags it
+# as a future auth-latency input. That number is REAL and is deliberately NOT
+# transcribed here — it must not enter a fixture until the founder decides whether
+# `confirmed`-latency is the right operationalisation of Solana authorization
+# latency. This file stays a placeholder until then.
+
+rail: "R9 x402-Solana"
+dimension: authorization-latency
+unit: seconds                    # wall-clock, payment-intent presented -> authorization granted
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 0.90, sigma_log: 0.35}   # PLACEHOLDER — NOT measured
+  approach: placeholder
+
+sources:
+  - type: placeholder
+    ref: "PLACEHOLDER — no measurement; harness-exercising value only"
+    date: "2026-06-15"
+    sample_size: 0
+    note: >
+      Authorization latency for x402-Solana = the 402 challenge -> signed payload
+      -> facilitator accept, distinct from `finalized` settlement (the R9 finality
+      dimension, ~14.6s). A `confirmed`-level latency (~2.27s) was observed in the
+      D1 run and is the likely real input, but is NOT used here pending the
+      founder's operationalisation decision (see header). Placeholder median
+      0.90s / sigma_log 0.35.
+
+calibration_date: "2026-06-15"
+confidence: placeholder
+fixture_content_hash: "sha256:2fa13acc3372461cb2cb4b5f001e63ccab667a9bd61102e29b683d6902566f69"
+notes: >
+  PLACEHOLDER — pending founder calibration. Do not publish or pre-register.
+  The real `confirmed`-latency figure is intentionally withheld until the founder
+  ratifies the operationalisation (DRAFT addendum, open question Q2).
