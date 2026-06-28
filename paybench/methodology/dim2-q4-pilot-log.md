@@ -110,6 +110,25 @@ measurement review) like Base/Solana before calibration write-back. Pilot data o
 >   pick which is the headline, OR collapse to one. Feeds DR4 (AP2 itself spans two work-modes within the
 >   local-crypto class). Pin the AP2 commit; independent re-review before scoring.
 
+> **UPDATE — durable both-flow re-capture, 2026-06-28 (founder-driven ceremony):** round-2 review found
+> the HP sample had been clobbered; investigation then found **neither** original capture was replayable
+> at all (two causes: `.temp-db` agent-provider keys regenerate every run → signing key gone; mandates
+> carry a short-lived `exp` → aged-out tokens raise `Token expired`). Both fixed: the capture hook now
+> **embeds the verifying pubkey** in the capture JSON (harness prefers it) and the harness **no-ops
+> time-claim enforcement** during replay (crypto-cost, not freshness). Re-captured BOTH flows fresh
+> (AP2 repo pinned **`e1ea56d`**): human-present/cards (agent role, CP verify) → `captured-hp.json`;
+> human-not-present/cards (MCP role, MPP-mcp verify) → `captured-dpc.json`. Both carry an embedded pubkey
+> and are **force-committed** with their 30-sample files (`agentpay 423a612`, `bed6298`) — replay-forever.
+>
+> | mode | verify | median | σ_log | p95 | p99 | n | outcome |
+> |---|---|---|---|---|---|---|---|
+> | human-present (issuer-only) | 1 ES256 | **0.682 ms** | 0.027 | 0.711 | 0.763 | 30 | 30/30 ok |
+> | delegated/DPC (chain) | 2 ES256 | **1.580 ms** | 0.009 | 1.599 | 1.624 | 30 | 30/30 ok |
+>
+> Both reproduce the original 0.68 / 1.58 ms headlines (DPC/HP = 2.32×), now from durable artifacts. The
+> earlier `captured.json`/`captured-kb.json` are superseded (non-replayable). Ceremony runbook +
+> 4-hook-site list: `poc/rail-ap2/CAPTURE-FULL.md` (`agentpay a09dc49`).
+
 ## R10 MPP-on-Tempo — 2026-06-23 (run-validated ✅, Sub-ranking B only)
 
 First live run of the R10 B harness (`rail-tempo-mpp/src/measure-rapl.ts`, branch

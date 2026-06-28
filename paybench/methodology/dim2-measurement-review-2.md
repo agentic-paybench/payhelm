@@ -79,9 +79,31 @@ All four code fixes landed and self-validated; pushed to origin.
 | 1 | Stellar censoring-suppression | `1a869c0` | **RESOLVED** | tight allowlist `isExpRace`/`isSimFail` only; persistent-after-retry → `rejected`; expiration-race exhaustion → `harness_error`. Re-run 40/40 ok, 0 harness_error. |
 | 2 | topology2 silent failure | `56cbd7c` | **RESOLVED** | `verdict()` parses the `outcomes:`/`n:` line → `done`/`SUSPECT`/`FAILED`; wired into run_ts, base, tempo A/B notes. + Tempo `setup-accounts` guarded behind `[ -s .env ]` (idempotency major). |
 | 3 | Tempo-Session monotonicity / regime | `3d26508` | **RESOLVED** | `prevCum` strict-increase gate, non-advancing → `harness_error`; trailer records `socket_connects`/`counts`/`sleep_s`/`regime`/`rtt_floor_s`. Re-run: cumulative 5000→6000→7000, 12/12 ok, trailer present. |
-| 4 | AP2 mode-dependent `SAMPLES_PATH` | `0ef02d5` | **CODE RESOLVED** | per-mode filenames (`…-chain` / `…-singlekb` / `…-issueronly`); chain & HP captures no longer clobber. **Still pending: a fresh issuer-only capture ceremony to land committed HP (0.68 ms) samples — needs a founder-driven capture run; the 0.68 ms remains pilot-log-only until then.** |
+| 4 | AP2 mode-dependent `SAMPLES_PATH` | `0ef02d5` | **RESOLVED** | per-mode filenames; chain & HP no longer clobber. |
+| 4b | AP2 durable capture (the real gap) | `a54f235` `423a612` `bed6298` | **RESOLVED 2026-06-28** | fresh founder-driven capture ceremony of BOTH flows; see below. |
 
-**Net:** all 3 BLOCKERS + the Tempo-idempotency MAJOR closed in code and validated. The AP2 0.68 ms
-remains the one open evidentiary gap — the harness is fixed, but the headline still rests on the pilot-log
-table until the issuer-only capture is re-run under `_full.py` and its samples committed. The chain
-**1.58 ms** (the actual sub-ranking-A headline for AP2) reconciles to its committed sample and is unaffected.
+### AP2 durable re-capture — closed 2026-06-28 (founder-driven ceremony)
+The round-2 review found the 0.68 ms HP sample had been clobbered. Investigation then found a deeper
+problem: **neither** original capture was replayable at all — two structural causes, both now fixed so it
+cannot recur:
+1. **Ephemeral signing key.** `.temp-db` agent-provider keys regenerate every run → the key that signed
+   the old captures was overwritten (`InvalidJWSSignature`). **Fix:** the capture hook now **embeds the
+   verifying pubkey** in the capture JSON; the harness prefers it (embedded > `--agent-pubkey` > env >
+   `.temp-db`). Self-contained → replays forever.
+2. **Short-lived `exp`.** Mandates carry an `exp`; aged-out captures raise `Token expired`. **Fix:** the
+   harness no-ops time-claim enforcement during replay (crypto-cost measurement, not freshness).
+
+A fresh both-flow capture was driven (AP2 repo pinned at **`e1ea56d`**): human-present/cards (agent role,
+CP verify) → `captured-hp.json`; human-not-present/cards (MCP role, MPP-mcp verify) → `captured-dpc.json`.
+Both carry an embedded pubkey and are **force-committed** (captures + 30-sample files) past `.gitignore`
+so the evidence persists. Re-measured, replayable:
+
+| Mode | verify | median | σ_log | p99 | n | outcome |
+|---|---|---|---|---|---|---|
+| HP issuer-only | 1 ES256 | **0.682 ms** | 0.027 | 0.763 ms | 30 | 30/30 ok |
+| DPC chain | 2 ES256 | **1.580 ms** | 0.009 | 1.624 ms | 30 | 30/30 ok |
+
+Both reproduce the original headlines (0.68 / 1.58 ms), now from durable artifacts. DPC/HP = 2.32×.
+
+**Net:** all 3 BLOCKERS + the Tempo-idempotency MAJOR + the AP2 evidentiary gap are **all closed**. No open
+round-2 items remain before the pre-registration freeze.
