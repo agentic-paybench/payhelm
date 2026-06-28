@@ -33,7 +33,7 @@ E2E is **backing-service-dominated**; the local-compute floor is sub-ms (signatu
 | Rail | T1 | T2a | **T2b** | P95(T2b) | P99(T2b) | N(T2b) | censoring | backing service |
 |---|---|---|---|---|---|---|---|---|
 | **x402-Solana** | 400 | 180 | **212** | 370 | 416 | 30 | 0% | x402.org facilitator |
-| **x402-Stellar** | 464 | 364 | **289** | 428 | **915** | 26 | **13.3% (T2b only)** | OZ facilitator |
+| **x402-Stellar** | 464 | 364 | **289** | 428 | **915** | 26† | **0%** (see ‡) | OZ facilitator |
 | **x402-Base** | 777 | 420 | **492** | 576 | 726 | 30 | 0% | facilitator → Base-Sepolia RPC |
 
 **SCORED ORDER (robust across all 3 topologies): Solana < Stellar < Base.** That ordinal — not the
@@ -63,10 +63,15 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 - **Topology sensitivity (D4e, FR4 satisfied):** network rails move in the **median** (the path); local
   rails are **host-sensitive** (compute-heavy → median tracks CPU; all → tails track host scheduling).
   Report the **per-topology spread**; do **not** present a single absolute number for a network rail.
-- **FR1 censoring (the one trigger crossing):** **Stellar T2b 13.3% > 5%** (4/30 OZ `/verify` invalids,
-  clustered, transient; **0% on T1/T2a**). Treat as **censored, not dropped**; **re-run to confirm** — if
-  representative, the **BT → Cox-PH/competing-risks fallback fires** (FR1). All other rail×topology cells:
-  **0% censoring**.
+- **FR1 censoring — NO trigger fires (re-checked 2026-06-28).** The apparent Stellar 13.3% "censoring"
+  on T2b was a **harness bug, not a payment decision**: reject-reason capture (n=100 devbox re-run) showed
+  **all** invalids were `auth_expiration_too_far` — OZ rejecting our **own malformed Soroban-auth payload**
+  (ledger-view race; *insensitive* to `maxTimeoutSeconds`). Reclassified to **`harness_error`** (not
+  `rejected`) → **FR1 censoring = 0% on all rail×topology cells; the BT→Cox-PH fallback does NOT fire.**
+  - **† / ‡ Stellar yield caveat:** ~12–43% of Stellar trials hit the expiration race → counted as
+    `harness_error`, so n is reduced (the **A median ~0.44 s is unaffected** — only the sample yield is).
+    **Before the scored run, get Stellar `harness_error = 0`** via a retry-on-construction-error (or a
+    facilitator/RPC sharing OZ's ledger view). This is an **instrumentation fix, not a rail property**.
 - **Work-clause (RR5/FR2/FR7):** the backing-service hop (facilitator / chain-RPC / Lightning node) is the
   **real authorization work** — reported as a diagnostic, **never subtracted** from E2E. The min-RTT floor
   removes only the localhost transport.
@@ -75,6 +80,6 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 
 ## Pending before this becomes the frozen pre-registered set
 1. Pre-registration ceremony (signed tag, dim-2 pass — `CEREMONY-RUNBOOK.md`).
-2. Stellar censoring re-check (FR1).
+2. Stellar harness_error=0 — fix the auth_expiration_too_far ledger-view race (retry-on-construction-error); the FR1 question is resolved (it was a harness bug, not censoring).
 3. Independent measurement review of the AP2/Tempo/Lightning harnesses.
 4. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
