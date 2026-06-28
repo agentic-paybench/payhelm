@@ -70,3 +70,18 @@ Four independent reviewers, 2026-06-28, against the branch `dim2-rapl-instrument
 2. **topology2 driver** — surface failed/empty rails in the SUMMARY (prevents silent bad data).
 3. **Tempo-Session** — record + assert cumulativeAmount; record regime/sleep_s; add trailer.
 4. **AP2** — mode-dependent `SAMPLES_PATH`; re-run + commit the issuer-only HP samples.
+
+## Resolution (2026-06-28, branch `dim2-rapl-instrumentation`)
+All four code fixes landed and self-validated; pushed to origin.
+
+| # | Item | Commit | Status | Validation |
+|---|---|---|---|---|
+| 1 | Stellar censoring-suppression | `1a869c0` | **RESOLVED** | tight allowlist `isExpRace`/`isSimFail` only; persistent-after-retry → `rejected`; expiration-race exhaustion → `harness_error`. Re-run 40/40 ok, 0 harness_error. |
+| 2 | topology2 silent failure | `56cbd7c` | **RESOLVED** | `verdict()` parses the `outcomes:`/`n:` line → `done`/`SUSPECT`/`FAILED`; wired into run_ts, base, tempo A/B notes. + Tempo `setup-accounts` guarded behind `[ -s .env ]` (idempotency major). |
+| 3 | Tempo-Session monotonicity / regime | `3d26508` | **RESOLVED** | `prevCum` strict-increase gate, non-advancing → `harness_error`; trailer records `socket_connects`/`counts`/`sleep_s`/`regime`/`rtt_floor_s`. Re-run: cumulative 5000→6000→7000, 12/12 ok, trailer present. |
+| 4 | AP2 mode-dependent `SAMPLES_PATH` | `0ef02d5` | **CODE RESOLVED** | per-mode filenames (`…-chain` / `…-singlekb` / `…-issueronly`); chain & HP captures no longer clobber. **Still pending: a fresh issuer-only capture ceremony to land committed HP (0.68 ms) samples — needs a founder-driven capture run; the 0.68 ms remains pilot-log-only until then.** |
+
+**Net:** all 3 BLOCKERS + the Tempo-idempotency MAJOR closed in code and validated. The AP2 0.68 ms
+remains the one open evidentiary gap — the harness is fixed, but the headline still rests on the pilot-log
+table until the issuer-only capture is re-run under `_full.py` and its samples committed. The chain
+**1.58 ms** (the actual sub-ranking-A headline for AP2) reconciles to its committed sample and is unaffected.

@@ -70,9 +70,13 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
   (ledger-view race; *insensitive* to `maxTimeoutSeconds`). Reclassified to **`harness_error`** (not
   `rejected`) → **FR1 censoring = 0% on all rail×topology cells; the BT→Cox-PH fallback does NOT fire.**
   - **† / ‡ Stellar yield — RESOLVED:** the ~12–43% expiration/simulation race trials are now **retried**
-    past (build+verify, 8 tries / 1.5 s spacing; `agentpay 3e5dbe1`) → **40/40 clean, `harness_error 0`**.
+    past (build+verify, 8 tries / 1.5 s spacing; `agentpay 1a869c0`) → **40/40 clean, `harness_error 0`**.
     The A median (~0.44 s) is unchanged; the **T2b cell above (N=26) predates the fix** — re-run for full N
     at score time. (An instrumentation fix, not a rail property.)
+    - **Review-2 correction:** the first cut (`3e5dbe1`) used a *broad* race-regex that matched 26/28 OZ
+      reject codes + funds-declines, which would have **suppressed real FR1 censoring**. Replaced with a
+      tight exact-code allowlist (`expir(ation|ed)` + gated `simulation_failed`); persistent-after-retry →
+      `rejected` (feeds FR1), expiration-race exhaustion → `harness_error`. `1a869c0` is the sound version.
 - **Work-clause (RR5/FR2/FR7):** the backing-service hop (facilitator / chain-RPC / Lightning node) is the
   **real authorization work** — reported as a diagnostic, **never subtracted** from E2E. The min-RTT floor
   removes only the localhost transport.
@@ -81,6 +85,7 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 
 ## Pending before this becomes the frozen pre-registered set
 1. Pre-registration ceremony (signed tag, dim-2 pass — `CEREMONY-RUNBOOK.md`).
-2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, `agentpay 3e5dbe1`): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
-3. Independent measurement review of the AP2/Tempo/Lightning harnesses.
-4. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
+2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, tight allowlist `agentpay 1a869c0`; supersedes the broad-regex `3e5dbe1` that review-2 flagged for censoring-suppression): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
+3. ✅ **Independent measurement review (round 2) — DONE 2026-06-28** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR fixed in code and validated (`1a869c0`, `56cbd7c`, `3d26508`, `0ef02d5`). One open evidentiary gap: the AP2 **0.68 ms** human-present headline still rests on the pilot-log table — the harness sample-path is fixed but the issuer-only capture must be **re-run + committed** before freeze. (AP2 chain 1.58 ms reconciles to its sample.)
+4. Re-run for full N at score time: Stellar **T2b** cell (N=26 predates `1a869c0`); AP2 **issuer-only** capture (commit HP samples).
+5. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
