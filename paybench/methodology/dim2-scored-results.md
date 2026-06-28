@@ -19,11 +19,11 @@ compare across only via the decomposition** (D4c); **E2E headline + local/backin
 ### Group A1 — Local-complete (no per-call network round-trip)
 | Rail (mode) | median | P95 | P99 | N | topology | class note |
 |---|---|---|---|---|---|---|
-| **AP2 — delegated/DPC** (2 ES256) *(headline)* | **1.58** | — | 1.74 | 30 | in-process (invariant) | holder-KB chain verify |
-| AP2 — human-present (issuer-only, 1 ES256) | 0.68 | — | 0.75 | 30 | in-process (invariant) | single-token verify |
+| **AP2 — delegated/DPC** (2 ES256) *(headline)* | **1.58** | 1.60 | 1.62 | 30 | in-process (invariant) | holder-KB chain verify |
+| AP2 — human-present (issuer-only, 1 ES256) | 0.68 | 0.71 | 0.76 | 30 | in-process (invariant) | single-token verify |
 | Tempo-Session (voucher accept) | **8.2 / 11.2 / 19.5** | — | ~10–19 | 30 | T2b / T2a / T1 | local crypto **+ amortized ~5 s TTL RPC tick**; median is **host-CPU-dependent** (faster host → lower) |
 
-- AP2 is in-process → **topology-invariant by construction** (measured on devbox; blocker-fixed).
+- AP2 is in-process → **topology-invariant by construction** (measured on devbox; blocker-fixed). Numbers from **durable, replay-forever captures** (embedded pubkey + exp-tolerant replay; AP2 pinned `e1ea56d`; captures+samples committed `agentpay 423a612`/`bed6298`) — both modes 30/30 ok, 0 harness_error.
 - Tempo-Session: warm (cache-hit) voucher = the numbers above; **cold (TTL miss → one chain-RPC read) ≈ 360 ms** (`L_cold`, disclose with the request inter-arrival). Local-class because steady-state has no per-call RPC.
 
 ### Group A2 — Network-dependent (facilitator / chain-RPC round-trip per call)
@@ -86,6 +86,7 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 ## Pending before this becomes the frozen pre-registered set
 1. Pre-registration ceremony (signed tag, dim-2 pass — `CEREMONY-RUNBOOK.md`).
 2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, tight allowlist `agentpay 1a869c0`; supersedes the broad-regex `3e5dbe1` that review-2 flagged for censoring-suppression): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
-3. ✅ **Independent measurement review (round 2) — DONE 2026-06-28** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR fixed in code and validated (`1a869c0`, `56cbd7c`, `3d26508`, `0ef02d5`). One open evidentiary gap: the AP2 **0.68 ms** human-present headline still rests on the pilot-log table — the harness sample-path is fixed but the issuer-only capture must be **re-run + committed** before freeze. (AP2 chain 1.58 ms reconciles to its sample.)
-4. Re-run for full N at score time: Stellar **T2b** cell (N=26 predates `1a869c0`); AP2 **issuer-only** capture (commit HP samples).
+3. ✅ **Independent measurement review (round 2) — DONE 2026-06-28** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR + the AP2 evidentiary gap **all closed**. No open round-2 items remain.
+   - ✅ **AP2 durable re-capture — DONE 2026-06-28.** Founder-driven both-flow ceremony (AP2 pinned `e1ea56d`): HP issuer-only **0.682 ms** (30/30) + DPC chain **1.580 ms** (30/30), each from a **replay-forever** capture (embedded verifying pubkey + exp-tolerant replay; the old captures were non-replayable — ephemeral key + stale `exp`). Captures + samples **force-committed** (`agentpay 423a612`, `bed6298`). Reproduces the original 0.68/1.58 ms exactly.
+4. Re-run for full N at score time: Stellar **T2b** cell (N=26 predates `1a869c0`).
 5. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
