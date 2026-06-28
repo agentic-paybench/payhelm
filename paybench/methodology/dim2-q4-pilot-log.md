@@ -384,8 +384,14 @@ OZ's allowed window), **not** a payment decision (funds/signature). So:
   (rebuild payload + re-verify, 8 tries / 1.5 s spacing so a fresh ledger clears the race; retries ONLY the
   expiration/simulation race, never a genuine reject or transport error). Result: **40/40 ok, `harness_error
   0`, censoring 0%** (was ~12–43% harness_error). The **A median (~0.44 s) is unchanged** — the fix only
-  recovers yield. Commits: `1f6acc0` (reject-reason capture + reclassification), `3e5dbe1` (the retry). The
-  T2b cell (N=26) predates the retry; re-run for full N at score time.
+  recovers yield. Commits: `1f6acc0` (reject-reason capture + reclassification), `3e5dbe1` (the retry, later
+  superseded by the tight-allowlist `1a869c0` after review-2 flagged the broad regex).
+- **T2b FULL-N RE-RUN — DONE 2026-06-28** (post-`1a869c0`, fresh uk-london-1 **E5.Flex** vantage
+  `193.123.189.152`, network-bound so a faithful T2b substitute): **40/40 ok, harness_error 0, censoring 0%**,
+  `accept_retries` observed (construction-races retried + cleared). ACCEPT median **289 ms** (raw 290 / rtt-corr
+  289) — **identical to the pre-fix N=26 cell** — but the tail tightens (P95 428→366, **P99 915→553**) and N
+  lifts 26→40. The `†`/`‡` artifacts are retired; the scored Stellar T2b cell now stands on clean full N.
+  Samples pulled to `agentpay poc/topology2/results-T2b-oci/` (4 files). Scored order Solana(212)<Stellar(289)<Base(492) unchanged.
 
 ### Verdict — FR4 SATISFIED
 Across **T1 + T2a + T2b** (three network-distinct vantages, incl. the citable named region uk-london-1):
