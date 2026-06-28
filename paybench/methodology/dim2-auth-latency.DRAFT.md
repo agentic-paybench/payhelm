@@ -460,8 +460,10 @@ cross-lineage gate passed (4 rounds, §8); ✅ revised (DR4); ✅ **ratified int
       frozen set, not left as a later addendum.)*
 - [ ] **FR1 numeric thresholds** (tie>20% / censoring>5% / cyclic>10% / LR p<0.05) — confirmed values frozen.
 - [ ] **FR4 ≥2-topology** requirement + the named topologies actually used (devbox + topology-2).
-- [ ] **Scored per-rail `{median,P95,P99}`** per the group-and-decompose tuple — *only after* topology-2
-      (the single-topology pilots are indicative, not scored).
+- [ ] **Scored per-rail `{median,P95,P99}`** per the group-and-decompose tuple — **candidate set drafted in
+      `dim2-scored-results.md`** (3 topologies; FR4 satisfied 2026-06-28). Freeze at the ceremony after the
+      Stellar-censoring re-check + measurement review. (Single-topology pilots are indicative; the
+      cross-topology *order* is the scored result.)
 - [ ] Ceremony mechanics per `CEREMONY-RUNBOOK.md` (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI →
       arXiv), as a **dim-2 pass** distinct from the landed dim-1/v1.2 finality pre-reg.
 
