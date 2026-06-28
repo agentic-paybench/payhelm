@@ -3,8 +3,9 @@
 **Status: CANDIDATE scored set — NOT yet frozen.** Consolidates the run-validated pilots
 (`dim2-q4-pilot-log.md`) into the **DR4 group-and-decompose** format (§2.5.1). It *supersedes the DRAFT
 placeholders at the pre-registration ceremony* — it is not itself pre-registered. **Gating before
-freeze:** (a) the pre-reg ceremony; (b) **re-check Stellar censoring** (the one FR1-trigger crossing); (c)
-independent measurement review of the AP2/Tempo/Lightning harnesses. All medians are **lognormal**; times
+freeze:** (a) the pre-reg ceremony; (b) **Stellar `harness_error = 0`** (the `auth_expiration_too_far`
+ledger-view race — the FR1 "censoring" question is *resolved*: it was a harness bug, not a payment
+decision); (c) independent measurement review of the AP2/Tempo/Lightning harnesses. All medians are **lognormal**; times
 in ms; topologies **T1 = devbox**, **T2a = GitHub Codespaces/Azure**, **T2b = OCI uk-london-1 (x64)**.
 
 Reporting rules applied: **P50/P95/P99 + N + per-topology** (D4a/D4e); **group by work-class, rank within,
