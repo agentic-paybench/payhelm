@@ -30,9 +30,12 @@ import re
 from dataclasses import dataclass
 
 from . import MASTER_SEED, N_FIXTURE_SAMPLES, PRECISION_DECIMALS
-from .paths import FIXTURES_DIR, fixture_path, provenance_path
+from .dimensions import FINALITY, Dimension
+from .paths import FIXTURES_DIR
 
-FIXTURE_SCHEMA = "paybench.fixture.v1"
+# Re-exported for callers/tests that referenced it here pre-refactor; the
+# canonical definition now lives on the Dimension descriptor.
+FIXTURE_SCHEMA = FINALITY.fixture_schema
 GENERATOR_VERSION = "1"
 
 # --- Provenance parsing (comment-preserving, no YAML dependency) -------------
@@ -70,8 +73,8 @@ class RailCalibration:
         return float(self.sigma_log)
 
 
-def load_calibration(rail_id: str) -> RailCalibration:
-    text = provenance_path(rail_id).read_text(encoding="utf-8")
+def load_calibration(rail_id: str, dim: Dimension = FINALITY) -> RailCalibration:
+    text = dim.provenance_path(rail_id).read_text(encoding="utf-8")
     pm = _PARAMS_RE.search(text)
     rm = _RAIL_RE.search(text)
     fm = _FAMILY_RE.search(text)
@@ -108,9 +111,16 @@ def _format_sample(x: float) -> str:
     return f"{x:.{PRECISION_DECIMALS}f}"
 
 
-def sample_finalities(cal: RailCalibration, n: int = N_FIXTURE_SAMPLES) -> list[str]:
-    """Draw ``n`` seeded log-normal finality samples (as canonical strings)."""
-    rng = random.Random(derive_seed(f"fixture:{cal.rail_id}"))
+def sample_finalities(
+    cal: RailCalibration, dim: Dimension = FINALITY, n: int = N_FIXTURE_SAMPLES
+) -> list[str]:
+    """Draw ``n`` seeded log-normal samples for ``cal`` on ``dim`` (canonical strings).
+
+    The RNG stream is domain-separated per dimension+rail, so finality keeps its
+    ``fixture:<rail>`` stream byte-for-byte while auth-latency draws an
+    independent ``fixture:auth-latency:<rail>`` stream.
+    """
+    rng = random.Random(derive_seed(dim.fixture_seed_domain(cal.rail_id)))
     mu, sigma = cal.mu, cal.sigma
     return [_format_sample(rng.lognormvariate(mu, sigma)) for _ in range(n)]
 
@@ -129,14 +139,22 @@ def content_hash(payload: dict) -> str:
     return "sha256:" + hashlib.sha256(_canonical_bytes(payload)).hexdigest()
 
 
-def build_payload(cal: RailCalibration, samples: list[str]) -> dict:
-    """The hashed content of a fixture: calibration + seed + the samples."""
+def build_payload(
+    cal: RailCalibration, samples: list[str], dim: Dimension = FINALITY
+) -> dict:
+    """The hashed content of a fixture: calibration + seed + the samples.
+
+    The key set is dimension-invariant — only the *values* of ``dimension``,
+    ``unit`` and the seed-domain fields vary by ``dim`` — so the finality payload
+    is byte-for-byte identical to the pre-refactor harness (its hash is frozen).
+    """
+    seed_domain = dim.fixture_seed_domain(cal.rail_id)
     return {
-        "schema": FIXTURE_SCHEMA,
+        "schema": dim.fixture_schema,
         "rail_id": cal.rail_id,
         "rail_name": cal.rail_name,
-        "dimension": "settlement-finality",
-        "unit": "seconds",
+        "dimension": dim.dimension,
+        "unit": dim.unit,
         "distribution": {
             "family": cal.family,
             "median_s": cal.median_s,
@@ -147,8 +165,8 @@ def build_payload(cal: RailCalibration, samples: list[str]) -> dict:
             "version": GENERATOR_VERSION,
             "rng": "python-stdlib-random-mersenne-twister",
             "master_seed": MASTER_SEED,
-            "rail_seed_domain": f"fixture:{cal.rail_id}",
-            "rail_seed": derive_seed(f"fixture:{cal.rail_id}"),
+            "rail_seed_domain": seed_domain,
+            "rail_seed": derive_seed(seed_domain),
         },
         "n_samples": len(samples),
         "precision_decimals": PRECISION_DECIMALS,
@@ -158,13 +176,15 @@ def build_payload(cal: RailCalibration, samples: list[str]) -> dict:
 
 # --- Provenance write-back ----------------------------------------------------
 
-def write_provenance_hash(rail_id: str, fixture_hash: str) -> bool:
+def write_provenance_hash(
+    rail_id: str, fixture_hash: str, dim: Dimension = FINALITY
+) -> bool:
     """Set ``fixture_content_hash`` in the rail's provenance file (idempotent).
 
     A surgical single-line substitution preserves all hand-written comments and
     formatting (no YAML round-trip). Returns True if the file changed.
     """
-    path = provenance_path(rail_id)
+    path = dim.provenance_path(rail_id)
     text = path.read_text(encoding="utf-8")
     new_text, n = _HASH_LINE_RE.subn(rf'\1"{fixture_hash}"', text)
     if n != 1:
@@ -189,11 +209,11 @@ class GeneratedFixture:
     provenance_updated: bool
 
 
-def generate_fixture(rail_id: str) -> GeneratedFixture:
+def generate_fixture(rail_id: str, dim: Dimension = FINALITY) -> GeneratedFixture:
     """Generate, content-address, persist one rail's fixture; write provenance."""
-    cal = load_calibration(rail_id)
-    samples = sample_finalities(cal)
-    payload = build_payload(cal, samples)
+    cal = load_calibration(rail_id, dim)
+    samples = sample_finalities(cal, dim)
+    payload = build_payload(cal, samples, dim)
     fh = content_hash(payload)
 
     # The fixture file = payload + its own content hash (recomputed over payload
@@ -202,13 +222,13 @@ def generate_fixture(rail_id: str) -> GeneratedFixture:
     out = dict(payload)
     out["content_hash"] = fh
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
-    fixture_path(rail_id).write_text(
+    dim.fixture_path(rail_id).write_text(
         json.dumps(out, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
         + "\n",
         encoding="utf-8",
     )
 
-    updated = write_provenance_hash(rail_id, fh)
+    updated = write_provenance_hash(rail_id, fh, dim)
     return GeneratedFixture(
         rail_id=rail_id,
         hash=fh,
@@ -219,9 +239,9 @@ def generate_fixture(rail_id: str) -> GeneratedFixture:
     )
 
 
-def load_fixture(rail_id: str) -> dict:
+def load_fixture(rail_id: str, dim: Dimension = FINALITY) -> dict:
     """Load a generated fixture file and verify its content hash (integrity)."""
-    obj = json.loads(fixture_path(rail_id).read_text(encoding="utf-8"))
+    obj = json.loads(dim.fixture_path(rail_id).read_text(encoding="utf-8"))
     stored = obj.get("content_hash", "")
     payload = {k: v for k, v in obj.items() if k != "content_hash"}
     recomputed = content_hash(payload)
@@ -233,6 +253,6 @@ def load_fixture(rail_id: str) -> dict:
     return obj
 
 
-def fixture_samples_as_floats(rail_id: str) -> list[float]:
-    """The fixture's finality samples as floats (for race draws / pass@k)."""
-    return [float(s) for s in load_fixture(rail_id)["samples"]]
+def fixture_samples_as_floats(rail_id: str, dim: Dimension = FINALITY) -> list[float]:
+    """The fixture's samples as floats (for race draws / pass@k)."""
+    return [float(s) for s in load_fixture(rail_id, dim)["samples"]]

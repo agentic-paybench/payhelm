@@ -16,6 +16,13 @@ first, regenerate the manifest, then run this.
 (= `sha256sum paybench/methodology/prereg-manifest.sha256`). If any frozen file changes, regenerate
 the manifest and this hash changes — re-anchor from scratch.
 
+> **Scope: this runbook documents the DIMENSION-1 (settlement-finality, v1.2) pre-reg pass** (anchors +
+> signed tag LANDED 2026-06-14). **Dimension-2 (RAPL / authorization-latency) is a SEPARATE, not-yet-run
+> pass** reusing these same mechanics. Its frozen set = the **DR4-ratified doctrine** (`dim2-auth-latency`
+> §2 + §2.5 + **§2.5.1 / DR4**, group-and-decompose), the confirmed **FR1** thresholds, the **FR4** topology
+> list, and the **scored** per-rail `{median,P95,P99}` — see the dim-2 pre-registration-scope checklist in
+> `dim2-auth-latency.DRAFT.md` §7. Do **not** start the dim-2 pass until topology-2 lands (numbers scored).
+
 ---
 
 ## 0. Where each step runs

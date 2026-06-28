@@ -21,6 +21,29 @@ python -m paybench.mockbench.cli all        # generate then run
 
 No third-party dependencies (no numpy/scipy). Python 3.9+.
 
+## Dimensions
+
+The harness is **dimension-parametric** (`mockbench/dimensions.py`). Every
+subcommand takes `--dimension {finality,auth-latency}` (`-d`), defaulting to
+`finality`:
+
+- **`finality`** (default) — the frozen, pre-registered v1.2 settlement-finality
+  benchmark: 5 settling rails → C(5,2) = 10 pairs → 5,000 trials. Its fixture
+  hashes and `run_hash` are frozen and reproduce bit-for-bit (the `FINALITY`
+  descriptor is pinned to the original constants; CI + tests guard it).
+- **`auth-latency`** — the Day-30 authorization-latency dimension (§11), where
+  **AP2/R6 debuts** (§8 Resolution B): 6 rails → C(6,2) = 15 pairs → 7,500 trials.
+  Calibration is **PLACEHOLDER** pending founder sourcing — see
+  `../methodology/dim2-auth-latency.DRAFT.md` and `../SESSION-1-HANDOFF.md`.
+
+```bash
+python -m paybench.mockbench.cli all -d auth-latency   # generate + run the auth-latency dimension
+```
+
+Dimensions share the one published master seed but are RNG-domain-separated
+(`fixture:<rail>` vs `fixture:auth-latency:<rail>`), so neither perturbs the
+other's streams.
+
 ## What it does
 
 1. **Fixture generation** (`fixtures.py`). For each of the 5 settling rails (R1, R2, R9, R10,
