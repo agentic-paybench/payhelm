@@ -3,8 +3,8 @@
 **Status: CANDIDATE scored set — NOT yet frozen.** Consolidates the run-validated pilots
 (`dim2-q4-pilot-log.md`) into the **DR4 group-and-decompose** format (§2.5.1). It *supersedes the DRAFT
 placeholders at the pre-registration ceremony* — it is not itself pre-registered. **Gating before
-freeze:** (a) the pre-reg ceremony; (b) **Stellar `harness_error = 0`** (the `auth_expiration_too_far`
-ledger-view race — the FR1 "censoring" question is *resolved*: it was a harness bug, not a payment
+freeze:** (a) the pre-reg ceremony; (b) ✅ Stellar `harness_error` resolved (retry-on-construction-race,
+`3e5dbe1`) — and the FR1 "censoring" question resolved with it (it was a harness bug, not a payment
 decision); (c) independent measurement review of the AP2/Tempo/Lightning harnesses. All medians are **lognormal**; times
 in ms; topologies **T1 = devbox**, **T2a = GitHub Codespaces/Azure**, **T2b = OCI uk-london-1 (x64)**.
 
@@ -69,10 +69,10 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
   **all** invalids were `auth_expiration_too_far` — OZ rejecting our **own malformed Soroban-auth payload**
   (ledger-view race; *insensitive* to `maxTimeoutSeconds`). Reclassified to **`harness_error`** (not
   `rejected`) → **FR1 censoring = 0% on all rail×topology cells; the BT→Cox-PH fallback does NOT fire.**
-  - **† / ‡ Stellar yield caveat:** ~12–43% of Stellar trials hit the expiration race → counted as
-    `harness_error`, so n is reduced (the **A median ~0.44 s is unaffected** — only the sample yield is).
-    **Before the scored run, get Stellar `harness_error = 0`** via a retry-on-construction-error (or a
-    facilitator/RPC sharing OZ's ledger view). This is an **instrumentation fix, not a rail property**.
+  - **† / ‡ Stellar yield — RESOLVED:** the ~12–43% expiration/simulation race trials are now **retried**
+    past (build+verify, 8 tries / 1.5 s spacing; `agentpay 3e5dbe1`) → **40/40 clean, `harness_error 0`**.
+    The A median (~0.44 s) is unchanged; the **T2b cell above (N=26) predates the fix** — re-run for full N
+    at score time. (An instrumentation fix, not a rail property.)
 - **Work-clause (RR5/FR2/FR7):** the backing-service hop (facilitator / chain-RPC / Lightning node) is the
   **real authorization work** — reported as a diagnostic, **never subtracted** from E2E. The min-RTT floor
   removes only the localhost transport.
@@ -81,6 +81,6 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 
 ## Pending before this becomes the frozen pre-registered set
 1. Pre-registration ceremony (signed tag, dim-2 pass — `CEREMONY-RUNBOOK.md`).
-2. Stellar harness_error=0 — fix the auth_expiration_too_far ledger-view race (retry-on-construction-error); the FR1 question is resolved (it was a harness bug, not censoring).
+2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, `agentpay 3e5dbe1`): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
 3. Independent measurement review of the AP2/Tempo/Lightning harnesses.
 4. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
