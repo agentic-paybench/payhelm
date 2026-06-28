@@ -318,3 +318,47 @@ though the local *ranking* is robust).
 local ≪ network preserved) + the refined **host-sensitivity** finding (local→host CPU/scheduling,
 network→path). All rails ran (Tempo after the driver fix). **Pending: T2b (OCI named region)** — the citable
 topology-2. Still pilot, not scored, until T2b lands.
+
+## FR4 TOPOLOGY-2 — T2b OCI uk-london-1 (AMD/x64), 2026-06-28
+
+The citable named-region topology. Always-Free **A1 (ARM)** was capacity-blocked in uk-london-1 (London
+A1 is scarce) → pivoted to a paid **VM.Standard.E5.Flex x64** (`payhelm-dim2-e2`, 2 OCPU/12 GB) in the SAME
+region; ran the driver via `git archive` of the branch (devbox working tree was on `main`). All 5 rails ran.
+
+### Sub-ranking A — three-topology comparison (the FR4 test)
+
+| Rail | T1 devbox | T2a Codespaces | T2b OCI London | order |
+|---|---|---|---|---|
+| x402-Solana | 400 ms | 180 ms | **212 ms** | 1st (all 3) |
+| x402-Stellar | 464 ms | 364 ms | **289 ms** | 2nd (all 3) |
+| x402-Base | 777 ms | 420 ms | **492 ms** | 3rd (all 3) |
+
+**Order HOLDS across all three topologies: Solana < Stellar < Base.** Absolute numbers shift with the
+egress path (London differs from devbox + Azure), but the *order* — the FR4 question — is invariant. → **A
+ranking robust to topology, confirmed from a third network-distinct path.**
+
+### Sub-ranking B
+- **Lightning (network):** 936 (T1) → 771 (T2a) → **552 ms** (T2b) — faster from London (closer to the
+  Spark operators), still ≫ local-402. Heterogeneity holds at every topology.
+- **local-402 (Base/Solana/Stellar/Tempo):** ~1.6–2.2 ms — invariant median (host-jitter tails, as T2a).
+
+### Local control
+- **Tempo-A:** 19.5 (T1) → 11.2 (T2a) → **8.2 ms** (T2b) — keeps dropping with a faster host CPU (E5 London
+  is quick), confirming the **compute-heavy-local = CPU-sensitive median (host, not path)** finding. Still
+  ≪ the x402 A's (212–492 ms): **local ≪ network holds.** AP2 invariant (skipped).
+
+### NEW — first FR1-threshold crossing (Stellar, topology-dependent)
+**Stellar A: 26/30 ok, 4 rejected → censoring 13.3% > the FR1 5% trigger** (trials 5,6,27,28; the OZ
+`/verify` returned *invalid* after a normal-latency response — no transport error). **0% on T1 + T2a**, so
+this reads as **transient OZ-facilitator behavior from the London egress** (clustered, intermittent), not a
+rail defect. Per FR1 this would push toward the **Cox-PH fallback IF representative** — so **re-check
+Stellar's censoring on the scored runs**; the 4 enter the survival model as **censored, not dropped**. First
+time any rail crossed an FR1 numeric trigger — exactly what the rule is for.
+
+### Verdict — FR4 SATISFIED
+Across **T1 + T2a + T2b** (three network-distinct vantages, incl. the citable named region uk-london-1):
+A order robust (Solana<Stellar<Base ×3), B heterogeneity robust, local ≪ network preserved. **Per D4e the
+network numbers move from *indicative* → eligible to be SCORED** (≥2 topologies met). Caveats to carry into
+the scored/pre-reg pass: report the **per-topology spread** (absolute medians are path-dependent), **re-check
+Stellar censoring**, and local rails are **host-dependent** (report per-host). Bonus A1 (ARM) still pending
+(free). The E5 VM is PAID — terminate after the artifact pull (done: `results-T2b-oci-e2/`, 20 files).
