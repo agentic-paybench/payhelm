@@ -347,13 +347,25 @@ ranking robust to topology, confirmed from a third network-distinct path.**
   is quick), confirming the **compute-heavy-local = CPU-sensitive median (host, not path)** finding. Still
   ≪ the x402 A's (212–492 ms): **local ≪ network holds.** AP2 invariant (skipped).
 
-### NEW — first FR1-threshold crossing (Stellar, topology-dependent)
-**Stellar A: 26/30 ok, 4 rejected → censoring 13.3% > the FR1 5% trigger** (trials 5,6,27,28; the OZ
-`/verify` returned *invalid* after a normal-latency response — no transport error). **0% on T1 + T2a**, so
-this reads as **transient OZ-facilitator behavior from the London egress** (clustered, intermittent), not a
-rail defect. Per FR1 this would push toward the **Cox-PH fallback IF representative** — so **re-check
-Stellar's censoring on the scored runs**; the 4 enter the survival model as **censored, not dropped**. First
-time any rail crossed an FR1 numeric trigger — exactly what the rule is for.
+### Stellar "censoring" — RE-CHECKED 2026-06-28: it was a HARNESS bug, NOT real censoring → FR1 does NOT fire
+The T2b run showed Stellar A 26/30 ok / 4 "rejected" (13.3%), which *looked* like the first FR1 trigger
+crossing. **The re-check overturns that.** Added reject-reason capture to the harness and re-ran from
+**devbox** (n=100): **12% "rejected", ALL with the same reason `invalid_exact_stellar_payload_auth_expiration_too_far`** —
+i.e. the **OZ facilitator rejecting our own malformed payload** (the Soroban auth expiration lands beyond
+OZ's allowed window), **not** a payment decision (funds/signature). So:
+- It is **NOT transient** and **NOT London-specific** — it reproduces ~12–43% on **every** vantage (the
+  earlier "transient OZ" read was wrong).
+- It is an **instrumentation bug → reclassified as `harness_error`** (the harness now matches
+  `expiration|malformed|…` reasons and counts them as harness_error, NOT `rejected`). **FR1 censoring →
+  0.0%.** So **FR1 does NOT fire for Stellar** — the "trigger" was self-inflicted by the payload builder.
+- **Lever found NOT to work:** `maxTimeoutSeconds` (server *and* client-side) does **not** control it — the
+  reject rate is *insensitive* to it (12%/25%/43% across attempts), pointing to a **client↔OZ ledger-view
+  race** in `@x402/stellar` on this testnet facilitator, not a window-size issue.
+- **OPEN (engineering, not methodology):** to get a **clean Stellar scored run (`harness_error = 0`)**,
+  add a **retry-on-construction-error** (re-fetch challenge + rebuild payload until OZ accepts) or pin a
+  facilitator/RPC that shares OZ's ledger view. The successful 75–88% of trials give the **clean A median
+  (~0.44 s, unchanged)** — the latency number is unaffected; only the yield is. Commit: `1f6acc0`
+  (reject-reason capture + reclassification).
 
 ### Verdict — FR4 SATISFIED
 Across **T1 + T2a + T2b** (three network-distinct vantages, incl. the citable named region uk-london-1):
