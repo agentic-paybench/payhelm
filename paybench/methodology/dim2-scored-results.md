@@ -34,7 +34,7 @@ E2E is **backing-service-dominated**; the local-compute floor is sub-ms (signatu
 | Rail | T1 | T2a | **T2b** | P95(T2b) | P99(T2b) | N(T2b) | censoring | backing service |
 |---|---|---|---|---|---|---|---|---|
 | **x402-Solana** | 400 | 180 | **212** | 370 | 416 | 30 | 0% | x402.org facilitator |
-| **x402-Stellar** | 464 | 364 | **289** | 428 | **915** | 26† | **0%** (see ‡) | OZ facilitator |
+| **x402-Stellar** | 464 | 364 | **289** | 366 | 553 | 40 | **0%** | OZ facilitator |
 | **x402-Base** | 777 | 420 | **492** | 576 | 726 | 30 | 0% | facilitator → Base-Sepolia RPC |
 
 **SCORED ORDER (robust across all 3 topologies): Solana < Stellar < Base.** That ordinal — not the
@@ -69,10 +69,13 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
   **all** invalids were `auth_expiration_too_far` — OZ rejecting our **own malformed Soroban-auth payload**
   (ledger-view race; *insensitive* to `maxTimeoutSeconds`). Reclassified to **`harness_error`** (not
   `rejected`) → **FR1 censoring = 0% on all rail×topology cells; the BT→Cox-PH fallback does NOT fire.**
-  - **† / ‡ Stellar yield — RESOLVED:** the ~12–43% expiration/simulation race trials are now **retried**
-    past (build+verify, 8 tries / 1.5 s spacing; `agentpay 1a869c0`) → **40/40 clean, `harness_error 0`**.
-    The A median (~0.44 s) is unchanged; the **T2b cell above (N=26) predates the fix** — re-run for full N
-    at score time. (An instrumentation fix, not a rail property.)
+  - **Stellar yield — RESOLVED + T2b re-run DONE 2026-06-28:** the ~12–43% expiration/simulation race
+    trials are now **retried** past (build+verify, 8 tries / 1.5 s spacing; `agentpay 1a869c0`). The T2b cell
+    above was **re-run full-N on a fresh uk-london-1 E5.Flex vantage** (`193.123.189.152`, post-fix): **40/40
+    ok, `harness_error 0`, censoring 0%**, `accept_retries` observed (races retried, all cleared). The
+    **median is identical (289 ms)** to the pre-fix N=26 cell — the fix tightened the tail (P99 915→553,
+    P95 428→366) and lifted N 26→40; the `†`/`‡` artifacts are retired. (An instrumentation fix, not a rail
+    property.) Samples: `agentpay poc/topology2/results-T2b-oci/R2-x402-stellar.rapl.samples.jsonl`.
     - **Review-2 correction:** the first cut (`3e5dbe1`) used a *broad* race-regex that matched 26/28 OZ
       reject codes + funds-declines, which would have **suppressed real FR1 censoring**. Replaced with a
       tight exact-code allowlist (`expir(ation|ed)` + gated `simulation_failed`); persistent-after-retry →
@@ -88,5 +91,5 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, tight allowlist `agentpay 1a869c0`; supersedes the broad-regex `3e5dbe1` that review-2 flagged for censoring-suppression): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
 3. ✅ **Independent measurement review (round 2) — DONE 2026-06-28** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR + the AP2 evidentiary gap **all closed**. No open round-2 items remain.
    - ✅ **AP2 durable re-capture — DONE 2026-06-28.** Founder-driven both-flow ceremony (AP2 pinned `e1ea56d`): HP issuer-only **0.682 ms** (30/30) + DPC chain **1.580 ms** (30/30), each from a **replay-forever** capture (embedded verifying pubkey + exp-tolerant replay; the old captures were non-replayable — ephemeral key + stale `exp`). Captures + samples **force-committed** (`agentpay 423a612`, `bed6298`). Reproduces the original 0.68/1.58 ms exactly.
-4. Re-run for full N at score time: Stellar **T2b** cell (N=26 predates `1a869c0`).
+4. ✅ **Stellar T2b full-N re-run — DONE 2026-06-28** (fresh uk-london-1 E5.Flex `193.123.189.152`, post-`1a869c0`): 40/40 ok, harness_error 0, median 289 ms (identical to pre-fix), P95 366 / P99 553, censoring 0%. Replaces the N=26† cell. Scored order Solana<Stellar<Base unchanged.
 5. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
