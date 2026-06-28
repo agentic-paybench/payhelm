@@ -361,11 +361,12 @@ OZ's allowed window), **not** a payment decision (funds/signature). So:
 - **Lever found NOT to work:** `maxTimeoutSeconds` (server *and* client-side) does **not** control it — the
   reject rate is *insensitive* to it (12%/25%/43% across attempts), pointing to a **client↔OZ ledger-view
   race** in `@x402/stellar` on this testnet facilitator, not a window-size issue.
-- **OPEN (engineering, not methodology):** to get a **clean Stellar scored run (`harness_error = 0`)**,
-  add a **retry-on-construction-error** (re-fetch challenge + rebuild payload until OZ accepts) or pin a
-  facilitator/RPC that shares OZ's ledger view. The successful 75–88% of trials give the **clean A median
-  (~0.44 s, unchanged)** — the latency number is unaffected; only the yield is. Commit: `1f6acc0`
-  (reject-reason capture + reclassification).
+- **RESOLVED 2026-06-28 (engineering):** added a **retry-on-construction-race** to the Stellar harness
+  (rebuild payload + re-verify, 8 tries / 1.5 s spacing so a fresh ledger clears the race; retries ONLY the
+  expiration/simulation race, never a genuine reject or transport error). Result: **40/40 ok, `harness_error
+  0`, censoring 0%** (was ~12–43% harness_error). The **A median (~0.44 s) is unchanged** — the fix only
+  recovers yield. Commits: `1f6acc0` (reject-reason capture + reclassification), `3e5dbe1` (the retry). The
+  T2b cell (N=26) predates the retry; re-run for full N at score time.
 
 ### Verdict — FR4 SATISFIED
 Across **T1 + T2a + T2b** (three network-distinct vantages, incl. the citable named region uk-london-1):
