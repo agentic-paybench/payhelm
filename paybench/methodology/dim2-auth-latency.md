@@ -1,13 +1,12 @@
 # Dimension 2: Authorization Latency — RAPL (Rail Authorization-Primitive Latency)
 
-> **RATIFICATION-READY — proposed de-draft for founder sign-off.** This is the canonical doctrine
-> de-drafted from `dim2-auth-latency.DRAFT.md` per the **founder ratification of 2026-06-24** (DR4
-> group-and-decompose, FR1 thresholds, FR4 ≥2-topology). The `DRAFT/PROPOSED/PLACEHOLDER` language is
-> removed and the placeholder fixtures are replaced by the **scored results** (`dim2-scored-results.md`,
-> FR4-satisfied across 3 topologies, 2026-06-28). It is the candidate **frozen doctrine** for the dim-2
-> pre-registration ceremony (`dim2-CEREMONY-RUNBOOK.md`). The founder confirms this file at the freeze;
-> until the signed tag lands it is not yet anchored. The full decision arc lives in
-> `dim2-adversarial-review.md`, `dim2-worktype-synthesis.md`, and the §9 decision log of the DRAFT.
+> **RATIFIED 2026-06-29 (founder).** Canonical doctrine de-drafted from `dim2-auth-latency.DRAFT.md` per the
+> **founder ratification of 2026-06-24** (DR4 group-and-decompose, FR1 thresholds, FR4 ≥2-topology) and
+> founder-reviewed/ratified 2026-06-29. `DRAFT/PROPOSED/PLACEHOLDER` language removed; per-rail scored numbers
+> are single-sourced to `dim2-scored-results.md` (FR4-satisfied across 3 topologies). This is the
+> **frozen-candidate doctrine** for the dim-2 pre-registration ceremony (`dim2-CEREMONY-RUNBOOK.md`); it is
+> anchored only once the signed tag lands. Decision arc: `dim2-adversarial-review.md`,
+> `dim2-worktype-synthesis.md`, and the §9 decision log of the DRAFT.
 
 ## 1. What "authorization latency" measures
 

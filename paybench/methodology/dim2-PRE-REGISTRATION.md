@@ -1,9 +1,10 @@
 # PayBench authorization-latency (RAPL) benchmark — Pre-registration
 
-> **DRAFT for founder review.** Companion to the landed dimension-1 settlement-finality pre-registration
-> (`PRE-REGISTRATION.md`), as a **separate dim-2 pass** reusing the same anchor stack. The manifest hash +
-> DOI + anchor references below are filled at the ceremony (`dim2-CEREMONY-RUNBOOK.md`) once the founder
-> confirms the frozen set (§0 of the runbook: de-draft doctrine, finalize scored-results, this narrative).
+> **RATIFIED (founder, 2026-06-29) — pending the freeze ceremony.** Companion to the landed dimension-1
+> settlement-finality pre-registration (`PRE-REGISTRATION.md`), as a **separate dim-2 pass** reusing the same
+> anchor stack. The manifest hash + DOI + anchor references below are filled at the ceremony
+> (`dim2-CEREMONY-RUNBOOK.md`) once the remaining §0 prerequisites land (finalize `dim2-scored-results.md`; the
+> calibrated-mock leg, §0.4).
 
 **Pre-registration of an evaluation methodology and its analysis plan, committed before publication of any
 real-rail authorization-latency ranking.**
