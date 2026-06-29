@@ -54,8 +54,9 @@ the facilitators than devbox).
 |---|---|---|---|---|---|
 | **MPP-Lightning** (BOLT11 mint) | 936 | 771 | **552** | 30 | Spark/LN node round-trip |
 
-**SCORED RESULT: local-402 (~2–3 ms) ≪ Lightning invoice-mint (~0.5–0.9 s)** — a ~250–500× gap, robust
-across topologies. (Lightning faster from London; still an order-of-magnitude above local emit.)
+**SCORED RESULT: local-402 (~2–3 ms) ≪ Lightning invoice-mint (~0.5–0.9 s)** — a **several-hundred-fold** gap
+(~200–600× across topologies), robust. (Lightning faster from London; still orders of magnitude above local
+emit.)
 
 ---
 

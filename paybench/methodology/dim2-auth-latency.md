@@ -32,8 +32,8 @@ machinery applies within a sub-ranking (§4).
 
 ## 2. Per-rail operationalisation — the SPLIT design
 
-The §8 cross-lineage gate **refuted the single-race doctrine 0–4** and found the L402 pin a **category
-error**. The dimension is therefore **SPLIT**: authorization is *not one shared concept* across these rails,
+An independent **cross-lineage adversarial review refuted the single-race doctrine 0–4** and found the L402
+pin a **category error**. The dimension is therefore **SPLIT**: authorization is *not one shared concept* across these rails,
 so each rail is raced **only against rails whose authorization point is the same kind of object**. A rail is
 measured on **whichever primitive(s) it actually has**. The x402 rails have *both* a challenge-issuance and a
 validation primitive, so they appear in both A and B (two distinct, separately-measured quantities); L402 has
@@ -194,8 +194,9 @@ cross-lineage scan refuted the "one race + scalar label + median-only" framing 4
 - **(D4c) Work-class grouping (the structural change).** Within a sub-ranking, group rails by work class —
   *Local-complete* (no network round-trip in the primitive's critical path) vs *Network-dependent* (≥1
   intrinsic backing-service round-trip per call). **Rank within a group; compare across groups only via the
-  decomposition tuple (D4b) — never as a single cross-class ordinal.** When between-class spread (250–800×)
-  dwarfs within-class spread (≤~2×), a single ordinal encodes class membership, not rail quality.
+  decomposition tuple (D4b) — never as a single cross-class ordinal.** When the between-class spread
+  (local-complete vs network-dependent — roughly two orders of magnitude) dwarfs the within-class spread, a
+  single ordinal encodes class membership, not rail quality.
 - **(D4d) Tempo TTL is reference-impl config, not a rail class.** Report `L_hot` (cache-hit) and `L_cold`
   (cache-miss → chain read) with the request inter-arrival distribution disclosed (and/or a TTL sweep
   {0, 5 s, 60 s, ∞}); do **not** give TTL a third taxonomy bucket (gaming-prone). Tempo appears in both groups
