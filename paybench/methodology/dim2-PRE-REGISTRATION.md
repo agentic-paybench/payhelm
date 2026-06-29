@@ -48,7 +48,7 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 | FR1 fallback triggers (frozen) | tie-rate > 20% **OR** censoring > 5% **OR** > 10% cyclic triples / BT-fit LR p < 0.05 → switch BT → Cox-PH / competing-risks |
 | FR4 topologies (≥2 required, satisfied) | T1 devbox · T2a GitHub Codespaces (Azure) · T2b OCI uk-london-1 — 3 network-distinct vantages (2026-06-28) |
 | Scored per-rail `{median,P95,P99}` | `dim2-scored-results.md` (group-and-decompose, 3 topologies). **The scored result is the within-group order**, not the absolute ms. |
-| Calibrated mock fixtures + mock-pipeline hash | `calibration/provenance/<rail>-auth-latency.provenance.yaml` calibrated from the pilot `{median, σ}` (placeholders retired) + a deterministic mock-pipeline reproduction hash — the **Variant-E baseline**, mirroring dim-1 |
+| Calibrated mock fixtures + mock-pipeline hashes | 10 per-(rail×sub-ranking) fixtures (`…-auth-latency-{A,B}.provenance.yaml`) calibrated from the pilot `{median, σ}` (placeholders retired) + deterministic reproduction hashes **A `7487c278…` / B `19b91c8d…`** — the **Variant-E baseline** (SPLIT A/B, mirroring dim-1); frozen finality `run_hash 895f99ed…` unperturbed |
 | Reproducibility / seed-namespace (§5) | master seed `20260717`; RNG domain-separated `fixture:auth-latency:<rail>` / `pair:auth-latency:<a>:<b>`; asserted by `test_auth_latency.py::test_dimensions_are_rng_domain_separated` |
 
 ### Frozen analysis plan (doctrine §2.5, §4)
