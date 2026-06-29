@@ -77,12 +77,13 @@ does); Charge's fused ~500 ms is reported in an appendix, not ranked.
 pre-settlement payment-validation point (§2.3). L402's challenge issuance includes **BOLT11 invoice
 generation** (a real Lightning operation), so B is not a pure constant across rails.
 
-**Scored values:** the per-rail `{median, P95, P99}` (group-and-decompose tuple, 3 topologies) live in
-`dim2-scored-results.md` — the FR4-satisfied scored set (2026-06-28). The **scored result is the
+**Scored values — single source.** All per-rail `{median, P95, P99}` (the group-and-decompose tuple, 3
+topologies) live **only** in `dim2-scored-results.md` (the FR4-satisfied scored set, 2026-06-28); they are
+deliberately not duplicated here, to avoid drift between two frozen files. The **scored result is the
 within-group order**, not the absolute ms (which are path-dependent for network rails): A-network
-**Solana < Stellar < Base** (robust across all 3 topologies); A-local **AP2 (DPC 1.58 ms headline / HP 0.68
-ms) and Tempo-Session (warm 8–20 ms, host-dependent)**; B spans local-402 (~1.6–3 ms) to Lightning invoice
-mint (~0.55–0.94 s).
+**Solana < Stellar < Base** (robust across all 3 topologies); A-local **AP2** (DPC headline / human-present
+variant) and **Tempo-Session** (warm, host-dependent); B spans local-402 issuance up to Lightning
+invoice-mint.
 
 ### 2.1 Per-rail mechanics & nuances
 - **R9 (Solana): accept ≠ `confirmed`.** The facilitator accept is **earlier** than on-chain `confirmed`
@@ -181,14 +182,14 @@ The sub-100 ms regime is unforgiving; all of the following are pre-registered be
   settlement time — the honest disclosure for those rails.)
 
 ### 2.5.1 Work-type decomposition & grouping (DR4 — group-and-decompose)
-The Q4 first-party runs showed that **within each sub-ranking the rails span 2–3 orders of magnitude of
-*work-class*** (A: AP2 local crypto ~1.6 ms / Tempo-Session ~8–20 ms / x402 facilitator 200–800 ms; B:
-local-402 ~2–3 ms / Lightning invoice-mint ~0.55–0.94 s). A round-4 cross-lineage scan refuted the
-"one race + scalar label + median-only" framing 4/4; the convergent fixes:
+The Q4 first-party runs showed that **within each sub-ranking the rails span ~2–3 orders of magnitude of
+*work-class*** (A: AP2 local crypto ≪ Tempo-Session local+periodic-RPC ≪ x402 facilitator network; B:
+local-402 issuance ≪ Lightning invoice-mint; absolute numbers in `dim2-scored-results.md`). A round-4
+cross-lineage scan refuted the "one race + scalar label + median-only" framing 4/4; the convergent fixes:
 
 - **(D4a) Tail as headline.** Report **P50 / P95 / P99 + N + measurement-timestamp + topology** as the
-  headline tuple per rail (the median alone is not a point estimate for network-bound rails — Lightning moved
-  1252 ms@n=15 → 936 ms@n=30).
+  headline tuple per rail (the median alone is not a point estimate for network-bound rails — in the pilot the
+  Lightning median shifted materially as N grew; see the pilot log).
 - **(D4b) Per-rail decomposition tuple.** Report `(local_compute_floor, backing_service_component, E2E)`. E2E
   stays the headline (we never subtract from it — RR5/FR2/FR7 work-clause); the decomposition is the
   protocol-design view served as a secondary number. The min-RTT floor (FR4) and server→RPC-RTT diagnostic
@@ -211,11 +212,11 @@ local-402 ~2–3 ms / Lightning invoice-mint ~0.55–0.94 s). A round-4 cross-li
   x402-header / payload sizes) and the AP2 **in-process vs sidecar** assumption (the in-process number omits an
   IPC hop a sidecar would add). Concurrency / throughput are explicitly out of scope (latency-only).
 - **(D4g) AP2 worked example — within-class work-modes (DPC headline).** AP2 spans two authorization modes
-  inside the Local-complete class: **delegated / DPC** (`~~` KB chain, human-not-present — **2 ES256**,
-  **1.58 ms**, σ_log 0.009) and **human-present** (issuer-only single token — **1 ES256**, **0.68 ms**, σ_log
-  0.027). **The DPC/delegated number is the AP2 headline** (an agent acting autonomously on a delegated
-  credential is the agentic-representative case); human-present is a reported variant. Both numbers are from
-  durable, replayable captures (`dim2-scored-results.md`; `agentpay` `poc/rail-ap2`).
+  inside the Local-complete class: **delegated / DPC** (`~~` KB chain, human-not-present — **2 ES256** checks)
+  and **human-present** (issuer-only single token — **1 ES256** check); the extra ES256 makes DPC ≈2.3× the
+  human-present cost. **The DPC/delegated mode is the AP2 headline** (an agent acting autonomously on a
+  delegated credential is the agentic-representative case); human-present is a reported variant. Both are from
+  durable, replayable captures; `{median, σ}` in `dim2-scored-results.md` (`agentpay poc/rail-ap2`).
 
 **Fork resolution — GROUP-AND-DECOMPOSE.** One table per sub-ranking, grouped by work class (D4c), with the
 decomposition tuple (D4b) carrying the cross-group story. Rank within a group; compare across groups only via
