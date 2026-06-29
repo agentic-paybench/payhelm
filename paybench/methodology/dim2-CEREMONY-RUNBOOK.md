@@ -26,11 +26,15 @@ The freeze commits to exact bytes, so these must be done first, in order:
    dim-1 `PRE-REGISTRATION.md`; carries the watermark (mock-harness / no real-rail funds) and the Variant-E
    framing. **Awaiting founder review.** *(Add the "Rekor + OpenTimestamps independently sufficient even if OSF
    unavailable" clause — cross-LLM F16 — if not already present.)*
-4. **Build the calibrated-mock leg (Variant-E baseline — new, per the Hybrid freeze decision)** → **PENDING.**
-   Calibrate the six placeholder fixtures (`calibration/provenance/<rail>-auth-latency.provenance.yaml`) from
-   the pilot `{median, σ}` (retire the "NOT measured" markers), wire + record the **dim-2 mock-pipeline
-   reproduction hash** (the analogue of dim-1's `895f99ed…`), and re-verify `test_auth_latency.py`. This is the
-   dim-2 calibrated-mock baseline that ships under Variant E; it must exist before the freeze.
+4. **Build the calibrated-mock leg (Variant-E baseline)** → **DONE 2026-06-29 (`7777418a`).** The mock harness
+   was the superseded pre-gate design (single 6-rail/15-pair race, `[0.25..5]s` grid); refactored to the
+   ratified **SPLIT** — `auth-latency-A` (R1,R2,R9,R10,R6) + `auth-latency-B` (R1,R2,R9,R10,R11), C(5,2)=10
+   pairs each, never cross-raced, ms k-ladder. **10 fixtures calibrated** from the pilot `{median, σ}`
+   (representative topology T2b/canonical; placeholders retired). **Mock-pipeline reproduction hashes:**
+   A = `sha256:7487c278…d122072b`, B = `sha256:19b91c8d…b4dd7c71`; BT rankings reproduce the doctrine
+   within-group order (A: AP2<Tempo-Session<Solana<Stellar<Base; B: local-402≪Lightning). **Frozen finality
+   `run_hash 895f99ed…` UNPERTURBED** (guarded by `test_finality_artefact_is_unperturbed`). All 21 mockbench
+   tests pass.
 
 Once §0 is done, the freeze (§2) and anchors (§3–§7) are pure mechanics.
 
@@ -41,16 +45,16 @@ Once §0 is done, the freeze (§2) and anchors (§3–§7) are pure mechanics.
 | `methodology/dim2-auth-latency.md` | doctrine §1–§5: SPLIT + stats + DR4 + FR1 thresholds + FR4 topology list + seed-namespace | draft ready (§0.1) |
 | `methodology/dim2-scored-results.md` | scored per-rail `{median,P95,P99}` + calibration record (multi-topology order) | finalize §0.2 |
 | `methodology/dim2-PRE-REGISTRATION.md` | OSF narrative | draft ready (§0.3) |
-| `calibration/provenance/<rail>-auth-latency.provenance.yaml` (×6) | calibrated mock fixtures (from pilot `{median, σ}`) — Variant-E baseline | **§0.4 pending** |
-| dim-2 **mock-pipeline reproduction hash** | deterministic reproducibility leg (analogue of dim-1 `895f99ed…`) | **§0.4 pending** |
+| `calibration/provenance/<rail>-auth-latency-{A,B}.provenance.yaml` (×10) | calibrated mock fixtures (per rail×sub-ranking, from pilot `{median, σ}`) — Variant-E baseline | ✅ done (`7777418a`) |
+| dim-2 **mock-pipeline reproduction hashes** | A `7487c278…` / B `19b91c8d…` (deterministic reproducibility leg) | ✅ done |
 
 **Excluded by design** (mirrors dim-1, which excludes the adversarial-review companion): the cross-LLM review
 files (`dim2-review*`, `dim2-worktype-*`, `dim2-measurement-review*`), the pilot log (`dim2-q4-pilot-log.md`),
 and runbooks — they accrue dispositions / are process, not the frozen claim.
 
-> **Preview deferred.** The doctrine + narrative drafts exist, but the manifest also commits to the 6
-> calibrated fixtures + the mock-pipeline hash (§0.4), which don't exist yet — so a meaningful manifest preview
-> waits until calibration lands. (Earlier 3-file preview `sha256:5f50…` is stale.)
+> **All §0 prerequisites are now done** (doctrine ratified, scored-results finalized, narrative ratified,
+> calibrated-mock leg landed) — the freeze (§2) is ready to run. The manifest now commits to 3 docs + 10
+> calibrated fixtures; run §2 to compute the binding hash. (Earlier 3-file preview `sha256:5f50…` is stale.)
 
 ## 2. Freeze — generate the dim-2 manifest
 
@@ -64,16 +68,22 @@ cd paybench
   sha256sum methodology/dim2-auth-latency.md \
             methodology/dim2-scored-results.md \
             methodology/dim2-PRE-REGISTRATION.md \
-            calibration/provenance/R1-x402-base-auth-latency.provenance.yaml \
-            calibration/provenance/R2-x402-stellar-auth-latency.provenance.yaml \
-            calibration/provenance/R9-x402-solana-auth-latency.provenance.yaml \
-            calibration/provenance/R10-mpp-tempo-auth-latency.provenance.yaml \
-            calibration/provenance/R11-mpp-lightning-auth-latency.provenance.yaml \
-            calibration/provenance/R6-gcp-ap2-auth-latency.provenance.yaml
+            calibration/provenance/R1-x402-base-auth-latency-A.provenance.yaml \
+            calibration/provenance/R2-x402-stellar-auth-latency-A.provenance.yaml \
+            calibration/provenance/R9-x402-solana-auth-latency-A.provenance.yaml \
+            calibration/provenance/R10-mpp-tempo-auth-latency-A.provenance.yaml \
+            calibration/provenance/R6-gcp-ap2-auth-latency-A.provenance.yaml \
+            calibration/provenance/R1-x402-base-auth-latency-B.provenance.yaml \
+            calibration/provenance/R2-x402-stellar-auth-latency-B.provenance.yaml \
+            calibration/provenance/R9-x402-solana-auth-latency-B.provenance.yaml \
+            calibration/provenance/R10-mpp-tempo-auth-latency-B.provenance.yaml \
+            calibration/provenance/R11-mpp-lightning-auth-latency-B.provenance.yaml
 } > methodology/dim2-prereg-manifest.sha256
 # PRE-FLIGHT before freezing (mirrors dim-1 §1): the calibrated mock pipeline must reproduce + tests pass
-# python3 -m paybench.mockbench.cli run    | grep run_hash   # == the recorded dim-2 mock-pipeline hash
-# python3 -m pytest paybench/mockbench/tests/test_auth_latency.py -q --noconftest
+# python3 -m paybench.mockbench.cli run -d auth-latency-A | grep run_hash   # == sha256:7487c278…d122072b
+# python3 -m paybench.mockbench.cli run -d auth-latency-B | grep run_hash   # == sha256:19b91c8d…b4dd7c71
+# python3 -m paybench.mockbench.cli run -d finality       | grep run_hash   # == sha256:895f99ed… (UNPERTURBED)
+# python3 -m pytest paybench/mockbench/tests/ -q --noconftest               # 21 pass
 
 sha256sum -c methodology/dim2-prereg-manifest.sha256      # all OK
 sha256sum    methodology/dim2-prereg-manifest.sha256      # <-- THIS is the dim-2 anchored value
