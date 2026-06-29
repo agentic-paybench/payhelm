@@ -1,0 +1,32 @@
+# PayBench calibration provenance — R11 MPP-Lightning (BOLT11 invoice mint) — RAPL Sub-ranking B (Challenge-Issuance)
+# Dimension 2 (authorization latency, RAPL). CALIBRATED from the first-party pilot
+# {median, sigma} — the Variant-E mock baseline (methodology/dim2-auth-latency.md §5).
+# Representative topology: T2b uk-london-1 (network). The real multi-topology order + decomposition
+# tuples are in methodology/dim2-scored-results.md (the single source of truth);
+# this single-{median,sigma} fixture is the deterministic reproducibility baseline.
+
+rail: "R11 MPP-Lightning (BOLT11 invoice mint)"
+dimension: authorization-latency:challenge-issuance
+sub_ranking: "B"
+unit: seconds                    # wall-clock, pay-command on the wire -> authorization-primitive decision
+
+distribution:
+  family: lognormal
+  parameters: {median_s: 0.552, sigma_log: 0.157}   # CALIBRATED from pilot/scored (T2b/canonical)
+  approach: calibrated
+
+sources:
+  - type: first-party-pilot
+    ref: "scored T2b median (Group B2) + n=30 sigma (pilot Lightning re-run)"
+    date: "2026-06-28"
+    note: >
+      Calibrated from the first-party RAPL pilot. T2b uk-london-1 (network). See
+      methodology/dim2-scored-results.md and dim2-q4-pilot-log.md.
+
+calibration_date: "2026-06-29"
+confidence: medium               # placeholder | low | medium | high
+fixture_content_hash: "sha256:b91f1c03dcf74179dfe0105e5f5b581325dd9486f13bc6fac2b2e046fed2052b"
+notes: >
+  Variant-E calibrated mock baseline. Single {median,sigma} per (rail,sub-ranking)
+  at the representative topology; not a published real-rail ranking. The scored
+  within-group order is the claim (dim2-scored-results.md).

@@ -1,0 +1,529 @@
+{
+  "bradley_terry": {
+    "converged": true,
+    "iterations": 1645,
+    "ranking": [
+      "R2",
+      "R9",
+      "R10",
+      "R1",
+      "R11"
+    ],
+    "smoothing_prior": 1.0,
+    "strengths": {
+      "R1": 0.0007056531044844237,
+      "R10": 0.0008860204009420519,
+      "R11": 3.1120657401397215e-06,
+      "R2": 0.956313983210359,
+      "R9": 0.04209123121847445
+    }
+  },
+  "config": {
+    "fixture_hashes": {
+      "R1": "sha256:a8ee2698e160779c32dedc58c7745de6fb2b4f9388cca48ad0b03c016574c447",
+      "R10": "sha256:5d02e08adb8de8e65fa988df0e38a69b57a6cf637130d33b111895772d709cf3",
+      "R11": "sha256:b91f1c03dcf74179dfe0105e5f5b581325dd9486f13bc6fac2b2e046fed2052b",
+      "R2": "sha256:f2fc5bd6eefb81eb4d6b1eb87086b954a71e8d84638c0920560d2c24da633b94",
+      "R9": "sha256:0fd2586aa5aaea4b5e395ba0c496d8c49d03df51cc223f48271cf2f8bf56c7b6"
+    },
+    "k_grid_seconds": [
+      0.02,
+      0.05,
+      0.1,
+      0.25,
+      0.5
+    ],
+    "master_seed": 20260717,
+    "n_pairs": 10,
+    "pairs": [
+      [
+        "R1",
+        "R10"
+      ],
+      [
+        "R1",
+        "R11"
+      ],
+      [
+        "R1",
+        "R2"
+      ],
+      [
+        "R1",
+        "R9"
+      ],
+      [
+        "R10",
+        "R11"
+      ],
+      [
+        "R10",
+        "R2"
+      ],
+      [
+        "R10",
+        "R9"
+      ],
+      [
+        "R11",
+        "R2"
+      ],
+      [
+        "R11",
+        "R9"
+      ],
+      [
+        "R2",
+        "R9"
+      ]
+    ],
+    "rail_names": {
+      "R1": "R1 x402-Base (402)",
+      "R10": "R10 MPP-Tempo (402)",
+      "R11": "R11 MPP-Lightning (BOLT11 invoice mint)",
+      "R2": "R2 x402-Stellar (402)",
+      "R9": "R9 x402-Solana (402)"
+    },
+    "rails": [
+      "R1",
+      "R2",
+      "R9",
+      "R10",
+      "R11"
+    ],
+    "total_trials": 5000,
+    "trials_per_pair": 500
+  },
+  "dimension": "authorization-latency:challenge-issuance",
+  "pairs": [
+    {
+      "pair": [
+        "R1",
+        "R10"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R1": {
+          "phat": 0.454,
+          "wilson_lb": 0.4108757266738578,
+          "wilson_ub": 0.49782571264860515
+        },
+        "R10": {
+          "phat": 0.546,
+          "wilson_lb": 0.502174287351395,
+          "wilson_ub": 0.5891242733261424
+        }
+      },
+      "wins": {
+        "R1": 227.0,
+        "R10": 273.0
+      }
+    },
+    {
+      "pair": [
+        "R1",
+        "R11"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R1": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        },
+        "R11": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        }
+      },
+      "wins": {
+        "R1": 500.0,
+        "R11": 0.0
+      }
+    },
+    {
+      "pair": [
+        "R1",
+        "R2"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R1": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        },
+        "R2": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        }
+      },
+      "wins": {
+        "R1": 0.0,
+        "R2": 500.0
+      }
+    },
+    {
+      "pair": [
+        "R1",
+        "R9"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R1": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        },
+        "R9": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        }
+      },
+      "wins": {
+        "R1": 0.0,
+        "R9": 500.0
+      }
+    },
+    {
+      "pair": [
+        "R10",
+        "R11"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R10": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        },
+        "R11": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        }
+      },
+      "wins": {
+        "R10": 500.0,
+        "R11": 0.0
+      }
+    },
+    {
+      "pair": [
+        "R10",
+        "R2"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R10": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        },
+        "R2": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        }
+      },
+      "wins": {
+        "R10": 0.0,
+        "R2": 500.0
+      }
+    },
+    {
+      "pair": [
+        "R10",
+        "R9"
+      ],
+      "ties": 1,
+      "trials": 500,
+      "win_rate": {
+        "R10": {
+          "phat": 0.027,
+          "wilson_lb": 0.016001363808831968,
+          "wilson_ub": 0.045211262267796454
+        },
+        "R9": {
+          "phat": 0.973,
+          "wilson_lb": 0.9547887377322035,
+          "wilson_ub": 0.9839986361911681
+        }
+      },
+      "wins": {
+        "R10": 13.5,
+        "R9": 486.5
+      }
+    },
+    {
+      "pair": [
+        "R11",
+        "R2"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R11": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        },
+        "R2": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        }
+      },
+      "wins": {
+        "R11": 0.0,
+        "R2": 500.0
+      }
+    },
+    {
+      "pair": [
+        "R11",
+        "R9"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R11": {
+          "phat": 0.0,
+          "wilson_lb": 4.336808689942018e-19,
+          "wilson_ub": 0.007624340461552241
+        },
+        "R9": {
+          "phat": 1.0,
+          "wilson_lb": 0.9923756595384479,
+          "wilson_ub": 1.0
+        }
+      },
+      "wins": {
+        "R11": 0.0,
+        "R9": 500.0
+      }
+    },
+    {
+      "pair": [
+        "R2",
+        "R9"
+      ],
+      "ties": 0,
+      "trials": 500,
+      "win_rate": {
+        "R2": {
+          "phat": 0.964,
+          "wilson_lb": 0.9438156730319722,
+          "wilson_ub": 0.9771089390197072
+        },
+        "R9": {
+          "phat": 0.036,
+          "wilson_lb": 0.02289106098029272,
+          "wilson_ub": 0.056184326968027755
+        }
+      },
+      "wins": {
+        "R2": 482.0,
+        "R9": 18.0
+      }
+    }
+  ],
+  "pass_at_k": {
+    "R1": [
+      {
+        "k_seconds": 0.02,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.05,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.1,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.25,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.5,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      }
+    ],
+    "R10": [
+      {
+        "k_seconds": 0.02,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.05,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.1,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.25,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.5,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      }
+    ],
+    "R11": [
+      {
+        "k_seconds": 0.02,
+        "n": 5000,
+        "phat": 0.0,
+        "wilson_lb": 0.0,
+        "wilson_ub": 0.0007677019450571244
+      },
+      {
+        "k_seconds": 0.05,
+        "n": 5000,
+        "phat": 0.0,
+        "wilson_lb": 0.0,
+        "wilson_ub": 0.0007677019450571244
+      },
+      {
+        "k_seconds": 0.1,
+        "n": 5000,
+        "phat": 0.0,
+        "wilson_lb": 0.0,
+        "wilson_ub": 0.0007677019450571244
+      },
+      {
+        "k_seconds": 0.25,
+        "n": 5000,
+        "phat": 0.0,
+        "wilson_lb": 0.0,
+        "wilson_ub": 0.0007677019450571244
+      },
+      {
+        "k_seconds": 0.5,
+        "n": 5000,
+        "phat": 0.262,
+        "wilson_lb": 0.24999775670880284,
+        "wilson_ub": 0.2743676694170444
+      }
+    ],
+    "R2": [
+      {
+        "k_seconds": 0.02,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.05,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.1,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.25,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.5,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      }
+    ],
+    "R9": [
+      {
+        "k_seconds": 0.02,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.05,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.1,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.25,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      },
+      {
+        "k_seconds": 0.5,
+        "n": 5000,
+        "phat": 1.0,
+        "wilson_lb": 0.9992322980549431,
+        "wilson_ub": 1.0
+      }
+    ]
+  },
+  "run_hash": "sha256:19b91c8df32f73fca84615ed44f3c00455c81f8a1df39ac2e9ff9314b4dd7c71",
+  "schema": "paybench.auth-latency-B-run.v1"
+}

@@ -5,11 +5,12 @@
     python -m paybench.mockbench.cli verify       # re-verify fixture hashes vs provenance
     python -m paybench.mockbench.cli all          # generate then run
 
-Every subcommand takes ``--dimension {finality,auth-latency}`` (default
-``finality``). The default reproduces the original, frozen settlement-finality
-behaviour exactly (5 rails → 10 pairs → 5,000 trials, run_hash unchanged); the
-``auth-latency`` dimension exercises the 6-rail (AP2 debuts) → 15-pair benchmark
-over PLACEHOLDER calibration (§8 Resolution B; §11 Day-30).
+Every subcommand takes ``--dimension {finality,auth-latency-A,auth-latency-B}``
+(default ``finality``). The default reproduces the original, frozen
+settlement-finality behaviour exactly (5 rails → 10 pairs → 5,000 trials,
+run_hash unchanged). The RAPL dimension is SPLIT (doctrine §2): ``auth-latency-A``
+(Payment-Validation) and ``auth-latency-B`` (Challenge-Issuance) each race
+C(5,2)=10 pairs over the calibrated Variant-E fixtures, never cross-raced.
 """
 
 from __future__ import annotations
