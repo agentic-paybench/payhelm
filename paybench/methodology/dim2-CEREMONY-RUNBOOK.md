@@ -135,13 +135,13 @@ doctrine + the FR4-satisfied *order*). Category **cs.CR**. Embed the dim-2 manif
 ## Disposition table (fill as anchors land)
 | Anchor | Status | Reference |
 |---|---|---|
-| Founder §0 (de-draft + narrative) | **pending** | §0.1 doctrine de-draft · §0.2 scored final · §0.3 narrative |
-| Freeze (dim-2 manifest) | pending | `dim2-prereg-manifest.sha256` → anchored hash `—` |
-| OpenTimestamps (Bitcoin) | pending | — |
-| cosign → Rekor | pending | — |
-| Signed git tag | pending | `paybench-rapl-prereg-v1` on `<FROZEN_COMMIT>` |
-| OSF DOI | pending | embargo 2026-07-17 |
-| arXiv | pending | cs.CR |
+| Founder §0 (de-draft + narrative + mock leg) | **✅ DONE** | doctrine ratified · scored finalized · narrative ratified · SPLIT mock leg (A 7487c278 / B 19b91c8d) |
+| Freeze (dim-2 manifest) | **✅ DONE** | `dim2-prereg-manifest.sha256` → anchored hash **`46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388`**; freeze commit `3dd74caa` |
+| OpenTimestamps (Bitcoin) | **stamped — Bitcoin pending** | `.ots` committed (`d240fcff`); `ots info` confirms `46a19eab…`. **Next: `ots upgrade` once confirmed (~hours), commit upgraded `.ots`.** |
+| cosign → Rekor | **pending (your machine — browser OIDC)** | §4 |
+| Signed git tag | **pending (your machine — YubiKey)** | `paybench-rapl-prereg-v1` on freeze commit `3dd74caa` |
+| OSF DOI | pending (web) | embargo 2026-07-17 |
+| arXiv | pending (web) | cs.CR |
 
 ## Where each step runs
 | Step | Runs on | Blocker |
