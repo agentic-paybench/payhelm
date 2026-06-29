@@ -44,7 +44,20 @@ The frozen docs must not contradict the ratified design or each other.
 grep -niE "<superseded tokens for this dim>" methodology/<the frozen docs>
 # dim-2 examples: 15.pair | C\(6,2\) | placeholder | NOT measured | candidate | stale-commit-SHA
 ```
-**Pass bar:** no token describing a design the doctrine replaced; cross-doc numbers/orders agree.
+**After any refactor, also diff the docs' STRUCTURAL claims against the actual code/files** — not just a
+fixed token list. A rename (seed-domain format, fixture-filename pattern, dimension keys, schema strings)
+leaves the docs describing the OLD shape unless you check. Diff doc-claimed identifiers vs. what the code
+emits:
+```
+# e.g. seed domains the doc claims vs what the code produces:
+python3 -c "from paybench.mockbench.dimensions import <DIMS>; ...print fixture_seed_domain / pair_seed_domain"
+grep -oE "fixture:[a-z:<>-]+|<rail>-[a-z-]+\.(provenance\.yaml|fixture\.json)" methodology/<frozen docs> | sort -u
+ls calibration/provenance/*<dim>* fixtures/*<dim>*    # the real filenames
+```
+**Pass bar:** no token describing a design the doctrine replaced; **every identifier the docs cite
+(seed domains, file paths, dimension keys) matches the frozen code/files exactly**; cross-doc numbers/orders
+agree. *(This item exists because a SPLIT refactor renamed the seed domains + fixtures, and the doctrine §5 +
+narrative still described the pre-SPLIT shape — caught only on a human read-through.)*
 
 ## 5. Required clauses present (cross-LLM hardening)
 ```
