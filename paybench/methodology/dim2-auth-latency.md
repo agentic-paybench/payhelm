@@ -90,7 +90,8 @@ mint (~0.55–0.94 s).
   (§2.2).
 - **R10 (Tempo): only Session is raced (RR1).** The MPP spec mandates a `Verify` separate from `Settle`. The
   one-time **Charge** fuses verify+settle into ~500 ms → **excluded from A** (racing it = racing settlement),
-  disclosed in an appendix; **Tempo-Session** (near-zero off-chain voucher verify) is the raced A member.
+  disclosed in an appendix; **Tempo-Session** (near-zero voucher-verify crypto + an amortized ~5 s-TTL RPC
+  tick → **8–20 ms measured**, host-dependent) is the raced A member.
   Tempo also appears in **B** for its `402`-challenge issuance.
 - **R11 (L402/Spark): challenge-issuance only (B).** The macaroon + invoice are issued **before** the payer
   pays; the **preimage** is the settlement proof (Spark's conditional-lock → SSP-preimage finalize, the
@@ -241,7 +242,7 @@ sub-ranking**, hardened:
 - **Wilson lower-bound CIs** — unchanged; **Kaplan-Meier** survival curves added for description.
 
 BT within-sub-ranking only keeps the one-method-across-dimensions story intact. Tempo is genuinely bimodal
-(Charge ~500 ms vs Session ~0), which is why DR3 **bifurcates it into two pseudo-rails** rather than fitting
+(Charge ~500 ms vs Session ~8–20 ms), which is why DR3 **bifurcates it into two pseudo-rails** rather than fitting
 one log-normal; the generator assumes `family: lognormal` per (pseudo-)rail and flags any further non-log-
 normal shape for review.
 
