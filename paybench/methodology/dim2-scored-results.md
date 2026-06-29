@@ -1,4 +1,8 @@
-# Dim-2 RAPL — candidate scored results (group-and-decompose, DR4)
+# Dim-2 RAPL — scored results (group-and-decompose, DR4)
+
+> **Frozen-candidate (founder-ratified 2026-06-29).** This is the scored set the dim-2 pre-registration
+> freezes (`dim2-CEREMONY-RUNBOOK.md`); per-rail numbers here are the single source of truth (the doctrine
+> references but does not duplicate them). Anchored only when the signed tag lands.
 
 **Status: CANDIDATE scored set — NOT yet frozen.** Consolidates the run-validated pilots
 (`dim2-q4-pilot-log.md`) into the **DR4 group-and-decompose** format (§2.5.1). It *supersedes the DRAFT
@@ -86,10 +90,11 @@ across topologies. (Lightning faster from London; still an order-of-magnitude ab
 - **Scope tags (RR6):** AP2 = whole-rail, in-process (no transport); a sidecar deployment would add an IPC
   hop — disclosed. x402/MPP numbers are the authorization *slice* of a larger flow.
 
-## Pending before this becomes the frozen pre-registered set
-1. Pre-registration ceremony (signed tag, dim-2 pass — `CEREMONY-RUNBOOK.md`).
-2. ✅ **Stellar `harness_error = 0` — RESOLVED 2026-06-28** (retry-on-construction-race, tight allowlist `agentpay 1a869c0`; supersedes the broad-regex `3e5dbe1` that review-2 flagged for censoring-suppression): 40/40 clean (was ~12–43% from the @x402/stellar ledger race). FR1 was already resolved (harness bug, not censoring).
-3. ✅ **Independent measurement review (round 2) — DONE 2026-06-28** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR + the AP2 evidentiary gap **all closed**. No open round-2 items remain.
-   - ✅ **AP2 durable re-capture — DONE 2026-06-28.** Founder-driven both-flow ceremony (AP2 pinned `e1ea56d`): HP issuer-only **0.682 ms** (30/30) + DPC chain **1.580 ms** (30/30), each from a **replay-forever** capture (embedded verifying pubkey + exp-tolerant replay; the old captures were non-replayable — ephemeral key + stale `exp`). Captures + samples **force-committed** (`agentpay 423a612`, `bed6298`). Reproduces the original 0.68/1.58 ms exactly.
-4. ✅ **Stellar T2b full-N re-run — DONE 2026-06-28** (fresh uk-london-1 E5.Flex `193.123.189.152`, post-`1a869c0`): 40/40 ok, harness_error 0, median 289 ms (identical to pre-fix), P95 366 / P99 553, censoring 0%. Replaces the N=26† cell. Scored order Solana<Stellar<Base unchanged.
-5. (Bonus) A1/ARM topology if uk-london-1 capacity frees — a free portability point.
+## Status — frozen-candidate; all pre-freeze gates closed
+This set is ready to freeze at the ceremony. The pre-freeze resolution log (all ✅):
+- ✅ **Stellar `harness_error = 0`** (retry-on-construction-race, tight allowlist `agentpay 1a869c0`; supersedes the broad-regex `3e5dbe1` review-2 flagged for censoring-suppression): 40/40 clean. FR1 was already resolved (harness bug, not censoring).
+- ✅ **Independent measurement review round 2** (`dim2-measurement-review-2.md`): 3 BLOCKERS + Tempo-idempotency MAJOR + the AP2 evidentiary gap all closed.
+- ✅ **AP2 durable both-flow re-capture** (AP2 pinned `e1ea56d`): HP issuer-only **0.682 ms** / DPC chain **1.580 ms** (30/30 each), replay-forever captures (embedded pubkey + exp-tolerant replay); committed `agentpay 423a612`/`bed6298`.
+- ✅ **Stellar T2b full-N re-run** (uk-london-1 E5.Flex `193.123.189.152`, post-`1a869c0`): 40/40 ok, harness_error 0, median 289 ms, P95 366 / P99 553, censoring 0%; replaces the N=26† cell. Order Solana<Stellar<Base unchanged.
+
+**Remaining:** the freeze ceremony itself (signed tag, dim-2 pass — `dim2-CEREMONY-RUNBOOK.md`), which includes the calibrated-mock leg (§0.4). *(Non-blocking bonus: an A1/ARM topology if uk-london-1 free-tier capacity opens — a free portability point.)*
