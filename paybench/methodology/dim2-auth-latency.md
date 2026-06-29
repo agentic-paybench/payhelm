@@ -1,12 +1,10 @@
 # Dimension 2: Authorization Latency — RAPL (Rail Authorization-Primitive Latency)
 
-> **RATIFIED 2026-06-29 (founder).** Canonical doctrine de-drafted from `dim2-auth-latency.DRAFT.md` per the
-> **founder ratification of 2026-06-24** (DR4 group-and-decompose, FR1 thresholds, FR4 ≥2-topology) and
-> founder-reviewed/ratified 2026-06-29. `DRAFT/PROPOSED/PLACEHOLDER` language removed; per-rail scored numbers
-> are single-sourced to `dim2-scored-results.md` (FR4-satisfied across 3 topologies). This is the
-> **frozen-candidate doctrine** for the dim-2 pre-registration ceremony (`dim2-CEREMONY-RUNBOOK.md`); it is
-> anchored only once the signed tag lands. Decision arc: `dim2-adversarial-review.md`,
-> `dim2-worktype-synthesis.md`, and the §9 decision log of the DRAFT.
+> **Dimension-2 doctrine (RAPL).** The ratified methodology for authorization-latency: the SPLIT design
+> (§2), the measurement & statistics package (§2.5), DR4 group-and-decompose (§2.5.1), the FR1 fallback
+> thresholds, the FR4 ≥2-topology requirement, and the seed-namespace / reproducibility design (§5).
+> Per-rail scored numbers are single-sourced to `dim2-scored-results.md`. Frozen at the dim-2
+> pre-registration ceremony (`dim2-CEREMONY-RUNBOOK.md`).
 
 ## 1. What "authorization latency" measures
 
@@ -77,7 +75,7 @@ pre-settlement payment-validation point (§2.3). L402's challenge issuance inclu
 generation** (a real Lightning operation), so B is not a pure constant across rails.
 
 **Scored values — single source.** All per-rail `{median, P95, P99}` (the group-and-decompose tuple, 3
-topologies) live **only** in `dim2-scored-results.md` (the FR4-satisfied scored set, 2026-06-28); they are
+topologies) live **only** in `dim2-scored-results.md` (the FR4-satisfied scored set); they are
 deliberately not duplicated here, to avoid drift between two frozen files. The **scored result is the
 within-group order**, not the absolute ms (which are path-dependent for network rails): A-network
 **Solana < Stellar < Base** (robust across all 3 topologies); A-local **AP2** (DPC headline / human-present
@@ -155,7 +153,7 @@ The sub-100 ms regime is unforgiving; all of the following are pre-registered be
   consistent with the frozen dimension-1 spine, plus a **Davidson ties extension** and an explicit
   **censoring / competing-risks rule** for authorization *failures* (reject / timeout enter the model, not
   silently dropped). Report **Kaplan-Meier** curves for description. **Pre-specify a survival model (Cox PH /
-  Aalen-Johansen) as the data-triggered fallback** with **FR1 numeric triggers (founder-confirmed 2026-06-24,
+  Aalen-Johansen) as the data-triggered fallback** with **FR1 numeric triggers (pre-registered,
   frozen at the ceremony):** switch to it if, in any sub-ranking, the **tie-rate > 20%**, OR any rail's
   **auth-failure/censoring-rate > 5%**, OR **> 10% of triples are cyclic** (transitivity violation) / a BT
   goodness-of-fit LR test gives **p < 0.05**. We do **not** swap the engine pre-emptively (that would fragment
@@ -202,10 +200,10 @@ cross-lineage scan refuted the "one race + scalar label + median-only" framing 4
   (cache-miss → chain read) with the request inter-arrival distribution disclosed (and/or a TTL sweep
   {0, 5 s, 60 s, ∞}); do **not** give TTL a third taxonomy bucket (gaming-prone). Tempo appears in both groups
   by its warm (Local-complete) and cold (Network-dependent) numbers, each annotated.
-- **(D4e) ≥2 topologies MANDATORY for network-dependent rails (FR4, founder-confirmed 2026-06-24).** A single
+- **(D4e) ≥2 topologies MANDATORY for network-dependent rails (FR4).** A single
   topology measures the harness, not the rail; a second network-distinct vantage (a named cloud region) is
   **required** before any network-dependent number is scored. Local-complete rails being topology-invariant is
-  the built-in control. **Satisfied 2026-06-28** across T1 devbox / T2a Codespaces (Azure) / T2b OCI
+  the built-in control. **Satisfied** across T1 devbox / T2a Codespaces (Azure) / T2b OCI
   (uk-london-1).
 - **(D4f) Workload + deployment disclosure.** Disclose workload constants (macaroon caveat count, voucher /
   x402-header / payload sizes) and the AP2 **in-process vs sidecar** assumption (the in-process number omits an
