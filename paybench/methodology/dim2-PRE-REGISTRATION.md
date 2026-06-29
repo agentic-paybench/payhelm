@@ -47,6 +47,8 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 | FR1 fallback triggers (frozen) | tie-rate > 20% **OR** censoring > 5% **OR** > 10% cyclic triples / BT-fit LR p < 0.05 → switch BT → Cox-PH / competing-risks |
 | FR4 topologies (≥2 required, satisfied) | T1 devbox · T2a GitHub Codespaces (Azure) · T2b OCI uk-london-1 — 3 network-distinct vantages (2026-06-28) |
 | Scored per-rail `{median,P95,P99}` | `dim2-scored-results.md` (group-and-decompose, 3 topologies). **The scored result is the within-group order**, not the absolute ms. |
+| Calibrated mock fixtures + mock-pipeline hash | `calibration/provenance/<rail>-auth-latency.provenance.yaml` calibrated from the pilot `{median, σ}` (placeholders retired) + a deterministic mock-pipeline reproduction hash — the **Variant-E baseline**, mirroring dim-1 |
+| Reproducibility / seed-namespace (§5) | master seed `20260717`; RNG domain-separated `fixture:auth-latency:<rail>` / `pair:auth-latency:<a>:<b>`; asserted by `test_auth_latency.py::test_dimensions_are_rng_domain_separated` |
 
 ### Frozen analysis plan (doctrine §2.5, §4)
 
@@ -75,11 +77,14 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 
 ## Scope
 
-These anchors commit to the **method and the first-party calibration** (pilot + the FR4-satisfied scored set),
-*not* to a published production real-rail leaderboard. Consistent with the project's Variant-E posture
-(dimension 1), PayBench ships as an open tool; any public rail-by-rail scoring follows the same pre-registered
-method against pinned production endpoints. The scored set here establishes the **within-group order** and the
-method, not a marketing ranking.
+These anchors commit to the **method + the calibrated mock baseline** (the dim-2 mock fixtures calibrated from
+the first-party pilot `{median, σ}` + the deterministic mock-pipeline hash), **not** a published production
+real-rail leaderboard — mirroring the dimension-1 **Variant-E** posture. PayBench ships as an open tool with
+calibrated mock fixtures; any public rail-by-rail scoring follows the same pre-registered method against pinned
+production endpoints. `dim2-scored-results.md` is included as the **calibration record and disclosed
+first-party pilot evidence** — it carries the real multi-topology *within-group order* + decomposition tuples
+that a single per-rail log-normal cannot represent (DR4) — and is not, and is not presented as, a mainnet
+ranking.
 
 ## Cryptographic grounding (defence-in-depth)
 

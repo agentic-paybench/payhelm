@@ -16,18 +16,21 @@ is complete. **This runbook is now live, pending the founder prerequisites in §
 
 The freeze commits to exact bytes, so these must be done first, in order:
 
-1. **De-draft the doctrine.** `dim2-auth-latency.DRAFT.md` still carries the `DRAFT / PROPOSED` banner and
-   `PLACEHOLDER` number language. The doctrine was **founder-ratified 2026-06-24** (DR4 group-and-decompose,
-   FR1 thresholds, FR4 ≥2-topology) and the placeholders are now **real scored numbers**. Promote it to a
-   canonical ratified file (suggest `dim2-auth-latency.md`) with the DRAFT/PLACEHOLDER banners removed and the
-   scored values referenced. *This is the one real content act left; everything below is mechanical.*
-2. **Finalize `dim2-scored-results.md`.** Drop its "## Pending before this becomes the frozen pre-registered
-   set" section (items 1–5 are now all ✅ except this ceremony itself) — or reduce it to "frozen at ceremony."
+1. **De-draft the doctrine** → **DRAFT READY (`dim2-auth-latency.md`).** Canonical de-draft of the DRAFT
+   doctrine (DRAFT/PLACEHOLDER removed; scored numbers single-sourced to `dim2-scored-results.md`; §5
+   seed-namespace in scope per the Hybrid freeze decision). **Awaiting founder review/ratification.**
+2. **Finalize `dim2-scored-results.md`** → **PENDING.** Drop its "## Pending before this becomes the frozen
+   pre-registered set" section (all items now ✅ except this ceremony) — or reduce to "frozen at ceremony."
    Confirm the scored table is the set you stand behind.
-3. **Write the dim-2 pre-registration narrative.** Mirror the dim-1 `PRE-REGISTRATION.md` as
-   `dim2-PRE-REGISTRATION.md` (the OSF registration narrative): the SPLIT doctrine, FR1/FR4, the
-   group-and-decompose scored result, the watermark sentence (mock-harness / no real-rail funds), and the
-   "Rekor + OpenTimestamps independently sufficient even if OSF unavailable" clause (cross-LLM F16).
+3. **Write the dim-2 pre-registration narrative** → **DRAFT READY (`dim2-PRE-REGISTRATION.md`).** Mirrors the
+   dim-1 `PRE-REGISTRATION.md`; carries the watermark (mock-harness / no real-rail funds) and the Variant-E
+   framing. **Awaiting founder review.** *(Add the "Rekor + OpenTimestamps independently sufficient even if OSF
+   unavailable" clause — cross-LLM F16 — if not already present.)*
+4. **Build the calibrated-mock leg (Variant-E baseline — new, per the Hybrid freeze decision)** → **PENDING.**
+   Calibrate the six placeholder fixtures (`calibration/provenance/<rail>-auth-latency.provenance.yaml`) from
+   the pilot `{median, σ}` (retire the "NOT measured" markers), wire + record the **dim-2 mock-pipeline
+   reproduction hash** (the analogue of dim-1's `895f99ed…`), and re-verify `test_auth_latency.py`. This is the
+   dim-2 calibrated-mock baseline that ships under Variant E; it must exist before the freeze.
 
 Once §0 is done, the freeze (§2) and anchors (§3–§7) are pure mechanics.
 
@@ -35,20 +38,19 @@ Once §0 is done, the freeze (§2) and anchors (§3–§7) are pure mechanics.
 
 | File | Role | Status |
 |---|---|---|
-| `methodology/dim2-auth-latency.md` *(de-drafted from DRAFT.md)* | doctrine §2 SPLIT + §2.5 stats + §2.5.1/DR4; FR1 thresholds; FR4 topology list | **§0.1 pending** |
-| `methodology/dim2-scored-results.md` | scored per-rail `{median,P95,P99}` (group-and-decompose, 3 topologies) | finalize §0.2 |
-| `methodology/dim2-PRE-REGISTRATION.md` *(new)* | OSF narrative | **§0.3 pending** |
+| `methodology/dim2-auth-latency.md` | doctrine §1–§5: SPLIT + stats + DR4 + FR1 thresholds + FR4 topology list + seed-namespace | draft ready (§0.1) |
+| `methodology/dim2-scored-results.md` | scored per-rail `{median,P95,P99}` + calibration record (multi-topology order) | finalize §0.2 |
+| `methodology/dim2-PRE-REGISTRATION.md` | OSF narrative | draft ready (§0.3) |
+| `calibration/provenance/<rail>-auth-latency.provenance.yaml` (×6) | calibrated mock fixtures (from pilot `{median, σ}`) — Variant-E baseline | **§0.4 pending** |
+| dim-2 **mock-pipeline reproduction hash** | deterministic reproducibility leg (analogue of dim-1 `895f99ed…`) | **§0.4 pending** |
 
 **Excluded by design** (mirrors dim-1, which excludes the adversarial-review companion): the cross-LLM review
 files (`dim2-review*`, `dim2-worktype-*`, `dim2-measurement-review*`), the pilot log (`dim2-q4-pilot-log.md`),
-and runbooks — they accrue dispositions / are process, not the frozen claim. *(Optionally fold the FR1/FR4
-confirmed values into the doctrine so the frozen set is self-contained.)*
+and runbooks — they accrue dispositions / are process, not the frozen claim.
 
-> **Preview only** (current bytes, PRE-de-draft — these hashes WILL change once §0 is done):
-> ```
-> ae7d0c92…  methodology/dim2-auth-latency.DRAFT.md   (→ becomes dim2-auth-latency.md)
-> 27646d35…  methodology/dim2-scored-results.md
-> ```
+> **Preview deferred.** The doctrine + narrative drafts exist, but the manifest also commits to the 6
+> calibrated fixtures + the mock-pipeline hash (§0.4), which don't exist yet — so a meaningful manifest preview
+> waits until calibration lands. (Earlier 3-file preview `sha256:5f50…` is stale.)
 
 ## 2. Freeze — generate the dim-2 manifest
 
@@ -61,8 +63,17 @@ cd paybench
   echo "# Mechanics mirror the dim-1 v1.2 pass (CEREMONY-RUNBOOK.md); dim-1 anchors untouched."
   sha256sum methodology/dim2-auth-latency.md \
             methodology/dim2-scored-results.md \
-            methodology/dim2-PRE-REGISTRATION.md
+            methodology/dim2-PRE-REGISTRATION.md \
+            calibration/provenance/R1-x402-base-auth-latency.provenance.yaml \
+            calibration/provenance/R2-x402-stellar-auth-latency.provenance.yaml \
+            calibration/provenance/R9-x402-solana-auth-latency.provenance.yaml \
+            calibration/provenance/R10-mpp-tempo-auth-latency.provenance.yaml \
+            calibration/provenance/R11-mpp-lightning-auth-latency.provenance.yaml \
+            calibration/provenance/R6-gcp-ap2-auth-latency.provenance.yaml
 } > methodology/dim2-prereg-manifest.sha256
+# PRE-FLIGHT before freezing (mirrors dim-1 §1): the calibrated mock pipeline must reproduce + tests pass
+# python3 -m paybench.mockbench.cli run    | grep run_hash   # == the recorded dim-2 mock-pipeline hash
+# python3 -m pytest paybench/mockbench/tests/test_auth_latency.py -q --noconftest
 
 sha256sum -c methodology/dim2-prereg-manifest.sha256      # all OK
 sha256sum    methodology/dim2-prereg-manifest.sha256      # <-- THIS is the dim-2 anchored value
