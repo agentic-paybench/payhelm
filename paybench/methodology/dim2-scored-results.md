@@ -18,7 +18,7 @@ as warm/cold, not a bucket** (D4d). **No single cross-class ordinal.**
 |---|---|---|---|---|---|---|
 | **AP2 — delegated/DPC** (2 ES256) *(headline)* | **1.58** | 1.60 | 1.62 | 30 | in-process (invariant) | holder-KB chain verify |
 | AP2 — human-present (issuer-only, 1 ES256) | 0.68 | 0.71 | 0.76 | 30 | in-process (invariant) | single-token verify |
-| Tempo-Session (voucher accept) | **8.2 / 11.2 / 19.5** | — | ~10–19 | 30 | T2b / T2a / T1 | local crypto **+ amortized ~5 s TTL RPC tick**; median is **host-CPU-dependent** (faster host → lower) |
+| Tempo-Session (voucher accept) | **8.2 / 11.2 / 19.5** | — | — | 30 | T2b / T2a / T1 | local crypto **+ amortized ~5 s TTL RPC tick**; median is **host-CPU-dependent** (faster host → lower) |
 
 - AP2 is in-process → **topology-invariant by construction**. Both modes are measured from **durable,
   replay-forever captures** (embedded verifying pubkey + exp-tolerant replay) — 30/30 ok, 0 harness_error.
