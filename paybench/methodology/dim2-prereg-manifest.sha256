@@ -1,0 +1,35 @@
+# PayBench RAPL (authorization-latency, dim-2) pre-registration manifest
+# Paths relative to paybench/. Verify: cd paybench && sha256sum -c methodology/dim2-prereg-manifest.sha256
+# Mechanics mirror the dim-1 v1.2 pass; dim-1 anchors untouched. Full set: docs + harness code + provenance + fixtures + runs.
+85f9d2f55aa76a0749d98411a7b7d05eab6364bb6afad70d1a5d3c4594fe086e  methodology/dim2-auth-latency.md
+5567da1d789fb59eb286b7437f7f66b1560758d15e36defd3d8d653fd4fce19c  methodology/dim2-scored-results.md
+222d348b3582b6e0a119e315a96df993ac0b57dc082717a1b1062ceca1c95684  methodology/dim2-PRE-REGISTRATION.md
+071c86af9ab485bc03d40760a56820d626a5bc27cbdd3298d65639809b099367  mockbench/__init__.py
+e390992e91a05075d695a2250ca602d696a097757c65fab384627b5ee3d77fc6  mockbench/bench.py
+b93053a214f69f046eda4f4962601e4b68801ac391a20e7f7da752360cbd3f35  mockbench/cli.py
+991c55cbec6d8faa658f187dc8010fda4ccc15a1185a66f12f3edfa2e3453801  mockbench/dimensions.py
+bea9272dee006341a8841f913be87da6df0d44ad88663d3e99204e6438cb45b7  mockbench/fixtures.py
+3810b6d8da302e606c0afdd52edf5ad21f5ffe34683e34b166144e4ec15c6e39  mockbench/paths.py
+695b5206920ebe40fa18b9df5c783e63892137f8af0db4981a6fade9d5d2d57e  mockbench/stats.py
+91c2ae07b5f0786915da33e27525e3af0095e5c92f02d0bf866fb8639979b76a  calibration/provenance/R1-x402-base-auth-latency-A.provenance.yaml
+7326f704939a186e062c7dd104911494f8de91cd02a372f549fdb2cc2a869fce  calibration/provenance/R1-x402-base-auth-latency-B.provenance.yaml
+e840f6b5c429148e1b361acf57b869a150e10f3006aba51e5ac7cc617a66154d  calibration/provenance/R10-mpp-tempo-auth-latency-A.provenance.yaml
+8efcd819b78c6e95a8bf3814e9a431cf21205d801a61d26e9ec416e478dba8dc  calibration/provenance/R10-mpp-tempo-auth-latency-B.provenance.yaml
+da7c60ae78cc7a14e6fe928d1d8d9f6ed0f57bd910426bf073e8b8ccb2df9164  calibration/provenance/R11-mpp-lightning-auth-latency-B.provenance.yaml
+711cf1a182df4816210e99efad003816429686165738df456857ed7696a9a87e  calibration/provenance/R2-x402-stellar-auth-latency-A.provenance.yaml
+64bfd720aace5c204368ba103c879d1b1f5cfa642652e6928e67505ef9365b5f  calibration/provenance/R2-x402-stellar-auth-latency-B.provenance.yaml
+eac127c67b4680ab76c5b3b7ce92302df170ce5e69eb7b1ac8c955a512dc327f  calibration/provenance/R6-gcp-ap2-auth-latency-A.provenance.yaml
+187e9a2e75dd452037be561846c11f950f30aecb5b9114b0f39bbd397e6c8e4f  calibration/provenance/R9-x402-solana-auth-latency-A.provenance.yaml
+1facb230143e2fdbb52550374031c31d3dd7a8248cf040b80fbb7f768b26d771  calibration/provenance/R9-x402-solana-auth-latency-B.provenance.yaml
+23415142b61efb538f7c2b4757558e5e647ba4e9daafedcdec525a68eb45d2c7  fixtures/R1-auth-latency-A.fixture.json
+5c9b48abd2001f1e43b018d0a04934be0034c71c4e80dff81d864bfc85ee9df7  fixtures/R1-auth-latency-B.fixture.json
+f8cc62af2bef80870d27faf2f6809eb97a3a8df55261c194a89fe5745e1e97a0  fixtures/R10-auth-latency-A.fixture.json
+853d1bcee1828d2aa79ddca662b02e7f7d6582628a38ae33345abec5b05e839e  fixtures/R10-auth-latency-B.fixture.json
+eef694b2fd982721328d03d2a6c6e0522bf98a1fc66bab20f8b9b11a9050424e  fixtures/R11-auth-latency-B.fixture.json
+8d507c5a1cc739cd38f107fee847cce4c50982612cc93779d7e43072c9dac794  fixtures/R2-auth-latency-A.fixture.json
+9b7b71117afaf22893cd7b3fa81bd689cf457a68f1cba06486b4b9a7e6014e79  fixtures/R2-auth-latency-B.fixture.json
+b0e62438a876fcf466788aabd42dfcebf7f16f26f5eb344512e8cc2b2269c596  fixtures/R6-auth-latency-A.fixture.json
+8e71bb77c5c08895d1f960aae11959d9be4c584ebd6120cbd3cf4ea699ada415  fixtures/R9-auth-latency-A.fixture.json
+7c2c45c8c8d4620159c165703f66d31af5d3e9aef5e01e3517e3ed0322618919  fixtures/R9-auth-latency-B.fixture.json
+7c8f46b6dc1433d9c462a4f573b1f0f1adbbc3154424878c4bbd52bb63b65223  runs/auth-latency-A-run.json
+4e781af0983575e71989e8180556e3a7ae92744dd57ee62c7ab194c523da85ee  runs/auth-latency-B-run.json
