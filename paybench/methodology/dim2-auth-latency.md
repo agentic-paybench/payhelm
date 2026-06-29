@@ -246,12 +246,37 @@ BT within-sub-ranking only keeps the one-method-across-dimensions story intact. 
 one log-normal; the generator assumes `family: lognormal` per (pseudo-)rail and flags any further non-log-
 normal shape for review.
 
+## 5. Reproducibility / seed-namespace design
+The harness keeps the **single published master seed** (`20260717`, the dim-1 seed) and **domain-separates the
+RAPL RNG streams** from finality's, so the two dimensions never share a stream while both derive from the one
+seed:
+- finality fixture/pair domains stay `fixture:<rail>` / `pair:<a>:<b>` (frozen, dim-1);
+- RAPL uses `fixture:auth-latency:<rail>` / `pair:auth-latency:<a>:<b>`.
+
+This lets the frozen finality artefact reproduce bit-for-bit while RAPL draws independent streams (asserted by
+`tests/test_auth_latency.py::test_dimensions_are_rng_domain_separated`).
+
+**Variant-E posture (consistent with dim-1).** What ships and is anchored at POC Day-0 is the **method + a
+calibrated mock baseline**, not a published mainnet ranking. The dim-2 mock fixtures
+(`calibration/provenance/<rail>-auth-latency.provenance.yaml`) are **calibrated from the first-party pilot
+`{median, σ}`** (retiring the placeholders) and, with the seed-namespace above, drive a **deterministic
+mock-pipeline reproduction hash** — the same bit-for-bit reproducibility leg dim-1 has. The real multi-topology
+scored *order* + decomposition tuples (`dim2-scored-results.md`) are the **calibration record and disclosed
+first-party pilot evidence**, carried in the frozen set because a single per-rail log-normal cannot represent
+the topology structure (DR4); they are **not** a published real-rail leaderboard (publication deferred, as in
+dim-1 Variant E).
+
 ---
 
 ## Pre-registration scope (what the dim-2 ceremony freezes)
-- **This doctrine** (§1, §2 + §2.1–§2.5.1, §3, §4) — the SPLIT design, the measurement/stats package, FR1
-  numeric thresholds, the FR4 ≥2-topology requirement + named topologies, and DR4 group-and-decompose.
-- **`dim2-scored-results.md`** — the scored per-rail `{median, P95, P99}` (group-and-decompose, 3 topologies).
+- **This doctrine** (§1, §2 + §2.1–§2.5.1, §3, §4, §5) — the SPLIT design, the measurement/stats package, FR1
+  numeric thresholds, the FR4 ≥2-topology requirement + named topologies, DR4 group-and-decompose, and the
+  seed-namespace / reproducibility design.
+- **`dim2-scored-results.md`** — the scored per-rail `{median, P95, P99}` (group-and-decompose, 3 topologies);
+  the calibration record + disclosed pilot evidence.
+- **Calibrated mock fixtures** (`calibration/provenance/<rail>-auth-latency.provenance.yaml`, calibrated from
+  the pilot `{median, σ}`) **+ the deterministic mock-pipeline reproduction hash** — the Variant-E baseline,
+  mirroring dim-1.
 - Ceremony mechanics per `dim2-CEREMONY-RUNBOOK.md` (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI →
   arXiv), a dim-2 pass distinct from the landed dim-1/v1.2 finality pre-reg.
 
