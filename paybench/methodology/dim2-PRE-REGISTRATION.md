@@ -1,16 +1,14 @@
 # PayBench authorization-latency (RAPL) benchmark — Pre-registration
 
-> **RATIFIED (founder, 2026-06-29) — pending the freeze ceremony.** Companion to the landed dimension-1
-> settlement-finality pre-registration (`PRE-REGISTRATION.md`), as a **separate dim-2 pass** reusing the same
-> anchor stack. The manifest hash + DOI + anchor references below are filled at the ceremony
-> (`dim2-CEREMONY-RUNBOOK.md`) once the remaining §0 prerequisites land (finalize `dim2-scored-results.md`; the
-> calibrated-mock leg, §0.4).
+> Companion to the landed dimension-1 settlement-finality pre-registration (`PRE-REGISTRATION.md`), as a
+> **separate dim-2 pass** reusing the same anchor stack. The manifest hash, DOI, and anchor references below
+> are filled in at the ceremony (`dim2-CEREMONY-RUNBOOK.md`).
 
 **Pre-registration of an evaluation methodology and its analysis plan, committed before publication of any
 real-rail authorization-latency ranking.**
 
 - **Dimension:** 2 — authorization latency (RAPL: Rail Authorization-Primitive Latency)
-- **Doctrine version:** dim-2 v1 (candidate freeze 2026-06-28)
+- **Doctrine version:** dim-2 v1
 - **Decisions ratified:** 2026-06-24 — **DR4 group-and-decompose** (work-class grouping + per-rail
   decomposition tuple), **FR1 numeric fallback triggers** (tie > 20% / censoring > 5% / cyclic > 10% / BT-fit
   LR p < 0.05), **FR4 ≥2-topology** requirement. The SPLIT design (payment-validation vs challenge-issuance
@@ -46,7 +44,7 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 | Work-class grouping (DR4/D4c) | Within each sub-ranking, group **Local-complete** vs **Network-dependent**; rank within a group; compare across only via the decomposition tuple `(local_compute_floor, backing_service_component, E2E)` (D4b) |
 | Headline tuple (D4a) | **P50 / P95 / P99 + N + timestamp + topology** per rail |
 | FR1 fallback triggers (frozen) | tie-rate > 20% **OR** censoring > 5% **OR** > 10% cyclic triples / BT-fit LR p < 0.05 → switch BT → Cox-PH / competing-risks |
-| FR4 topologies (≥2 required, satisfied) | T1 devbox · T2a GitHub Codespaces (Azure) · T2b OCI uk-london-1 — 3 network-distinct vantages (2026-06-28) |
+| FR4 topologies (≥2 required, satisfied) | T1 devbox · T2a GitHub Codespaces (Azure) · T2b OCI uk-london-1 — 3 network-distinct vantages |
 | Scored per-rail `{median,P95,P99}` | `dim2-scored-results.md` (group-and-decompose, 3 topologies). **The scored result is the within-group order**, not the absolute ms. |
 | Calibrated mock fixtures + mock-pipeline hashes | 10 per-(rail×sub-ranking) fixtures (`…-auth-latency-{A,B}.provenance.yaml`) calibrated from the pilot `{median, σ}` (placeholders retired) + deterministic reproduction hashes **A `7487c278…` / B `19b91c8d…`** — the **Variant-E baseline** (SPLIT A/B, mirroring dim-1); frozen finality `run_hash 895f99ed…` unperturbed |
 | Reproducibility / seed-namespace (§5) | master seed `20260717`; RNG domain-separated `fixture:auth-latency:<rail>` / `pair:auth-latency:<a>:<b>`; asserted by `test_auth_latency.py::test_dimensions_are_rng_domain_separated` |
@@ -78,7 +76,7 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 
 ## Scope
 
-> **Watermark (cross-LLM review).** This pre-registration covers a **simulated harness and calibrated mock
+> **Watermark.** This pre-registration covers a **simulated harness and calibrated mock
 > fixtures**; **no real-rail funds are moved and no production rankings are derived.** The first-party pilot is
 > testnet/devnet/regtest measurement used to *calibrate the mock baseline*, not a mainnet leaderboard.
 
@@ -107,7 +105,7 @@ the ceremony runs):
 Trust-anchor triad: **OSF DOI + Bitcoin block + Rekor entry** — three independent anchors, no single point of
 trust; the signed git tag + arXiv are additional defence-in-depth. The dim-1 anchors are untouched.
 
-**Anchor robustness (cross-LLM F16).** The OSF DOI resolves to a single URL — a single point of failure. The
+**Anchor robustness.** The OSF DOI resolves to a single URL — a single point of failure. The
 **Rekor entry + OpenTimestamps (Bitcoin) proof are independently sufficient** to establish the freeze date
 *even if OSF is unavailable*. At ceremony time, independently archive `dim2-PRE-REGISTRATION.md` +
 `dim2-prereg-manifest.sha256` (+ the `.ots` / `.cosign.bundle` proofs) to the Internet Archive / IPFS so the
