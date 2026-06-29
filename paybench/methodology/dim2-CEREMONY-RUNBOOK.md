@@ -40,21 +40,24 @@ Once §0 is done, the freeze (§2) and anchors (§3–§7) are pure mechanics.
 
 ## 1. Candidate frozen set (what the dim-2 manifest will commit to)
 
-| File | Role | Status |
-|---|---|---|
-| `methodology/dim2-auth-latency.md` | doctrine §1–§5: SPLIT + stats + DR4 + FR1 thresholds + FR4 topology list + seed-namespace | draft ready (§0.1) |
-| `methodology/dim2-scored-results.md` | scored per-rail `{median,P95,P99}` + calibration record (multi-topology order) | finalize §0.2 |
-| `methodology/dim2-PRE-REGISTRATION.md` | OSF narrative | draft ready (§0.3) |
-| `calibration/provenance/<rail>-auth-latency-{A,B}.provenance.yaml` (×10) | calibrated mock fixtures (per rail×sub-ranking, from pilot `{median, σ}`) — Variant-E baseline | ✅ done (`7777418a`) |
-| dim-2 **mock-pipeline reproduction hashes** | A `7487c278…` / B `19b91c8d…` (deterministic reproducibility leg) | ✅ done |
+**32 files**, the full dim-1-parity set (docs + harness code + provenance + fixtures + run reports):
 
-**Excluded by design** (mirrors dim-1, which excludes the adversarial-review companion): the cross-LLM review
-files (`dim2-review*`, `dim2-worktype-*`, `dim2-measurement-review*`), the pilot log (`dim2-q4-pilot-log.md`),
-and runbooks — they accrue dispositions / are process, not the frozen claim.
+| Group | Files | Role | Status |
+|---|---|---|---|
+| Docs (3) | `dim2-auth-latency.md`, `dim2-scored-results.md`, `dim2-PRE-REGISTRATION.md` | doctrine + scored set + OSF narrative | ✅ ratified |
+| Harness code (7) | `mockbench/{__init__,bench,cli,dimensions,fixtures,paths,stats}.py` | the code the reproduction hashes depend on (mirrors dim-1, which freezes the code) | ✅ done |
+| Provenance (10) | `calibration/provenance/<rail>-auth-latency-{A,B}.provenance.yaml` | calibrated mock fixtures (per rail×sub-ranking, from pilot `{median, σ}`) — Variant-E baseline | ✅ done (`7777418a`) |
+| Fixtures (10) | `fixtures/<rail>-auth-latency-{A,B}.fixture.json` | content-addressed sample populations | ✅ done |
+| Runs (2) | `runs/auth-latency-{A,B}-run.json` | reproduction hashes **A `7487c278…` / B `19b91c8d…`** | ✅ done |
+
+**Excluded by design** (mirrors dim-1): the cross-LLM review files (`dim2-review*`, `dim2-worktype-*`,
+`dim2-measurement-review*`), the pilot log (`dim2-q4-pilot-log.md`), the tests, and the runbooks — they accrue
+dispositions / are process, not the frozen claim.
 
 > **All §0 prerequisites are now done** (doctrine ratified, scored-results finalized, narrative ratified,
-> calibrated-mock leg landed) — the freeze (§2) is ready to run. The manifest now commits to 3 docs + 10
-> calibrated fixtures; run §2 to compute the binding hash. (Earlier 3-file preview `sha256:5f50…` is stale.)
+> calibrated-mock leg landed) — the freeze (§2) is ready to run. The manifest commits to the full **32-file**
+> dim-1-parity set (3 docs + 7 code + 10 provenance + 10 fixtures + 2 runs); run §2 to compute the binding
+> hash. (Earlier 3-file preview `sha256:5f50…` is stale.)
 
 ## 2. Freeze — generate the dim-2 manifest
 
@@ -65,19 +68,16 @@ cd paybench
   echo "# PayBench RAPL (authorization-latency, dim-2) pre-registration manifest — frozen $(date +%F)"
   echo "# Paths relative to paybench/. Verify: cd paybench && sha256sum -c methodology/dim2-prereg-manifest.sha256"
   echo "# Mechanics mirror the dim-1 v1.2 pass (CEREMONY-RUNBOOK.md); dim-1 anchors untouched."
-  sha256sum methodology/dim2-auth-latency.md \
-            methodology/dim2-scored-results.md \
-            methodology/dim2-PRE-REGISTRATION.md \
-            calibration/provenance/R1-x402-base-auth-latency-A.provenance.yaml \
-            calibration/provenance/R2-x402-stellar-auth-latency-A.provenance.yaml \
-            calibration/provenance/R9-x402-solana-auth-latency-A.provenance.yaml \
-            calibration/provenance/R10-mpp-tempo-auth-latency-A.provenance.yaml \
-            calibration/provenance/R6-gcp-ap2-auth-latency-A.provenance.yaml \
-            calibration/provenance/R1-x402-base-auth-latency-B.provenance.yaml \
-            calibration/provenance/R2-x402-stellar-auth-latency-B.provenance.yaml \
-            calibration/provenance/R9-x402-solana-auth-latency-B.provenance.yaml \
-            calibration/provenance/R10-mpp-tempo-auth-latency-B.provenance.yaml \
-            calibration/provenance/R11-mpp-lightning-auth-latency-B.provenance.yaml
+  # Full dim-1-parity set: docs + harness CODE + provenance + fixtures + run reports. Freezing the code
+  # (mockbench/*.py) + fixtures + runs is what cryptographically pins the reproduction hashes — provenance
+  # alone is NOT enough. (Tests are excluded, as in dim-1.) Globs expand deterministically (sorted).
+  sha256sum \
+    methodology/dim2-auth-latency.md methodology/dim2-scored-results.md methodology/dim2-PRE-REGISTRATION.md \
+    mockbench/__init__.py mockbench/bench.py mockbench/cli.py mockbench/dimensions.py \
+    mockbench/fixtures.py mockbench/paths.py mockbench/stats.py \
+    calibration/provenance/*-auth-latency-[AB].provenance.yaml \
+    fixtures/*-auth-latency-[AB].fixture.json \
+    runs/auth-latency-[AB]-run.json
 } > methodology/dim2-prereg-manifest.sha256
 # PRE-FLIGHT before freezing (mirrors dim-1 §1): the calibrated mock pipeline must reproduce + tests pass
 # python3 -m paybench.mockbench.cli run -d auth-latency-A | grep run_hash   # == sha256:7487c278…d122072b

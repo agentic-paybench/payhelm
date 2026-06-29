@@ -4,13 +4,12 @@
 > freezes (`dim2-CEREMONY-RUNBOOK.md`); per-rail numbers here are the single source of truth (the doctrine
 > references but does not duplicate them). Anchored only when the signed tag lands.
 
-**Status: CANDIDATE scored set — NOT yet frozen.** Consolidates the run-validated pilots
-(`dim2-q4-pilot-log.md`) into the **DR4 group-and-decompose** format (§2.5.1). It *supersedes the DRAFT
-placeholders at the pre-registration ceremony* — it is not itself pre-registered. **Gating before
-freeze:** (a) the pre-reg ceremony; (b) ✅ Stellar `harness_error` resolved (retry-on-construction-race,
-`3e5dbe1`) — and the FR1 "censoring" question resolved with it (it was a harness bug, not a payment
-decision); (c) independent measurement review of the AP2/Tempo/Lightning harnesses. All medians are **lognormal**; times
-in ms; topologies **T1 = devbox**, **T2a = GitHub Codespaces/Azure**, **T2b = OCI uk-london-1 (x64)**.
+This set consolidates the run-validated pilots (`dim2-q4-pilot-log.md`) into the **DR4 group-and-decompose**
+format (§2.5.1) and **supersedes the DRAFT placeholders** (retired into the calibrated mock fixtures). All
+medians are **lognormal**; times in ms; topologies **T1 = devbox**, **T2a = GitHub Codespaces/Azure**,
+**T2b = OCI uk-london-1 (x64)**. The pre-freeze gates — Stellar `harness_error` (tight-allowlist `1a869c0`),
+the round-2 measurement review, the AP2 durable re-capture, and the Stellar T2b full-N re-run — are **all
+closed** (see the resolution log at the bottom). Remaining: the freeze ceremony itself.
 
 Reporting rules applied: **P50/P95/P99 + N + per-topology** (D4a/D4e); **group by work-class, rank within,
 compare across only via the decomposition** (D4c); **E2E headline + local/backing decomposition** (D4b);

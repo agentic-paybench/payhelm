@@ -78,6 +78,10 @@ first-party pilot/scored calibration**; it does not assert a production real-rai
 
 ## Scope
 
+> **Watermark (cross-LLM review).** This pre-registration covers a **simulated harness and calibrated mock
+> fixtures**; **no real-rail funds are moved and no production rankings are derived.** The first-party pilot is
+> testnet/devnet/regtest measurement used to *calibrate the mock baseline*, not a mainnet leaderboard.
+
 These anchors commit to the **method + the calibrated mock baseline** (the dim-2 mock fixtures calibrated from
 the first-party pilot `{median, σ}` + the deterministic mock-pipeline hash), **not** a published production
 real-rail leaderboard — mirroring the dimension-1 **Variant-E** posture. PayBench ships as an open tool with
@@ -102,6 +106,12 @@ the ceremony runs):
 
 Trust-anchor triad: **OSF DOI + Bitcoin block + Rekor entry** — three independent anchors, no single point of
 trust; the signed git tag + arXiv are additional defence-in-depth. The dim-1 anchors are untouched.
+
+**Anchor robustness (cross-LLM F16).** The OSF DOI resolves to a single URL — a single point of failure. The
+**Rekor entry + OpenTimestamps (Bitcoin) proof are independently sufficient** to establish the freeze date
+*even if OSF is unavailable*. At ceremony time, independently archive `dim2-PRE-REGISTRATION.md` +
+`dim2-prereg-manifest.sha256` (+ the `.ots` / `.cosign.bundle` proofs) to the Internet Archive / IPFS so the
+freeze is self-verifying without OSF or the repo (mirrors the dim-1 IA archive).
 
 ## Verification
 
