@@ -66,9 +66,12 @@ Upload to the project's OSF Storage (these become part of the immutable snapshot
 ## Step 4 — embargo, then submit
 1. Set **Embargo end date = POC Day-0 `2026-07-17`** (early release permitted). This syncs the OSF page's
    public visibility with the Day-0 ship bundle; the anchors are already public so the freeze date isn't hidden.
-2. **Submit.** OSF time-stamps the registration and **mints the DOI** (registrations auto-DOI; for embargoed
-   ones the DOI resolves to a "registration is embargoed" landing page until release).
-3. Copy the **DOI** (form `10.17605/OSF.IO/XXXXX`).
+2. **Submit.** OSF **time-stamps the registration immediately** (the freeze date is recorded now), BUT for an
+   **embargoed** registration the **DOI is only issued / becomes resolvable when the embargo is released** —
+   *not at submission*. So the dim-2 DOI does not exist until the **2026-07-17 release** (or an early release).
+   Nothing is gated on it: the freeze date is already independently anchored by Bitcoin + Rekor.
+3. **At embargo release**, copy the **DOI** (form `10.17605/OSF.IO/XXXXX`). Until then the OSF disposition
+   reads "registered + embargoed; **DOI on release**".
 
 ## Step 5 — F16 independent archive (don't skip)
 The DOI is a single URL = a single point of failure. Independently archive so the freeze is self-verifying
@@ -78,12 +81,21 @@ without OSF:
 - Confirm the narrative already states "Rekor + OpenTimestamps independently sufficient even if OSF
   unavailable" (it does for dim-2 — the F16 clause in `dim2-PRE-REGISTRATION.md`).
 
-## Step 6 — write the DOI back + record dispositions
+## Step 6 — write the DOI back + record dispositions (at embargo release)
+The DOI only arrives at **embargo release** (Step 4) — so this step happens on **2026-07-17** (or early
+release), not at registration. Until then, the disposition reads "registered + embargoed; DOI on release."
 The narrative + manifest are **immutable / uploaded** — do NOT edit them to carry the DOI (it would break the
 anchored hash). Record the DOI in the **process** docs only:
 1. Add the DOI to the `*-CEREMONY-RUNBOOK.md` disposition table (OSF row).
 2. (Optional) note it in the project README / Notion. Tell me the DOI + IA URL and I'll do the disposition
    write-back from devbox.
+
+## Note on the existing OSF project metadata (the umbrella)
+The PayBench OSF **project** (id `Gv8j7`) currently has **dim-1-specific** title/description ("settlement-finality
+methodology v1.2"). To host dim-2 under the same project (Step 1), **generalize the project metadata to the
+umbrella** — title/description covering *both* dimensions. This is safe: the project is mutable and editing it
+does **not** alter any already-created registration (registrations are immutable snapshots). Put the
+dimension-specific wording in the per-dimension **component/registration**, not the umbrella project.
 
 ---
 **Triad after this step:** OSF DOI ✅ + Bitcoin ✅ + Rekor ✅ = the full three-anchor triad, no single point of
