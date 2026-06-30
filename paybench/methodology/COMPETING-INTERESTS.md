@@ -9,8 +9,7 @@ effort. This statement is public and is referenced from the methodology paper.
 PayBench is designed, operated, and published by the author (Michael Blake, everydayai.link) in connection with
 the author's commercial work on agent-to-agent (A2A) payments. That work gives the author a **competing
 interest**: a credible, openly-pre-registered benchmark of A2A payment rails also serves to establish technical
-standing for that commercial work. The project does not hide this — it states an *evaluation-as-marketing*
-function as one of its founding principles. A reader should weigh the benchmark in that light.
+standing for that commercial work. A reader should weigh the benchmark in that light.
 
 Concretely, the two design choices that openness and reproducibility **cannot** by themselves neutralise — and
 which a conflicted operator could in principle exercise to flatter a preferred outcome — are:
@@ -23,8 +22,7 @@ against. These choices are operator judgements and should be read as such.
 
 ## What is *not* the case
 No rail operator or other third party commissioned, funded, or had pre-publication approval over this benchmark,
-its design, or its results, and no party was paid for — or paid to obtain — any particular ranking. *(Author to
-confirm/qualify this sentence against the actual funding arrangement before publication.)*
+its design, or its results, and no party was paid for — or paid to obtain — any particular ranking.
 
 ## Mitigations (what reduces the residual risk, and what doesn't)
 - **Cryptographic pre-registration (strong, but bounded).** The full design — rail set, definitions, metrics,
