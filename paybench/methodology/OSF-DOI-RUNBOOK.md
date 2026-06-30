@@ -14,11 +14,12 @@ dimensions; **worked example = dim-2 (RAPL)** in call-outs. Companion to `*-CERE
   OTS stamped, Bitcoin confirming) — so the freeze date is provable **independently of OSF** (F16).
 
 ## Key facts about OSF registrations (so you set it up right)
-- An OSF **Registration** is an **immutable, time-stamped, frozen snapshot** of an OSF *Project* — it gets a
-  **DOI automatically**. You cannot edit a registration after it's submitted (only withdraw → leaves a tombstone).
-- **Embargo** delays *public visibility* of the registration up to 4 years; the **registration/DOI timestamp
-  is still recorded now** (and you can end the embargo early). So an embargo does **not** hide the freeze date —
-  and for us the freeze date is independently anchored anyway (Bitcoin + Rekor).
+- An OSF **Registration** is an **immutable, time-stamped, frozen snapshot** of an OSF *Project*, with its own
+  **DOI** — but for an **embargoed** registration the DOI is **issued at release**, not at submission (Step 4).
+  You cannot edit a registration after it's submitted (only withdraw → leaves a tombstone).
+- **Embargo** delays *public visibility* (and DOI issuance) up to 4 years; the **registration is time-stamped
+  now** (and you can end the embargo early). So an embargo does **not** hide the freeze date — and for us the
+  freeze date is independently anchored anyway (Bitcoin + Rekor).
 - A registration snapshots the **Project's files + a registration form**. So: create a Project, upload the
   artefacts to it, fill the form, then register.
 
