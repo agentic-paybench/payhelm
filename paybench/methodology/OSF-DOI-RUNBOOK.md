@@ -22,11 +22,21 @@ dimensions; **worked example = dim-2 (RAPL)** in call-outs. Companion to `*-CERE
 - A registration snapshots the **Project's files + a registration form**. So: create a Project, upload the
   artefacts to it, fill the form, then register.
 
-## Step 1 — account + project
-1. Sign in at **osf.io** (the canonical identity — `mblake@everydayai.link`; keep the persona consistent with
-   the signed tag + arXiv). Create the account if first time.
-2. **Create a Project** (e.g. "PayBench — authorization-latency (RAPL) pre-registration"). Keep it **private**
-   for now (the registration's embargo controls public release).
+## Step 1 — account + project (ONE PayBench project across all dimensions)
+1. Sign in at **osf.io** (canonical identity `mblake@everydayai.link`; keep the persona consistent with the
+   signed tag + arXiv). Create the account if first time.
+2. **Do NOT create a separate top-level project per dimension.** dim-1 (settlement-finality) and dim-2 (RAPL)
+   are two dimensions of the **same** benchmark → they share one **PayBench** project (one coherent,
+   discoverable body of work). Each *Registration* is its own immutable, separately-DOI'd snapshot, so the
+   **per-dimension DOI is preserved regardless** of sharing the project.
+3. **Recommended — a Component per dimension.** In the PayBench project, add a **Component** ("Authorization
+   latency — RAPL") and **register that component** (Step 3). Its snapshot then contains only this dimension's
+   files → a clean per-dimension DOI. *(Simpler alternative: register the whole project a second time for
+   dim-2 — also fine, but the snapshot then includes dim-1's files too; the narrative scopes the claim.)*
+4. **If dim-1's OSF is already a standalone project:** either add dim-2 as a component/registration there, or
+   leave dim-2 alongside it — the cryptographic anchoring (Bitcoin + Rekor + signed tag) is the *real* freeze;
+   OSF is the human-readable leg, so project structure affects **discoverability, not correctness**.
+5. Keep the project **private**; the registration's **embargo** controls public release.
 
 ## Step 2 — upload the frozen artefacts to the project
 Upload to the project's OSF Storage (these become part of the immutable snapshot):
