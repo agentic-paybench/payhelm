@@ -1,5 +1,12 @@
 # arXiv preprint — the public methods paper (defence-in-depth, longest lead time)
 
+> **Execution note** (memory: `execution-ready-runsheets`). This file is the reusable **template** — it
+> carries `<placeholders>`. To EXECUTE a specific instance, don't substitute by hand: ask me for a
+> **fully-substituted runsheet** — every value pre-resolved (full hashes / block / Rekor index / commit /
+> exact paths), each paste-block format-matched + **labelled with its destination field** (PLAINTEXT vs
+> markdown), and artifacts pre-built. The operator substitutes nothing.
+
+
 The public-scholarship leg. **Not part of the trust-anchor triad** (OSF DOI + Bitcoin + Rekor) — it's
 additional defence-in-depth + dissemination. **Start the account/endorsement early**: a first-time submitter
 usually needs an endorsement, which gates the whole timeline. Reusable across dimensions; **worked example =

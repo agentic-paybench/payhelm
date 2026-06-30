@@ -1,5 +1,12 @@
 # Internet Archive (F16) — independent, self-verifying archive of a pre-registration freeze
 
+> **Execution note** (memory: `execution-ready-runsheets`). This file is the reusable **template** — it
+> carries `<placeholders>`. To EXECUTE a specific instance, don't substitute by hand: ask me for a
+> **fully-substituted runsheet** — every value pre-resolved (full hashes / block / Rekor index / commit /
+> exact paths), each paste-block format-matched + **labelled with its destination field** (PLAINTEXT vs
+> markdown), and artifacts pre-built. The operator substitutes nothing.
+
+
 The **robustness leg** (cross-LLM F16). The OSF DOI resolves to a single URL = a single point of failure;
 the git repo can move or go private. This step puts the **self-verifying minimum** on a third, independent,
 date-stamped public host (the Internet Archive) so the freeze can be checked **without OSF and without the

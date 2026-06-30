@@ -1,5 +1,12 @@
 # OSF pre-registration → DOI (anchor ceremony, the OSF leg)
 
+> **Execution note** (memory: `execution-ready-runsheets`). This file is the reusable **template** — it
+> carries `<placeholders>`. To EXECUTE a specific instance, don't substitute by hand: ask me for a
+> **fully-substituted runsheet** — every value pre-resolved (full hashes / block / Rekor index / commit /
+> exact paths), each paste-block format-matched + **labelled with its destination field** (PLAINTEXT vs
+> markdown), and artifacts pre-built. The operator substitutes nothing.
+
+
 The human-readable leg of the trust-anchor triad (the other two — Bitcoin via OpenTimestamps, Rekor via
 cosign — are cryptographic). OSF mints a **DOI** over a frozen snapshot + your narrative. Reusable across
 dimensions; **worked example = dim-2 (RAPL)** in call-outs. Companion to `*-CEREMONY-RUNBOOK.md` §5/§6 and the

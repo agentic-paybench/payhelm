@@ -1,5 +1,12 @@
 # Pre-freeze preflight checklist (run BEFORE any pre-registration freeze)
 
+> **Execution note** (memory: `execution-ready-runsheets`). This file is the reusable **template** — it
+> carries `<placeholders>`. To EXECUTE a specific instance, don't substitute by hand: ask me for a
+> **fully-substituted runsheet** — every value pre-resolved (full hashes / block / Rekor index / commit /
+> exact paths), each paste-block format-matched + **labelled with its destination field** (PLAINTEXT vs
+> markdown), and artifacts pre-built. The operator substitutes nothing.
+
+
 A freeze + cryptographic anchor is a point of no return: once anchored, any change to the byte-set means
 re-freezing from scratch. This checklist is the **routine gate** that must pass before generating a manifest
 (`§2` of a `*-CEREMONY-RUNBOOK.md`). It exists because past freezes accreted avoidable rework — the fixes
