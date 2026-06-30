@@ -120,4 +120,8 @@ and reproduction determinism — **not** the rail-adapter layer that extracts a 
 response (last-byte stopwatch, same-path RTT subtraction, the work-clause). Read "validated pipeline" as
 "validated statistics layer." Golden-transcript adapter tests (recorded raw response → adapter → assert against
 a hand-labelled timestamp — the pattern AP2 already uses via capture-replay) are deferred to the real-rail run,
-when the adapters are final. Tracking: `gauntlet-r1…` **G-P4**.
+when the adapters are final. A check of the pilot artefacts (2026-06-30) confirmed the T1/T2a/T2b runs logged
+only *derived* samples (`accept_raw_s`, `challenge_raw_s`, `rtt_floor_s`, …), not the raw rail responses — so
+golden-transcript tests cannot be backfilled from existing data, and the real-rail harness must additionally
+**log raw rail transcripts** for that backfill to become possible. (AP2 is the one rail with replayable raw
+captures today.) Tracking: `gauntlet-r1…` **G-P4**.
