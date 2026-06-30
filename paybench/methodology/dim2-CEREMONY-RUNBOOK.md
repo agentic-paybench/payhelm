@@ -110,6 +110,23 @@ cosign sign-blob --yes \
 ```
 
 ## 5. Signed git tag (your machine, YubiKey plugged in)
+
+**First — create the freeze-evidence file** (the gates 8 & 9 attestation). The `freeze-guard` pre-push hook +
+CI refuse to push a `paybench-*prereg*` tag unless the **tagged commit** carries `freeze-evidence/<tag>.md`.
+Install the hook once per machine: `bash paybench/methodology/ceremony-hooks/install-hooks.sh`.
+```bash
+cd paybench
+cp methodology/freeze-evidence/TEMPLATE.md methodology/freeze-evidence/paybench-rapl-prereg-v1.md  # filename == tag, exactly
+# edit it: STATUS: PASS  +  GATE8-GAUNTLET: PASS  +  GATE9-XDIM: PASS
+#   (cite the pre-freeze gauntlet result + the cross-dimension/ERRATA consistency note)
+git add methodology/freeze-evidence/paybench-rapl-prereg-v1.md
+git commit -m "dim2: freeze-evidence (gates 8 & 9) for paybench-rapl-prereg-v1"   # <- tag THIS commit
+```
+*(The evidence file is NOT in the frozen manifest — it doesn't change the anchored hash — it just has to live
+in the tagged commit's tree. For the already-landed dim-2 freeze it is `STATUS: LEGACY`: the gauntlet ran
+post-freeze. New freezes must be `STATUS: PASS`.)*
+
+Then sign + push the tag, pointing it at the commit that contains the evidence file:
 ```bash
 gpg --card-status                                        # YubiKey OpenPGP present
 git config user.signingkey <YUBIKEY_KEYID>               # ed25519 signing subkey (same key as dim-1)
@@ -137,7 +154,7 @@ doctrine + the FR4-satisfied *order*). Category **cs.CR**. Embed the dim-2 manif
 |---|---|---|
 | Founder §0 (de-draft + narrative + mock leg) | **✅ DONE** | doctrine ratified · scored finalized · narrative ratified · SPLIT mock leg (A 7487c278 / B 19b91c8d) |
 | Freeze (dim-2 manifest) | **✅ DONE** | `dim2-prereg-manifest.sha256` → anchored hash **`46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388`**; freeze commit `3dd74caa` |
-| OpenTimestamps (Bitcoin) | **✅ DONE — confirmed Bitcoin block 955977** | upgraded `.ots` (Bitcoin attestation baked in; also blocks 955978/955993); commits to `46a19eab…1dcd388`. |
+| OpenTimestamps (Bitcoin) | **✅ DONE — confirmed Bitcoin block 955977** | upgraded `.ots` (Bitcoin attestation baked in; also blocks 955978/955993); commits to `46a19eab…1dcd388`. Wayback block-height snapshots (server-side API, **not** the SPA pages — those captured empty shells): mempool `https://web.archive.org/web/20260630083135/https://mempool.space/api/block-height/955977` · blockstream `https://web.archive.org/web/20260630151511/https://blockstream.info/api/block-height/955977`. |
 | cosign → Rekor | **✅ DONE** | Rekor logIndex `2012836917`; bundle committed (`748ff7f5`) over `46a19eab…` |
 | Signed git tag | **✅ DONE** | `paybench-rapl-prereg-v1` → freeze commit `3dd74caa` (tag obj `66075feb`), pushed; YubiKey EdDSA `B61635C9…286042AC`, signer `mblake@everydayai.link` |
 | OSF registration | **✅ registered — embargoed to 2026-07-17** | Open-Ended Registration under the PayBench project (`Gv8j7`), as the "Authorization latency (RAPL)" component; Summary = plain-text abstract, 5 attachments (4 docs + `dim2-anchor-proofs.zip`). **DOI issues at embargo release** (registration GUID: *TBC*). |
