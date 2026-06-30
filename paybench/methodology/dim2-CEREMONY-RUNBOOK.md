@@ -140,8 +140,9 @@ doctrine + the FR4-satisfied *order*). Category **cs.CR**. Embed the dim-2 manif
 | OpenTimestamps (Bitcoin) | **✅ DONE — confirmed Bitcoin block 955977** | upgraded `.ots` (Bitcoin attestation baked in; also blocks 955978/955993); commits to `46a19eab…1dcd388`. |
 | cosign → Rekor | **✅ DONE** | Rekor logIndex `2012836917`; bundle committed (`748ff7f5`) over `46a19eab…` |
 | Signed git tag | **✅ DONE** | `paybench-rapl-prereg-v1` → freeze commit `3dd74caa` (tag obj `66075feb`), pushed; YubiKey EdDSA `B61635C9…286042AC`, signer `mblake@everydayai.link` |
-| OSF DOI | pending (web) | embargo 2026-07-17 |
-| arXiv | pending (web) | cs.CR |
+| OSF registration | **✅ registered — embargoed to 2026-07-17** | Open-Ended Registration under the PayBench project (`Gv8j7`), as the "Authorization latency (RAPL)" component; Summary = plain-text abstract, 5 attachments (4 docs + `dim2-anchor-proofs.zip`). **DOI issues at embargo release** (registration GUID: *TBC*). |
+| IA archive (F16) | **✅ archived** | self-verifying file set (narrative + manifest + `.ots` + `.cosign.bundle`) on the Internet Archive (item URL: *TBC*). |
+| arXiv | pending (web) | cs.CR (or cs.PF/cs.DC); needs endorsement — start early |
 
 ## Where each step runs
 | Step | Runs on | Blocker |
