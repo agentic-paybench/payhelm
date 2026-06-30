@@ -1,9 +1,11 @@
 % PayBench methods paper — arXiv preprint source (derived from paybench/methodology/methodology.md v1.2)
 % Build: pdflatex payhelm-methods.tex  (twice, for refs)
 % Perimeter discipline (methodology §7, F14): this PUBLIC artefact carries NO real-rail
-% ranking and NO per-rail finality numbers. Calibration parameters live in the repository.
-% Watermark (cross-LLM review): the title states "Calibrated Mock Harness" so the work cannot
-% be screenshotted as a real-rail leaderboard.
+% ranking and NO per-rail numbers (finality or authorization-latency). Calibration parameters
+% live in the repository. Watermark (cross-LLM review): the title states "Calibrated Mock
+% Harness" so the work cannot be screenshotted as a real-rail leaderboard.
+% Combined two-dimension version (2026-06-30): adds the authorization-latency (RAPL) dimension
+% alongside settlement-finality.
 \documentclass[11pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
@@ -12,7 +14,7 @@
 \hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
 
 \title{PayBench: A Pre-Registered Methodology and Calibrated Mock Harness\\
-for Agent-to-Agent Payment-Rail Settlement Finality}
+for Agent-to-Agent Payment Rails}
 
 % Identity resolved 2026-06-06: real-name attribution (portfolio/credibility, P5), "Independent
 % researcher" affiliation (protects the neutral-instrument positioning; avoids commercial-COI optics).
@@ -20,38 +22,49 @@ for Agent-to-Agent Payment-Rail Settlement Finality}
 % arXiv account, not the PDF).
 \author{Michael Blake\\[2pt]
   \normalsize Independent researcher \;\textbar\; \href{https://everydayai.link}{everydayai.link}}
-\date{Methodology v1.2 (frozen 2026-06-06). Preprint v1.}
+\date{Methodology: settlement-finality v1.2 (frozen 2026-06-06); authorization-latency / RAPL
+(frozen 2026-06-29). Preprint v1.}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-\noindent\textbf{This preprint describes a pre-registered measurement methodology and a calibrated
+\noindent\textbf{This preprint describes pre-registered measurement methodologies and a calibrated
 \emph{mock} harness; no real-rail funds are moved and no production rail-by-rail ranking is derived
 or published here.} PayBench is an evaluation methodology and benchmark for agent-to-agent (A2A)
-payment rails. Its first dimension is \emph{settlement-finality}: the wall-clock time from payment
-submission to the point at which an autonomous agent may rely on the payment for an irreversible
-downstream action. We make three contributions. First, a \emph{reliance-level doctrine} for defining
-finality across heterogeneous rails (deterministic BFT close, probabilistic rooting, optimistic-rollup
-soft finality, hash-time-locked preimage release), pairing each rail's ecosystem-canonical reliance
-level with an explicit \emph{trust/equivalence class} so that wall-clock comparisons never masquerade
-as security-model equivalence. Second, a comparative statistical method---Bradley--Terry maximum-likelihood
-estimation over pairwise finality races, complemented by $\mathrm{pass}@k = P(\text{finality} \le k)$
-and Wilson lower-bound confidence intervals---with explicit caveats on its behaviour under cluster
-separation. Third, a cryptographic \emph{pre-registration} protocol (OSF DOI $+$ a transparency-log
-entry $+$ an independent timestamp anchor $+$ a signed source tag $+$ this preprint) that fixes the
-design before any scored run, and that cleanly decouples \emph{methodology} pre-registration from the
-later \emph{real-rail data} pre-registration. The methodology and a reproducible mock harness are
-released as an open tool; publication of real-rail rankings is deferred.
+payment rails, with two benchmarked timing dimensions. \emph{Settlement-finality} is the wall-clock
+time from payment submission to the point at which an autonomous agent may rely on the payment for an
+irreversible downstream action; \emph{authorization latency} is the earlier, distinct point at which
+the rail \emph{accepts} the payment as allowed to proceed. We make four contributions. First, a
+\emph{reliance-level doctrine} for defining finality across heterogeneous rails (deterministic BFT
+close, probabilistic rooting, optimistic-rollup soft finality, hash-time-locked preimage release),
+pairing each rail's ecosystem-canonical reliance level with an explicit \emph{trust/equivalence class}
+so that wall-clock comparisons never masquerade as security-model equivalence. Second, a \emph{split}
+authorization-primitive doctrine that races each rail only against rails whose authorization point is
+the same \emph{kind} of object---separating payment-validation from challenge-issuance after an
+adversarial review found that racing them together is a category error---together with a
+\emph{group-and-decompose} analysis that groups rails by work class (local-complete vs.\
+network-dependent), ranks within a group, and compares across groups only through a per-rail
+decomposition rather than a single cross-class ordinal. Third, comparative statistical
+methods---Bradley--Terry maximum-likelihood estimation over pairwise races, $\mathrm{pass}@k =
+P(\cdot \le k)$, and Wilson lower-bound intervals---hardened for the sub-second regime with a ties
+extension, a censoring/competing-risks rule, and a pre-specified survival-model fallback under stated
+numeric triggers. Fourth, a cryptographic \emph{pre-registration} protocol (OSF DOI $+$ a
+transparency-log entry $+$ an independent timestamp anchor $+$ a signed source tag $+$ this preprint),
+run once per dimension, that fixes each design before any scored run and decouples \emph{methodology}
+pre-registration from the later \emph{real-rail data} pre-registration. The methodologies and a
+reproducible mock harness are released as an open tool; publication of real-rail rankings is deferred.
 \end{abstract}
 
 \section{Introduction}
 Agentic payment rails are proliferating---x402 on multiple chains, the Machine Payments Protocol (MPP)
 on different settlement rails, mandate/authorization layers such as AP2, and others. An autonomous
-agent transacting A2A must answer one question above all others before it acts on a payment:
-\emph{when can I rely on this?} That is the settlement-finality question, and it gates every
-downstream action the agent takes. PayBench exists to define and publish the canonical, comparative
-metric for it.
+agent transacting A2A faces two timing questions about a payment, at two different moments: \emph{is
+this payment allowed to proceed?}---the authorization gate it hits \emph{before} committing to a
+rail---and \emph{when can I rely on this?}---the settlement-finality question that gates every
+downstream action once it has committed. The two are complementary and genuinely distinct
+(authorization precedes, and does not imply, finality). PayBench defines and publishes a canonical,
+comparative metric for each.
 
 The benchmark is deliberately \emph{comparative}, not absolute: it ranks rails against each other on a
 dimension, with a stated confidence interval, under a protocol fixed in advance. The comparative
@@ -70,8 +83,8 @@ PayBench answers three different \emph{kinds} of question and is explicit about 
 \emph{hybrid-tiered} schema):
 \begin{itemize}
   \item \textbf{Tier~1 --- benchmarked.} Dimensions PayBench runs trials on, pre-registers, and ranks
-  with confidence intervals. Settlement-finality is the first; authorization latency and fee
-  predictability are roadmap-committed.
+  with confidence intervals. Settlement-finality and authorization latency are the two benchmarked
+  dimensions (\S\ref{sec:finality}, \S\ref{sec:rapl}); fee predictability is roadmap-committed.
   \item \textbf{Tier~2 --- factual lookup.} Live, queryable capability/reference data per rail (fees,
   supported assets, custody model, the auth/dispute/refund/sanctions capability bundle), stated as
   fact, not scored.
@@ -136,7 +149,78 @@ reduces to an underlying rail) are excluded from the finality dimension and meas
 authorization-latency dimension instead, where they are well-defined. Racing such a layer against its
 own underlying rail would violate the independence the statistical model assumes.
 
-\section{Statistical method}
+\section{Authorization latency (RAPL)}\label{sec:rapl}
+\paragraph{Definition.} Authorization latency---\emph{Rail Authorization-Primitive Latency}
+(RAPL)---is the wall-clock time from the agent issuing its pay command (the payment payload constructed
+and on the wire) to the point the rail returns an \emph{authorization-primitive decision}: ``this
+payment/mandate is validated'' or ``this payable challenge is issued.'' It is \emph{prior to and
+distinct from} settlement-finality (\S\ref{sec:finality}): finality answers \emph{when can I rely on
+this payment as irreversible?}, RAPL answers \emph{how fast does the rail tell me the payment is allowed
+to proceed?}---the gate an agent hits \emph{before} it commits to a rail. Lower is better, and the race
+semantics are identical, so the Bradley--Terry spine of \S\ref{sec:stats} applies---but only
+\emph{within} a sub-ranking, for the reason below.
+
+\paragraph{The split, and why a label will not do.} Authorization is not one shared concept across
+these rails. An x402 facilitator \texttt{/verify}, an MPP voucher \texttt{Verify}, and an AP2
+mandate-verify all \emph{validate something the payer has already submitted}; an L402
+macaroon-plus-invoice is the server \emph{issuing a payable challenge before the payer has committed
+anything}---in ISO-8583 terms the merchant's request, not the issuer's response, and an earlier
+protocol step. An independent four-model adversarial review refuted, unanimously, a design that raced
+all such primitives in one ranking: a single Bradley--Terry race treats the items as differing in
+\emph{degree} along one latent axis when they differ in \emph{kind}, and a trust-class \emph{label}
+names that category error without removing it. PayBench therefore \emph{splits} the dimension into two
+sub-rankings that are never raced across each other---\textbf{payment-validation} and
+\textbf{challenge-issuance}---and races each rail only against rails whose authorization point is the
+same kind of object. Each rail is measured on whichever primitive(s) it actually has: the x402 rails
+appear in both; a mandate layer with no challenge appears only in validation; an L402 rail, which has
+no pre-settlement validation point (in Lightning, payment \emph{is} settlement), appears only in
+challenge-issuance.
+
+\paragraph{Measurement in the sub-second regime.} The clock starts when the agent issues the ultimate
+pay command---uniformly across rails, so no rail is advantaged by excluded payload construction---and
+stops at the \emph{last byte} of the authorization response, not the first byte (a first-byte stopwatch
+lets a rail emit early framing before finishing the mandated work). A baseline round-trip from a
+\emph{same-path} application-layer probe (the same route and TLS termination as the authorization
+endpoint) is subtracted; raw and corrected are both reported, with the per-endpoint minimum-RTT floor.
+The discriminating metric is $P(\text{auth} \le k)$ on a \emph{millisecond} ladder $k \in
+\{20,50,100,250,500\}$~ms---the seconds-scaled finality grid would not separate here---with median,
+$P95$, and $P99$ reported alongside. An anti-gaming work-clause requires the timed validation response
+to include signature verification \emph{and} a fresh state read, so a rail cannot game the metric by
+deferring real checks to settlement.
+
+\paragraph{Hardened statistics and a survival-model fallback.} Sub-second networked races tie often
+within clock jitter and produce authorization \emph{failures} (reject, timeout) that must enter the
+model rather than be silently dropped. The Bradley--Terry spine (\S\ref{sec:stats}) is therefore
+hardened with a Davidson ties extension and an explicit censoring/competing-risks rule, with
+Kaplan--Meier curves for description; and a Cox proportional-hazards / competing-risks survival model is
+\emph{pre-specified} as a data-triggered fallback, adopted if, in any sub-ranking, the tie-rate exceeds
+$20\%$, or any rail's authorization-failure rate exceeds $5\%$, or more than $10\%$ of triples are
+cyclic, or a Bradley--Terry goodness-of-fit likelihood-ratio test gives $p<0.05$. The engine is not
+swapped pre-emptively---doing so would fragment the one-method-across-dimensions story and re-expose
+the (tie-free, seconds-scale) finality model to a critique its data does not warrant.
+
+\paragraph{Group-and-decompose.} Within each sub-ranking the rails span two-to-three orders of
+magnitude of \emph{work class}: a purely local cryptographic check versus a primitive whose critical
+path contains at least one intrinsic backing-service round-trip. When the between-class spread (roughly
+two orders of magnitude) dwarfs the within-class spread, a single ordinal would encode class membership
+rather than rail quality, and a bare leaderboard would mislead any reader who skipped the label.
+PayBench therefore groups rails by work class (\emph{local-complete} vs.\ \emph{network-dependent}),
+ranks within a group, and compares across groups only through a per-rail decomposition (local-compute
+floor, backing-service component, end-to-end)---never as a single cross-class ordinal. The end-to-end
+figure stays the headline (the backing-service hop \emph{is} authorization work and is never subtracted
+from it); the decomposition is the protocol-design view, served as a secondary number.
+
+\paragraph{Topology is mandatory, and is the result.} A network-dependent rail's absolute latency is a
+function of the measuring host's network path: a single topology measures the harness, not the rail.
+PayBench therefore requires at least two network-distinct vantages before any network-dependent number
+is scored; local-complete rails being topology-invariant is the built-in control. The consequence is
+that \emph{the scored result is the within-group order, not the absolute milliseconds}---an order that
+must be stable across topologies to count. Consistent with the perimeter discipline of
+\S\ref{sec:design}, this preprint reports that ordering only qualitatively (local cryptographic
+validation is orders of magnitude below facilitator-network validation, and within the network group
+the ordering is stable across the vantages measured) and reports no per-rail millisecond table.
+
+\section{Statistical method}\label{sec:stats}
 \paragraph{Bradley--Terry MLE.} For each unordered rail pair we run repeated finality \emph{races}: in a
 trial, both rails execute the same scenario against the same fixture and the rail reaching finality
 first wins. Aggregating wins/losses across all trials and pairs, Bradley--Terry MLE produces a latent
@@ -188,15 +272,26 @@ Mersenne Twister; no wall-clock, no OS entropy), and every fixture is content-ad
 trial records, and the harness re-verifies, the exact fixture bytes it consumed. The harness is pure
 standard library, removing cross-version RNG drift.
 
+\paragraph{Authorization-latency harness.} The RAPL dimension reuses the same machinery under its split
+design: two sub-rankings (payment-validation and challenge-issuance), each a $C(5,2)=10$-pair,
+$5{,}000$-trial benchmark, never raced across each other. Each sub-ranking carries its own RNG seed
+sub-namespace derived from the one published master seed, so its trial streams are domain-separated from
+the finality dimension and from the other sub-ranking---the same seed, never the same stream---and each
+yields a deterministic mock-pipeline reproduction hash the harness re-derives byte-for-byte. The mock
+fixtures here are calibrated from first-party pilot measurements collected across multiple
+network-distinct topologies; consistent with the perimeter discipline below, the calibration parameters
+and the multi-topology ordering live in the repository, and this preprint carries no per-rail latencies.
+
 \paragraph{Calibrated mock fixtures.} Each fixture is a seeded log-normal population whose location and
 scale parameters are derived from real reference data---rail documentation, public telemetry, and
 first-party testnet/devnet/regtest observations. The harness is therefore \emph{meaningful}: it
 exercises the full pipeline against realistic, first-party-anchored distributions.
 
-\paragraph{Perimeter discipline---why no per-rail numbers appear here.} A seconds-valued,
-fastest-to-slowest table of real first-party measurements \emph{is} a rail ranking, which the
-publication posture defers. Accordingly this preprint reports \emph{no} per-rail finality medians and
-\emph{no} ranking. The calibration parameters (log-space $\mu$, $\sigma$ per rail), full per-source
+\paragraph{Perimeter discipline---why no per-rail numbers appear here.} A fastest-to-slowest table of
+real first-party measurements \emph{is} a rail ranking, which the publication posture defers.
+Accordingly this preprint reports \emph{no} per-rail finality or authorization-latency numbers and
+\emph{no} ranking---only, for authorization latency, the qualitative within-group ordering of
+\S\ref{sec:rapl}. The calibration parameters (log-space $\mu$, $\sigma$ per rail), full per-source
 provenance, the harness, and the deterministic run report are released in the repository; this paper
 documents the \emph{method}. The released mock run demonstrates the pipeline; it is not, and is not
 presented as, a real-rail result.
@@ -213,10 +308,14 @@ discrete (constant-plus-jitter) distribution rather than log-normal.
 
 \section{Pre-registration protocol}
 Pre-registration is the load-bearing artefact: it is what defends a comparative leaderboard against
-selective-trial and threshold-shopping critique. We pre-register, before any scored run, the rail set,
-per-rail finality definitions, trial counts, metric definitions (BT $+$ $\mathrm{pass}@k$ grid $+$
-Wilson), the RNG seed, and the input fixture hashes. The concrete frozen values are committed as a
-content manifest; the manifest's own hash is the single value the anchors below commit to.
+selective-trial and threshold-shopping critique. \emph{Each dimension is pre-registered separately},
+before any scored run, with the same machinery. For settlement-finality we fix the rail set, the
+per-rail finality definitions, trial counts, the metric definitions (BT $+$ $\mathrm{pass}@k$ grid $+$
+Wilson), the RNG seed, and the input fixture hashes. For authorization latency we fix the split into
+sub-rankings, the measurement contract and anti-gaming work-clause, the millisecond grid, the numeric
+triggers for the survival-model fallback, the $\ge 2$-topology requirement, the seed-namespace, and the
+calibrated mock-fixture hashes. Each dimension's frozen values are committed as a content manifest;
+that manifest's own hash is the single value its anchors commit to.
 
 \paragraph{Cryptographic grounding (defence-in-depth).} The manifest hash is committed via three
 independent trust anchors plus two corroborating records: an OSF pre-registration resolving to a DOI;
@@ -234,39 +333,46 @@ same anchor stack, \emph{before} that run executes. Decoupling the two closes th
 benchmark many times and registered only the best'' attack---the real-rail design is frozen ahead of
 the real-rail data, exactly as this method was frozen ahead of any real-rail data.
 
-\paragraph{Verification.} The released manifest verifies every input file by sha256; the harness
-re-derives the mock-pipeline verification hash byte-for-byte from the frozen fixtures (no wall-clock is
-written into the report). \textbf{This verification hash certifies pipeline reproduction; it is not a
-real-rail ranking result.} Only version~1 of this preprint is the canonical frozen artefact; later
-revisions, if any, are post-freeze errata.
+\paragraph{Verification.} Each released manifest verifies every input file by sha256; the harness
+re-derives each dimension's mock-pipeline reproduction hash(es) byte-for-byte from the frozen fixtures
+(no wall-clock is written into any report). \textbf{These reproduction hashes certify pipeline
+reproduction; they are not real-rail ranking results.} Only version~1 of this preprint is the canonical
+frozen artefact; later revisions, if any, are post-freeze errata.
 
 \paragraph{Provenance posture.} The cryptographic primitives used here---JCS (RFC~8785), SHA-256
 (FIPS~180-4), cosign, and OpenTimestamps---are commodity public standards, used as-is and claimed by no
 one; the anchors establish \emph{precedence, integrity, and signer-identity}, not authorship of those
-primitives. PayBench's original contribution is the per-rail-canonical reliance-level finality doctrine
-(\S\ref{sec:finality}) and the calibrated mock-fixture methodology (Bradley--Terry MLE with a symmetric
-smoothing prior, $\mathrm{pass}@k = P(\text{finality} \le k)$, and Wilson lower-bound intervals), for
-which this pre-registration establishes precedence. We do not frame the canonicalisation or
+primitives. PayBench's original contributions are the per-rail-canonical reliance-level finality
+doctrine (\S\ref{sec:finality}); the split authorization-primitive doctrine and group-and-decompose
+work-class analysis (\S\ref{sec:rapl}); and the calibrated mock-fixture methodology (Bradley--Terry MLE
+with a symmetric smoothing prior, $\mathrm{pass}@k = P(\cdot \le k)$, Wilson lower-bound intervals,
+and---for the sub-second regime---a Davidson ties extension, a censoring/competing-risks rule, and a
+pre-specified survival-model fallback), for which these pre-registrations establish precedence. We do not frame the canonicalisation or
 content-addressing technique as the contribution.
 
 \section{Related work}
 Adjacent efforts touch this ground---registries of payment-capable services, multi-rail routing and
 analytics layers, and service-discovery surfaces. PayBench's distinct contribution is
-\emph{methodological}: a pre-registered, comparative, settlement-finality benchmark published from a
-non-custodial, rail-neutral posture, with the design fixed cryptographically before any scored run. A
+\emph{methodological}: a pre-registered, comparative benchmark---across settlement-finality and
+authorization latency---published from a non-custodial, rail-neutral posture, with each design fixed
+cryptographically before any scored run. A
 neutral, sourced, dated related-work treatment naming specific efforts belongs in the camera-ready
 version; it is omitted from this preprint to keep the instrument neutral.
 
 \section{Conclusion}
-PayBench operationalises the dominant rail-DX question for agent-to-agent commerce---when can the agent
-rely on a payment?---as a comparative, pre-registered benchmark, with a finality doctrine that is honest
-about cross-rail trust asymmetry and a statistical method that is honest about its own degeneracies.
-The methodology and a reproducible calibrated-mock harness are released now; real-rail rankings follow,
-under a separate data pre-registration, when the publication posture permits.
+PayBench operationalises the two rail-DX timing questions for agent-to-agent commerce---\emph{is this
+payment allowed to proceed?} and \emph{when can the agent rely on it?}---as comparative, pre-registered
+benchmarks: a finality doctrine honest about cross-rail trust asymmetry, an authorization-latency
+doctrine honest about the category error in racing unlike primitives, and statistical methods honest
+about their own degeneracies. The methodologies and a reproducible calibrated-mock harness are released
+now; real-rail rankings follow, under separate data pre-registrations, when the publication posture
+permits.
 
-\paragraph{Availability.} Methodology of record, harness, calibration provenance, and the
-pre-registration manifest are in the project repository at the frozen commit referenced by the signed
-tag \texttt{paybench-prereg-v1.2}. The manifest hash committed by the anchors is
-\texttt{sha256:a5f6feb4\ldots d3a6f} (full value in the repository manifest).
+\paragraph{Availability.} Methodology of record, harness, calibration provenance, and the per-dimension
+pre-registration manifests are in the project repository at the frozen commits referenced by the signed
+tags \texttt{paybench-prereg-v1.2} (settlement-finality; manifest \texttt{sha256:a5f6feb4\ldots d3a6f})
+and \texttt{paybench-rapl-prereg-v1} (authorization latency; manifest
+\texttt{sha256:46a19eab\ldots1dcd388}). Full hash values are in the repository manifests, and each
+manifest hash is anchored to a public blockchain timestamp and a public transparency-log entry.
 
 \end{document}
