@@ -101,3 +101,46 @@ dimension-specific wording in the per-dimension **component/registration**, not 
 **Triad after this step:** OSF DOI ✅ + Bitcoin ✅ + Rekor ✅ = the full three-anchor triad, no single point of
 trust. The signed git tag + arXiv are additional defence-in-depth. **Never** edit the frozen byte-set to carry
 process metadata (DOI, dates) — that breaks the anchored hash; process lives here, in git, and in Notion.
+
+---
+
+## Worked example — dim-2 ready-to-paste OSF text
+
+### Umbrella PROJECT (Gv8j7) — generalize to cover both dimensions
+**Title:** `PayBench: pre-registration of an agent-to-agent payment-rail benchmark methodology`
+
+**Description:**
+> Pre-registrations of the PayBench agent-to-agent payment-rail benchmark methodology. Each dimension's full
+> measurement design and analysis plan is frozen and independently anchored before any scored run, so no
+> element can be accused of having been chosen to flatter a rail. This covers a simulated harness and
+> calibrated mock fixtures; no real-rail funds are moved and no production rankings are derived.
+>
+> Dimension 1 — settlement-finality (methodology v1.2, frozen 2026-06-06): manifest sha256 a5f6feb4…d3a6f,
+> anchored via OpenTimestamps (Bitcoin block 952636) + cosign/Rekor (logIndex 1740328355).
+>
+> Dimension 2 — authorization-latency (RAPL) (frozen 2026-06-29): manifest sha256 46a19eab…1dcd388, anchored
+> via OpenTimestamps (Bitcoin block 955977) + cosign/Rekor (logIndex 2012836917), signed tag
+> paybench-rapl-prereg-v1.
+>
+> Each dimension is a separate registration with its own DOI. Frozen methods + cryptographic manifests are in
+> the attached files / per-dimension registrations.
+
+### dim-2 COMPONENT — "Authorization latency (RAPL)"
+**Title:** `PayBench: pre-registration of an authorization-latency (RAPL) benchmark methodology (dim-2)`
+
+**Description:**
+> Pre-registration of the PayBench authorization-latency benchmark methodology — Rail Authorization-Primitive
+> Latency (RAPL), dimension 2, frozen 2026-06-29. It fixes the full measurement design and analysis plan
+> before any scored run, so no element can be accused of having been chosen to flatter a rail: the SPLIT design
+> (two never-cross-raced sub-rankings — A Payment-Validation and B Challenge-Issuance, C(5,2)=10 pairs each),
+> the t=0 / last-byte stopwatch with same-path RTT subtraction, the millisecond P(auth≤k) ladder, a hardened
+> Bradley-Terry model (Davidson ties + censoring/competing-risks) with a pre-specified FR1-triggered Cox-PH
+> survival fallback, Wilson lower-bound intervals and Kaplan-Meier curves, the DR4 group-and-decompose
+> work-class analysis, the FR4 ≥2-topology requirement, the RNG seed-namespace, and the calibrated
+> mock-fixture hashes. This covers a simulated harness and calibrated mock fixtures; no real-rail funds are
+> moved and no production rankings are derived. The frozen method and a cryptographic content manifest are in
+> the attached files; the manifest hash
+> (sha256:46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388) is independently anchored via
+> OpenTimestamps (Bitcoin block 955977) and a cosign signature in the Rekor transparency log
+> (logIndex 2012836917), and signed-tagged paybench-rapl-prereg-v1 on commit 3dd74caa. Full detail is in the
+> Summary field and the attached dim2-PRE-REGISTRATION.md.
