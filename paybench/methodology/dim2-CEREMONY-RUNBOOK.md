@@ -142,7 +142,7 @@ doctrine + the FR4-satisfied *order*). Category **cs.CR**. Embed the dim-2 manif
 | Signed git tag | **✅ DONE** | `paybench-rapl-prereg-v1` → freeze commit `3dd74caa` (tag obj `66075feb`), pushed; YubiKey EdDSA `B61635C9…286042AC`, signer `mblake@everydayai.link` |
 | OSF registration | **✅ registered — embargoed to 2026-07-17** | Open-Ended Registration under the PayBench project (`Gv8j7`), as the "Authorization latency (RAPL)" component; Summary = plain-text abstract, 5 attachments (4 docs + `dim2-anchor-proofs.zip`). **DOI issues at embargo release** (registration GUID: *TBC*). |
 | IA archive (F16) | **✅ archived** | self-verifying file set on the Internet Archive: **https://archive.org/details/dim2-auth-latency** (files: https://archive.org/download/dim2-auth-latency). |
-| arXiv | pending (web) | cs.CR (or cs.PF/cs.DC); needs endorsement — start early |
+| arXiv | **held — pending endorsement** | dim-1 already started a HELD submission: endorsement code **`3666MT`** (`arxiv.org/auth/endorse?x=3666MT`); endorsers contacted 2026-06-18 (Chishti/NTNU, Ekelhart/SBA; backup Paola Di Maio). License **CC BY**, primary `cs.CR`, cross-list `cs.DC`+`cs.PF`. **Paper now COMBINED (both dimensions)** → on endorsement clearing, recompile (Overleaf) and update the held submission with the new PDF + title/abstract. Full live state: agentpay memory `arxiv-submission-state`. |
 
 ## Where each step runs
 | Step | Runs on | Blocker |
