@@ -148,3 +148,10 @@ the finality single-race look contradictory — `gauntlet-r1-disposition-sheet.m
 **Only when 1–9 pass:** run the runbook §2 freeze. Record the resulting manifest hash, then proceed to the
 anchor steps (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI → arXiv). **8 and 9 are the gates added
 after gauntlet round 1: break it and cross-check it BEFORE the anchor, not after.**
+
+**Gates 8 & 9 are mechanically enforced at publish time.** Before tagging, copy
+`freeze-evidence/TEMPLATE.md` to `freeze-evidence/<exact-tag-name>.md`, fill it in (`STATUS: PASS` with
+`GATE8-GAUNTLET: PASS` + `GATE9-XDIM: PASS`), and **commit it in the same commit you tag**. The `freeze-guard`
+pre-push hook and the `freeze-guard` CI job both refuse to publish a `paybench-*prereg*` tag without it
+(`ceremony-hooks/README.md`; install once per clone with `ceremony-hooks/install-hooks.sh`). The guard forces
+the attestation to exist and be anchored with the freeze — it does not run the gauntlet for you.

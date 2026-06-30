@@ -1,0 +1,20 @@
+name: freeze-guard
+
+# Backstop for the local pre-push hook: on every pushed pre-registration tag, verify the
+# tagged commit carries a valid freeze-evidence file (CEREMONY-PREFLIGHT gates 8 + 9).
+# This runs server-side and cannot be bypassed locally; make it a required check to harden.
+
+on:
+  push:
+    tags:
+      - 'paybench-*prereg*'
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify freeze-evidence (gates 8 & 9)
+        run: bash paybench/methodology/ceremony-hooks/freeze-guard.sh "${GITHUB_REF_NAME}" "${GITHUB_SHA}"
