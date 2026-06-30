@@ -49,6 +49,15 @@ Upload to the project's OSF Storage (these become part of the immutable snapshot
 - a one-line pointer to the immutable git tag (the full byte-set lives there).
   - *dim-2 tag:* `paybench-rapl-prereg-v1` → commit `3dd74caa` (`github.com/agentic-paybench/payhelm`).
 
+> **⚠ OSF caps a registration at 5 file attachments.** The self-verifying set is 6 (4 docs + 2 proofs), so
+> bundle to fit. **Recommended (readability-first):** zip the two opaque binary proofs into
+> `<DIM>-anchor-proofs.zip` and keep the 4 docs direct → narrative + doctrine + scored-results + manifest +
+> proofs-zip = 5. *(Alternative, completeness-first: one `<DIM>-frozen-set.zip` of the ENTIRE manifest set —
+> unzip → `sha256sum -c` → all OK — plus narrative + manifest + the two proofs = 5; the doctrine/scored then
+> live inside the zip.)* Either is fine: the full byte-set is immutable in the git tag, so OSF need not be the
+> canonical store — it's the human-readable + DOI leg. *(dim-2: both zips pre-built in the agentpay `scratch/`
+> dir — `dim2-anchor-proofs.zip` 8 KB, `dim2-frozen-set.zip` 187 KB / 32-files-verified.)*
+
 ## Step 3 — create the registration
 1. In the project: **Registrations → New registration → "Open-Ended Registration"** (free-form; lets you paste
    the narrative + keep the attached files. The structured "OSF Preregistration"/"AsPredicted" templates are
