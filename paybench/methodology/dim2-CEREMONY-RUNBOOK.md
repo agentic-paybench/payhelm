@@ -137,7 +137,7 @@ doctrine + the FR4-satisfied *order*). Category **cs.CR**. Embed the dim-2 manif
 |---|---|---|
 | Founder §0 (de-draft + narrative + mock leg) | **✅ DONE** | doctrine ratified · scored finalized · narrative ratified · SPLIT mock leg (A 7487c278 / B 19b91c8d) |
 | Freeze (dim-2 manifest) | **✅ DONE** | `dim2-prereg-manifest.sha256` → anchored hash **`46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388`**; freeze commit `3dd74caa` |
-| OpenTimestamps (Bitcoin) | **stamped — Bitcoin pending** | `.ots` committed (`d240fcff`); `ots info` confirms `46a19eab…`. **Next: `ots upgrade` once confirmed (~hours), commit upgraded `.ots`.** |
+| OpenTimestamps (Bitcoin) | **✅ DONE — confirmed Bitcoin block 955977** | upgraded `.ots` (Bitcoin attestation baked in; also blocks 955978/955993); commits to `46a19eab…1dcd388`. |
 | cosign → Rekor | **✅ DONE** | Rekor logIndex `2012836917`; bundle committed (`748ff7f5`) over `46a19eab…` |
 | Signed git tag | **✅ DONE** | `paybench-rapl-prereg-v1` → freeze commit `3dd74caa` (tag obj `66075feb`), pushed; YubiKey EdDSA `B61635C9…286042AC`, signer `mblake@everydayai.link` |
 | OSF DOI | pending (web) | embargo 2026-07-17 |
