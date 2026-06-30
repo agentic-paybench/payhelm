@@ -30,6 +30,19 @@ sha256sum -c /tmp/DIM-manifest.sha256                                           
 **zero** "No such file" errors; `-c` verifies. *Provenance alone is NOT enough — code+fixtures+runs are what
 pin the reproduction hash.*
 
+**Freeze the whole decision pipeline, not just the output numbers.** If a pre-registered numeric *trigger*
+exists (e.g. an FR1 censoring threshold), the **classifier/taxonomy that produces its input** must be frozen
+too — the exact-string reject-reason → {harness_error, rejected, censored} decision table, not just the
+percentage it is compared against. A frozen threshold fed by a mutable labeller is not pre-registered: the
+free variable simply moves from the number to the label.
+```
+# any pre-registered trigger whose INPUT is computed by code not in the manifest? list them, confirm each input rule is frozen:
+grep -rniE "censor|reject|trigger|threshold|harness_error" methodology/<the frozen docs>
+```
+**Pass bar:** every input to a pre-registered trigger is itself a frozen artefact (decision table / allowlist),
+not a regex or routing rule living only in un-frozen code. *(This item exists because an FR1 censoring trigger's
+reject-reason classifier was left out of a manifest — `gauntlet-r1-disposition-sheet.md` G-R4/R8.)*
+
 ## 2. Reproduction pinning + prior-artefact unperturbed
 ```
 python3 -m paybench.mockbench.cli run -d <DIM-dimension(s)> | grep run_hash   # == the recorded hash(es)
@@ -97,6 +110,41 @@ When **authoring** a to-be-frozen doc, never write session status, commit SHAs, 
 its body — put them in the runbook / pilot log / commit message. The frozen doc is the published claim from
 the first keystroke. (This is the shift-left version of item 6.)
 
+## 8. Pre-freeze adversarial gauntlet — break it BEFORE you anchor
+A freeze is provenance, not perfection: it proves the bytes existed, not that the design is beyond critique.
+The hostile review that *will* happen post-publication must happen **pre-freeze**, so the gaps it finds are
+fixed before the anchor instead of corrected by errata after. Run the dossier's gauntlet (`DEFENSE-DOSSIER.md`
+§7 prompt) over THIS dimension's load-bearing decisions: spawn adversaries told to *break, not agree*, one per
+defence cluster; an attack that survives is a finding.
+```
+# the gauntlet is a generative review, not a token grep — run it as agents over the frozen-candidate docs,
+# then triage findings into: [DOC] over-claim · [DISC] disclose/relabel · [GAP] structural.
+```
+**Pass bar:** a full gauntlet round surfaces **no surviving `[GAP]`-tier** attack against the to-be-frozen
+design (only already-disclosed `[DISC]`-tier items remain). If a `[GAP]` survives, fix it and re-run — do not
+freeze on top of a known structural gap. *(This item exists because round 1 ran AFTER the freeze and its
+findings — `gauntlet-r1-disposition-sheet.md` — had to be handled by errata + re-anchor instead of pre-empted.)*
+
+## 9. Cross-dimension doctrine consistency — don't break a PRIOR dimension by improving this one
+A new dimension's doctrine can silently contradict an already-anchored one. Before freezing, re-run every prior
+dimension's load-bearing doctrine against this dimension's and confirm no contradiction (or that any difference
+is principled and stated).
+- **The split-vs-label rule (canonical, from `ERRATA.md` E1):** *split the comparison when the timed events
+  differ in **kind**; use a trust/equivalence-class **label** when the **same** event differs in trust class.*
+  Every dimension must apply this rule the same way — a dimension that splits on event-kind must not elsewhere
+  race unlike events under a label, and a dimension that labels a trust-class difference must not be accused of
+  needing a split it doesn't (there is no event-kind difference to split on).
+```
+# surface the relevant doctrine claims in each dimension and diff them by hand for the rule above:
+grep -niE "split|trust.?class|equivalence.?class|category error|same (event|object)|differ in (kind|degree)" \
+  methodology/<PRIOR frozen docs> methodology/<DIM frozen docs>
+```
+**Pass bar:** the split-vs-label rule is applied identically across all frozen dimensions; any cross-dimension
+asymmetry (e.g. a per-rail-canonical reliance bar) is named and, where it could read as flattering, paired with
+a neutralising secondary cut. *(This item exists because the RAPL split doctrine, frozen after finality, made
+the finality single-race look contradictory — `gauntlet-r1-disposition-sheet.md` G-F1.)*
+
 ---
-**Only when 1–7 pass:** run the runbook §2 freeze. Record the resulting manifest hash, then proceed to the
-anchor steps (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI → arXiv).
+**Only when 1–9 pass:** run the runbook §2 freeze. Record the resulting manifest hash, then proceed to the
+anchor steps (OpenTimestamps → cosign/Rekor → signed tag → OSF/DOI → arXiv). **8 and 9 are the gates added
+after gauntlet round 1: break it and cross-check it BEFORE the anchor, not after.**
