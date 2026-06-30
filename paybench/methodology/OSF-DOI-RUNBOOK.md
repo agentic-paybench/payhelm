@@ -53,7 +53,11 @@ Upload to the project's OSF Storage (these become part of the immutable snapshot
 1. In the project: **Registrations → New registration → "Open-Ended Registration"** (free-form; lets you paste
    the narrative + keep the attached files. The structured "OSF Preregistration"/"AsPredicted" templates are
    hypothesis-test oriented and a poor fit for a methodology freeze.)
-2. **Summary / narrative:** paste `<DIM>-PRE-REGISTRATION.md`.
+2. **Summary field = PLAIN TEXT, not markdown.** OSF's registration Summary does **not** render markdown —
+   pasted `#` / `**` / `|`-tables / code-fences appear as literal junk (hit on dim-1). So **do NOT paste the
+   `.md`.** Paste a **plain-text abstract** (markdown-free: no `#`, `*`, `|`, backticks; avoid `<`/`>` — write
+   "at most"/"under"; ALL-CAPS labels instead of headers; the ready dim-2 version is in the worked example
+   below) and **attach the full `<DIM>-PRE-REGISTRATION.md` as a file** (Step 2) for the rendered detail.
 3. **⚠ Watermark — first sentence of the summary/abstract MUST read** (cross-LLM hardening; non-negotiable):
    > *"This pre-registration covers a simulated harness and calibrated mock fixtures; no real-rail funds are
    > moved and no production rankings are derived."*
@@ -145,3 +149,63 @@ process metadata (DOI, dates) — that breaks the anchored hash; process lives h
 > OpenTimestamps (Bitcoin block 955977) and a cosign signature in the Rekor transparency log
 > (logIndex 2012836917), and signed-tagged paybench-rapl-prereg-v1 on commit 3dd74caa. Full detail is in the
 > Summary field and the attached dim2-PRE-REGISTRATION.md.
+
+### dim-2 COMPONENT — plain-text SUMMARY (paste into the OSF Summary field; markdown-free)
+```
+PayBench dimension-2 pre-registration: authorization latency (RAPL, Rail Authorization-Primitive Latency).
+Frozen 2026-06-29. This registers the complete measurement design and analysis plan for RAPL before any
+scored run, so no element can be accused of having been chosen to flatter a rail.
+
+WATERMARK. This pre-registration covers a simulated harness and calibrated mock fixtures; no real-rail funds
+are moved and no production rankings are derived. The first-party pilot is testnet, devnet and regtest
+measurement used to calibrate the mock baseline, not a mainnet leaderboard.
+
+WHAT IS PRE-REGISTERED. RAPL times a rail or protocol authorization primitive (the accept/verify decision,
+or the 402 challenge) prior to and distinct from settlement finality. Because authorization is not one shared
+concept across rails, the dimension is split into two sub-rankings that are never raced across each other:
+- Sub-ranking A, Payment-Validation: x402 facilitator verify on Base, Stellar and Solana; Tempo-Session
+  voucher verify; and AP2 mandate-verify. Five members, C(5,2) equals 10 pairs.
+- Sub-ranking B, Challenge-Issuance: the 402 challenge on x402 Base, Stellar and Solana; the MPP-on-Tempo
+  402; and the L402 macaroon plus BOLT11 invoice on Spark-Lightning. Five members, C(5,2) equals 10 pairs.
+AP2 appears only in A (it issues no 402 challenge); L402 appears only in B (it has no pre-settlement
+validation point).
+
+MEASUREMENT. t equals 0 is the pay command on the wire; the stopwatch runs to the last byte of the
+authorization response, not the first byte. A same-path TCP/TLS round-trip baseline is subtracted; raw and
+corrected values are both reported, with the per-endpoint minimum round-trip floor. The metric is
+P(auth at most k), a latency CDF on a millisecond ladder of 20, 50, 100, 250 and 500 ms, with median, P95
+and P99 reported alongside.
+
+ANALYSIS. Bradley-Terry maximum-likelihood within a sub-ranking only, never across A and B, with a Davidson
+ties extension and an explicit censoring and competing-risks rule for reject and timeout outcomes. A Cox
+proportional-hazards or Aalen-Johansen competing-risks survival model is pre-specified as a data-triggered
+fallback, adopted if, in any sub-ranking, the tie rate exceeds 20 percent, or any rail's authorization-failure
+rate exceeds 5 percent, or more than 10 percent of triples are cyclic, or a Bradley-Terry goodness-of-fit
+likelihood-ratio test gives p under 0.05. Wilson lower-bound intervals and Kaplan-Meier curves are reported.
+
+WORK-CLASS GROUPING (DR4). Within each sub-ranking, rails are grouped by work class: Local-complete (no
+network round-trip in the primitive's critical path) versus Network-dependent (at least one intrinsic
+backing-service round-trip per call). Rank within a group; compare across groups only through a per-rail
+decomposition tuple of local-compute floor, backing-service component and end-to-end, never as a single
+cross-class ordinal. At least two network-distinct topologies are mandatory before any network-dependent
+number is scored; this was satisfied across three vantages: a local host, a GitHub Codespaces (Azure) host,
+and an OCI uk-london-1 host.
+
+SCOPE (Variant E, consistent with dimension 1). What is anchored is the method plus a calibrated mock baseline
+(mock fixtures calibrated from the first-party pilot medians and sigmas, with a deterministic mock-pipeline
+reproduction hash), not a published production real-rail leaderboard. The scored-results file is included as
+the calibration record and disclosed first-party pilot evidence; it carries the real multi-topology
+within-group order that a single per-rail log-normal cannot represent, and it is not, and is not presented as,
+a mainnet ranking.
+
+ANCHORS. The frozen byte-set is the file set listed in dim2-prereg-manifest.sha256, whose SHA-256 is
+sha256:46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388. It is independently anchored in
+Bitcoin via OpenTimestamps (block 955977) and in the Rekor transparency log via a cosign signature (logIndex
+2012836917), and signed-tagged paybench-rapl-prereg-v1 on commit 3dd74caa in the agentic-paybench/payhelm
+repository. The Rekor entry and the OpenTimestamps proof are independently sufficient to establish the freeze
+date even if OSF is unavailable.
+
+Full detail, including the frozen doctrine and the cryptographic manifest, is in the attached files:
+dim2-PRE-REGISTRATION.md, dim2-auth-latency.md, dim2-scored-results.md, dim2-prereg-manifest.sha256, and the
+.ots and .cosign.bundle proofs.
+```
