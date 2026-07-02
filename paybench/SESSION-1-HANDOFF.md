@@ -1,77 +1,104 @@
 # PayHELM Dimension-2 (authorization latency / RAPL) — HANDOFF
 
-**Branch:** `paybench/dim2-auth-latency` (cut from `paybench/poc`). **Not** PR'd — that is a founder
-step, once the dimension is ratified + pre-registered.
+**Branch:** dim-2 work was cut on `paybench/dim2-auth-latency`, then **merged to `paybench/poc`**
+(where it now lives alongside frozen dim-1). The `main` merge is a founder/PR step (main is PR-gated).
 
-> **Status (2026-06-22): doctrine GATE-CLEARED and PRE-REGISTERABLE.** The dimension went through
-> three cross-lineage adversarial rounds (**0–4 → 3–1 → 4/4**); see "How we got here". What remains
-> is founder/credentialed work: confirm the FR1 thresholds, run the Q4 validation/calibration,
-> ratify, pre-register, PR.
+> **Status (2026-06-30): RATIFIED, FROZEN, TRIPLE-ANCHORED, OSF-REGISTERED (embargoed), IA-ARCHIVED.**
+> This supersedes the earlier "gate-cleared / pre-registerable / founder-must-decide" state. Every item
+> on the old decide/do list is done (ratified 2026-06-24; ceremony completed 2026-06-29→30). What remains
+> is the **Variant-E-deferred real-rail run**, the **held arXiv submission**, and the **Day-0 release**.
+> See "What remains" below.
 
-## The harness (mechanical, autonomous — built session 1)
+## The doctrine as ratified (dim-2 v1, 2026-06-24)
 
-1. **Dimension-parametric harness.** `mockbench/dimensions.py` adds a first-class `Dimension`
-   descriptor; `fixtures.py`/`bench.py`/`cli.py` thread `dim=FINALITY` by default. CLI gained
-   `--dimension {finality,auth-latency}`. **21/21 tests green** (`tests/test_auth_latency.py`).
-2. **Frozen finality preserved bit-for-bit:** run_hash `sha256:895f99ed…b14ee0`, ranking
-   `R10,R1,R2,R9,R11`; pinned in CI + `test_finality_artefact_is_unperturbed_by_generalisation`.
+- **Metric: RAPL** (Rail Authorization-Primitive Latency), **SPLIT** into two never-cross-compared
+  sub-rankings — **A = Payment-Validation** (facilitator/`verify` accept) and **B = Challenge-Issuance**
+  (the 402). Racing all six rails as one ranking was the original category error.
+- **DR4 — group-and-decompose:** group rails by work-class, report a per-rail decomposition tuple,
+  **no single cross-class ordinal**.
+- **FR1 numeric fallback triggers (confirmed):** BT → survival/Cox-PH when **tie > 20% / censoring > 5% /
+  cyclic-triples > 10% / BT-fit LR p < 0.05**. Set → pre-registered → honoured even if it forces the
+  survival model (does not tune to flatter BT).
+- **FR4:** **≥ 2 topologies mandatory.**
+- Cross-lineage gate arc (DeepSeek/Gemini/Kimi/Qwen): **0–4 (category error) → 3–1 (SPLIT) → 4/4
+  (pre-registerable) → round-4 work-type scan 4/4 → DR4.** See `dim2-adversarial-review.md`,
+  `dim2-worktype-synthesis.md`.
 
-> ⚠️ **The harness still runs the *pre-gate* single 6-rail / 15-pair placeholder race.** The doctrine
-> has since been redesigned (SPLIT, below); **re-aligning the harness** (two sub-rankings,
-> Tempo-Session-only, ms k-ladder, hardened-BT) is a **post-ratification** task — deliberately not
-> built against an un-ratified design. The harness's auth-latency numbers are a *working pipeline*,
-> **not a result** (all calibration is PLACEHOLDER).
+## The harness — re-aligned to the SPLIT design (DONE)
+
+- `mockbench/dimensions.py` carries the **A/B SPLIT** (`AUTH_LATENCY_A` / `AUTH_LATENCY_B`, 10 pairs each);
+  `fixtures.py`/`bench.py`/`cli.py` thread the dimension. **21/21 tests green** (`tests/test_auth_latency.py`).
+- **Frozen finality preserved bit-for-bit:** run_hash `sha256:895f99ed…b14ee0`, unperturbed by the dim-2
+  generalisation (pinned in CI + `test_finality_artefact_is_unperturbed_by_generalisation`).
+- The A/B run_hashes reproduce deterministically. Calibration is now **real first-party pilot data**, not
+  placeholder — all six rails instrumented + run-validated (`mblake4u/agentpay`, branch
+  `dim2-rapl-instrumentation`). Pilot medians in `dim2-q4-pilot-log.md` (indicative until the real-rail run
+  flips them to scored).
 
 ```bash
 # finality (frozen) — must print run_hash 895f99…b14ee0
 python -m paybench.mockbench.cli run
-# auth-latency (PLACEHOLDER, pre-gate single-race pipeline)
+# auth-latency A/B (calibrated pilot fixtures)
 python -m paybench.mockbench.cli all -d auth-latency
 python -m pytest paybench/mockbench/tests/ --noconftest -c /dev/null -q
 ```
 
-## How we got here (the methodology arc — the substantive work)
+## The freeze (ceremony completed 2026-06-29 → 30)
 
-- **Research (3 passes):** all six rails' authorization checkpoints are **primary-source-validated**
-  (`dim2-auth-latency.research.md`); ISO-8583 auth-vs-settlement is conceptual precedent; no prior
-  "authorization latency" benchmark surfaced (novelty plausible — *re-check before publishing*).
-- **Cross-lineage gate (`dim2-adversarial-review.md`):**
-  - **Round 1 — refuted 0–4.** Racing all six rails as one ranking was a **category error** (L402's
-    macaroon is a *grant-to-pay*, not a validation of payment).
-  - **Round 2 — SPLIT validated 3–1**, + a refinement list (RR1–RR6).
-  - **Round 3 — PRE-REGISTERABLE 4/4**, conditional on fixes (FR1–FR5); the panel caught two real
-    bugs (RR5-on-Group-B, first-byte gaming) — both fixed.
-- **The doctrine now (`dim2-auth-latency.DRAFT.md` §2), renamed _Rail Authorization-Primitive
-  Latency_ (RAPL):** two within-group races — **A Payment-Validation** (x402×3, Tempo-Session, AP2;
-  Tempo-Charge excluded) and **B Challenge-Issuance** (x402×3, Tempo, L402); hardened-BT (Davidson
-  ties + censoring) with a **Cox-PH data-triggered fallback**; metric renamed `P(auth ≤ k)`; ms
-  k-ladder; client-side last-byte RTT-subtracted measurement; anti-gaming + visibility/scope labels.
+- **Manifest** `dim2-prereg-manifest.sha256` = `46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388`
+  (32 files).
+- **Signed tag** `paybench-rapl-prereg-v1` (YubiKey EdDSA, `mblake@everydayai.link`) → freeze commit
+  `3dd74caa`.
+- **OpenTimestamps** → Bitcoin block **955977**; **cosign** → Rekor **logIndex 2012836917**.
+- **OSF** Open-Ended Registration (project `Gv8j7`, RAPL component) — **embargoed to 2026-07-17 (Day-0)**.
+- **Internet Archive** item `dim2-auth-latency`.
+- Registration record: `dim2-PRE-REGISTRATION.md`; ceremony: `dim2-CEREMONY-RUNBOOK.md`; de-drafted
+  doctrine: `dim2-auth-latency.md`; scored-results write-up: `dim2-scored-results.md`.
 
-## What the founder must DECIDE / DO next (in order)
+> ⚠️ **freeze-evidence STATUS = LEGACY, not PASS.** The break-it gauntlet (round 1) ran *after* this freeze,
+> so it cannot honestly be marked PASS — that ordering is exactly the gap `CEREMONY-PREFLIGHT` gates 8 & 9
+> (added 2026-06-30) now close. The structural `[GAP]` items ride the planned real-rail re-registration,
+> which will run gates 8 & 9 and should mark STATUS: PASS. See `freeze-evidence/paybench-rapl-prereg-v1.md`.
+
+## Multi-topology (FR4) — status
+
+- **T1 devbox** — pilot baseline (all six rails).
+- **T2a GitHub Codespaces (Azure)** — **PASSED**: A order held (Solana < Stellar < Base), B heterogeneity
+  held; finding — **local rails host-sensitive, network rails path-sensitive**.
+- **T2b OCI uk-london-1** — Stellar full-N re-run **40/40, 0 censoring, ≈289 ms** (the earlier ~13% was a
+  harness-classifier artefact, since fixed). Paid VM terminated after the run.
+- Raw samples curated into `paybench/evidence/dim2-topology/` (+ README + SHA256SUMS).
+
+## Post-freeze hardening (2026-06-28 → 30)
+
+- **Defense dossier + gauntlet round 1** (`DEFENSE-DOSSIER.md`, `gauntlet-r1-disposition-sheet.md`):
+  **G-F1** (finality↔RAPL split contradiction) ratified as **errata** (split-on-KIND / label-on-CLASS;
+  uniform-reliance secondary cut spec'd, rides the real-rail run). `[DISC]` disclosures landed as
+  `ERRATA.md` E2–E6; E1 tightens the uniform-reliance spec.
+- **Process gates:** `CEREMONY-PREFLIGHT` gained gate **8** (pre-freeze gauntlet) + gate **9**
+  (cross-dimension split-vs-label consistency) + freeze-the-classifier.
+- **freeze-guard:** committed `freeze-evidence/<tag>.md` attestation enforced by a **pre-push hook** +
+  the **"Guard frozen prereg tags"** tag-immutability ruleset + a **freeze-guard CI** workflow
+  (PR #1 → merged to `main`).
+
+## What remains (the real "next")
 
 | # | Step | Notes |
 |---|---|---|
-| 1 | **Confirm the FR1 fallback thresholds** | Numeric BT→Cox-PH triggers (proposed: tie>20% / censoring>5% / cyclic-triples>10%) — a statistician's call; **best set from the Q4 pilot** (below) |
-| 2 | **Run the Q4 validation/calibration** (credentialed) | Plan: `dim2-validation-run-plan.md`. Pilots FR1 + the power analysis **and** replaces PLACEHOLDER fixtures with real `{median,sigma}`. **Runs *before* pre-registration** (mirrors D1 calibrate-before-freeze). Needs a thin `/verify` route + RTT endpoint added to the POC adapters (`mblake4u/agentpay`). |
-| 3 | **Ratify the doctrine** | Fold the gate-cleared §2 into `methodology.md` as a real section (not DRAFT) |
-| 4 | **Pre-registration ceremony** | OSF / cosign / OpenTimestamps / signed tag — a founder ceremony, as for D1 |
-| 5 | **Harness re-alignment** | Re-build the harness to the SPLIT design (two sub-rankings, ms ladder, hardened-BT) |
-| 6 | **PR → `paybench/poc`** | Session-4 reproducibility CI already guards finality on the PR |
-| ✅ | **Prior-art novelty re-check** | **Done** (Pass 4 `wktco3m7a`, 2026-06-22): novelty **defensible** — no prior benchmark measures authorization latency; card-network ISO-8583/SLAs are conceptual precedent (an SLA, not a benchmark). See `research.md`. |
+| 1 | **arXiv** (held) | On `cs.CR` endorsement `3666MT`: recompile combined two-dimension paper (Overleaf; incl. COI paragraph; +`cs.PF`), update held submission, write the arXiv id back into `CEREMONY-RUNBOOK.md`. Backup endorser draft ready. |
+| 2 | **Day-0 (2026-07-17)** | OSF DOI release, Wayback the now-public GitHub URLs, snapshot the OSF page. On Google Calendar + Notion Filing & Publishing Calendar. |
+| 3 | **Real-rail run** (Variant-E deferred) | Re-registration pass that folds in the gauntlet residuals — G-R4/R8 (classifier + censoring bound), G-R2 (grouping threshold), G-F2 (adjacent-pair CIs), G-R3 (vary backing-service leg), G-R6 (AP2 sidecar); produces the **uniform-reliance cut**, the summed E2E (G-R1), golden adapter tests + raw transcripts (G-P4). Runs gates 8 & 9 → marks `freeze-evidence STATUS: PASS`. |
+| 4 | **Gauntlet round 2** | Held; auto-triggers at the real-rail pre-freeze via gate 8. |
+| ✅ | Ratify · calibrate · freeze · pre-register · re-align harness · PR→poc · prior-art re-check | All **done** (2026-06-22 → 30). |
 
-## Discipline for Q4 → FR1 (don't undo the gate)
-The Q4 pilot **informs** principled FR1 thresholds; it must **not tune** them to flatter BT on the
-data that will be scored (that re-creates the post-hoc method-switching the panel rejected). Set →
-pre-register → honour the trigger even if it forces the survival model.
-
-## Tripwires honoured this session
-No frozen v1.2 artefact touched (finality bit-for-bit); **nothing ratified or pre-registered**;
-doctrine remains DRAFT; **no real calibration committed** (placeholders only; the real Solana figure
-withheld); no adapters modified / nothing run against testnets. One-writer discipline maintained
-(one Syncthing index-desync incident this session, recovered via `git reset`, no data loss).
+## Tripwires honoured
+Frozen finality v1.2 artefact untouched throughout (bit-for-bit). Real-rail rankings remain deferred
+(Variant E). One-writer discipline; agentpay RAPL work safe on `origin/dim2-rapl-instrumentation`.
 
 ## Key artefacts
-`dim2-auth-latency.DRAFT.md` (doctrine) · `dim2-auth-latency.research.md` (evidence) ·
-`dim2-adversarial-review.md` (3 gate rounds + verdicts) · `dim2-review{,2,3}-{model}.md` (raw
-replies) · `dim2-validation-run-plan.md` (Q4 plan) · `dimension-design-lessons.md` (cross-dimension
-knock-on + new-dimension checklist).
+`dim2-auth-latency.md` (ratified doctrine) · `dim2-PRE-REGISTRATION.md` · `dim2-scored-results.md` ·
+`dim2-prereg-manifest.sha256`(+`.ots`/`.cosign.bundle`) · `dim2-CEREMONY-RUNBOOK.md` ·
+`CEREMONY-PREFLIGHT.md` (gates 8–9) · `DEFENSE-DOSSIER.md` · `gauntlet-r1-disposition-sheet.md` ·
+`ERRATA.md` · `COMPETING-INTERESTS.md` · `freeze-evidence/paybench-rapl-prereg-v1.md` ·
+`dim2-q4-pilot-log.md` · `dim2-topology2-run-plan.md` · `dimension-design-lessons.md` ·
+`paybench/evidence/dim2-topology/`.
