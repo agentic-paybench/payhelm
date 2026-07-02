@@ -60,3 +60,43 @@ Run this **before** drafting any new ranked dimension; it is what the D2 self-pa
    quality covariate** (e.g. `P(settled | accept)`) so a rail cannot win by *doing less*.
 6. **Gate it.** Cross-lineage adversarial review **before** ratification/pre-registration — D2 shows
    the self-pass alone misses category errors (the gate caught one the author defended).
+
+## 5. Process / ceremony lessons (distilled from the D2 freeze + gauntlet)
+
+These are not design lessons — they are about the *order and enforcement* of the freeze ceremony.
+D2's ceremony went well but exposed an ordering gap worth not repeating:
+
+1. **Gauntlet BEFORE freeze, not after.** The break-it gauntlet (round 1) ran *after* the D2 freeze,
+   so its evidence can only honestly be marked **`STATUS: LEGACY`**, never `PASS` — the freeze
+   pre-dates the adversarial pass that was supposed to harden it. This is the exact gap
+   **`CEREMONY-PREFLIGHT` gate 8 (pre-freeze gauntlet)** now closes; the real-rail re-registration
+   runs it in the right order and can legitimately mark `STATUS: PASS`. Freeze-order is: draft →
+   gauntlet → disposition → freeze → anchor, not freeze → anchor → gauntlet.
+2. **Check cross-dimension consistency at the gate.** The gauntlet caught **G-F1** — a finality↔RAPL
+   split-vs-label inconsistency — reconciled in `ERRATA.md` E1 (split-on-KIND / label-on-CLASS). Hence
+   **gate 9 (cross-dimension split-vs-label consistency)**: a new dimension's grouping/labelling must
+   be checked against every already-frozen dimension, not just internally.
+3. **Freeze the classifier, and enforce the freeze mechanically.** A committed
+   `freeze-evidence/<tag>.md` attestation is enforced by a **pre-push hook + tag-immutability ruleset +
+   freeze-guard CI** — so a `*-prereg-*` tag cannot be published without its gate-8&9 evidence. Trust a
+   mechanical guard over ceremony discipline.
+
+## 6. Workflow / knowledge-hygiene lessons (surfaced completing D2)
+
+Not about the method at all — about how the work is recorded so the *next* session inherits reality.
+
+1. **Launch sessions from the repo root.** The bulk of D2 ran with `claude` launched from the
+   `dim2-auth-latency/` subdirectory, which Claude Code slugs to a **separate project** (its own
+   transcripts, its own — here absent — memory dir), invisible to repo-root sessions. A mid-session
+   `cd` does not fix it: the project key is fixed at launch. Launch from
+   `agentic-paybench/payhelm/` so transcripts and memory land in the one project.
+2. **When a dimension's status changes, update the in-repo status doc — don't rely on memory alone.**
+   D2's completion facts propagated into per-project memory, but `SESSION-1-HANDOFF.md` was left saying
+   "pre-registerable / founder-must-decide" for ~a week, so a fresh session reading the repo got a stale
+   story. Status belongs in the repo (handoff + methodology); memory is a pointer, not the record. Close
+   the loop on the doc at ratification/freeze.
+3. **Per-project memory does not cross repos.** dim-1's arXiv work (done in the `mblake4u/agentpay`
+   project) was invisible to `payhelm` sessions and got re-discovered. Cross-project ceremony knowledge
+   lives in Notion (the "Pre-registration anchor ceremony" cheat sheet); check it + prior session logs
+   before re-deriving a step.
+4. **`main` is PR-gated.** Land `main` changes via PR; dimension work lands on `paybench/poc` first.
