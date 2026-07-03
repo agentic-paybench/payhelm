@@ -3,8 +3,9 @@
 **Credentialed founder step.** This is the step-by-step for the Q4 validation run that (1) pilots the
 FR1 fallback thresholds + power analysis and (2) replaces the PLACEHOLDER auth-latency fixtures with
 real `{median, sigma}`. Pairs with `dim2-validation-run-plan.md` (the plan) and the adapter code on
-the `dim2-rapl-instrumentation` branch of `mblake4u/agentpay`. **Nothing here runs until you, the
-founder, execute it with credentials.**
+the `dim2-rapl-instrumentation` branch of `agentpay` (private instrumentation repo; `$AGENTPAY_DIR`
+below is your local checkout of it). **Nothing here runs until you, the founder, execute it with
+credentials.**
 
 ## ⚡ QUICK START — Base (R1), copy-paste (the one rail runnable TODAY)
 
@@ -14,25 +15,25 @@ founder, execute it with credentials.**
 **A. One-time setup**
 ```bash
 # 1. get on the instrumentation branch
-cd /home/michael/dev/github/mblake4u/agentpay && git checkout dim2-rapl-instrumentation
+cd $AGENTPAY_DIR && git checkout dim2-rapl-instrumentation
 
 # 2. confirm creds + deps exist
-ls -l /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/.env
-/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/venv/bin/python -c "import requests; print('requests OK')"
+ls -l $AGENTPAY_DIR/poc/rail-x402-base/.env
+$AGENTPAY_DIR/poc/rail-x402-base/venv/bin/python -c "import requests; print('requests OK')"
 ```
 If `.env` is missing → copy `poc/rail-x402-base/.env.example` to `.env` and fill the CDP keys + RPC.
-If `requests` errors → `/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/venv/bin/pip install requests`
+If `requests` errors → `$AGENTPAY_DIR/poc/rail-x402-base/venv/bin/pip install requests`
 
 **B. Terminal 1 — start the server (leave running)**
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base
+cd $AGENTPAY_DIR/poc/rail-x402-base
 ./venv/bin/python seller_server.py
 ```
 Wait for: `Listening on : http://0.0.0.0:8082`. Keep this terminal open.
 
 **C. Terminal 2 — run the measurement**
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base
+cd $AGENTPAY_DIR/poc/rail-x402-base
 ./venv/bin/python measure_rapl.py --trials 30 --warmup 5 --rtt-burst 12 --sleep 1.0
 ```
 
@@ -48,7 +49,7 @@ cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base
 
 **F. Output file**
 ```
-/home/michael/dev/github/mblake4u/agentpay/poc/rail-x402-base/samples/R1-x402-base.rapl.samples.jsonl
+$AGENTPAY_DIR/poc/rail-x402-base/samples/R1-x402-base.rapl.samples.jsonl
 ```
 
 **G. Record + send me** (from the summary), for ACCEPT (A) and CHALLENGE (B):
@@ -65,7 +66,7 @@ help set the FR1 thresholds, and write them into provenance.
       decision: **yes** (scoping `w56fqhjyl`). Needs a free Google AI Studio API key for the agent runtime.
 - [ ] **One-writer:** do this on a single machine; agentpay syncs via Syncthing. Confirm no other
       session is mid-write in agentpay before you start.
-- [ ] **Branch:** `git -C ~/dev/github/mblake4u/agentpay checkout dim2-rapl-instrumentation`.
+- [ ] **Branch:** `git -C $AGENTPAY_DIR checkout dim2-rapl-instrumentation`.
 - [ ] **Creds present:** each rail's `.env` (CDP buyer/seller keys, RPC URLs, wallet addresses). These
       are yours; the harness never touches them.
 - [ ] **Funded test wallets** on each rail's testnet/devnet (the buyer must be able to pay; the
@@ -78,7 +79,7 @@ Two terminals per rail. Numbers are **milliseconds**, RAW is primary, corrected 
 
 ### Base (R1) — the reference (Python), DONE + review-fixed
 ```bash
-cd ~/dev/github/mblake4u/agentpay/poc/rail-x402-base
+cd $AGENTPAY_DIR/poc/rail-x402-base
 ./venv/bin/python seller_server.py                       # terminal 1 (keep-alive enabled)
 ./venv/bin/python measure_rapl.py --trials 30 --warmup 5 --rtt-burst 12 --sleep 1.0   # terminal 2
 ```

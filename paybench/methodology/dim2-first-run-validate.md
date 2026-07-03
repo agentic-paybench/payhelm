@@ -4,15 +4,16 @@
 backend up, (2) two shells: `server` + `measure-rapl`, (3) the **sanity gate** before trusting numbers.
 Base (R1) and AP2 (R6) are already run-validated — not repeated here.
 
-All harnesses live on the agentpay branch **`dim2-rapl-instrumentation`** (repo
-`/home/michael/dev/github/mblake4u/agentpay`). Switch to it first:
+All harnesses live on the `agentpay` (private instrumentation repo) branch
+**`dim2-rapl-instrumentation`**. `$AGENTPAY_DIR` below is your local checkout of that repo. Switch to
+it first:
 
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay && git checkout dim2-rapl-instrumentation
+cd $AGENTPAY_DIR && git checkout dim2-rapl-instrumentation
 ```
 
 Results are **pilot data, not calibration** — append outcomes to
-`/home/michael/dev/github/agentic-paybench/payhelm/paybench/methodology/dim2-q4-pilot-log.md`
+`paybench/methodology/dim2-q4-pilot-log.md`
 (do NOT write provenance/calibration yet; that needs ≥2 topology + all rails + the FR1 confirmation).
 
 ---
@@ -44,7 +45,7 @@ Keep `--sleep < 4` (undici keepAliveTimeout ~4 s).
 Backend: keyless Tempo Moderato auto-fund (no browser faucet).
 
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-tempo-mpp
+cd $AGENTPAY_DIR/poc/rail-tempo-mpp
 npx tsx src/setup-accounts.ts          # one-time: generates EOAs, keyless-funds, writes .env
 # shell 1 — server (leave running):
 npx ts-node src/server.ts              # -> "Rail 10 — MPP-on-Tempo server on port 8404"
@@ -60,7 +61,7 @@ Backend: Spark **regtest** wallets via setup script. For B (issue invoice) **no 
 `setup-wallets.ts` creating the SERVER wallet is sufficient to generate BOLT11 invoices.
 
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-lightning-mpp
+cd $AGENTPAY_DIR/poc/rail-lightning-mpp
 npx tsx src/setup-wallets.ts           # one-time: generates SERVER+CLIENT Spark regtest wallets, writes .env
 # shell 1 — server (leave running):
 npx tsx src/server.ts                  # -> "Rail 11 — MPP-on-Lightning (Spark) server on port 8411"
@@ -81,7 +82,7 @@ Backend: **buyer funded with devnet USDC** + seller ATA created. Facilitator is 
 `https://x402.org/facilitator` (no key).
 
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-solana-x402
+cd $AGENTPAY_DIR/poc/rail-solana-x402
 # one-time setup (if .env not already populated):
 npm run keygen                         # writes keypair-seller.json / keypair-buyer.json (gitignored)
 #   then fill .env: SELLER_WALLET_ADDRESS + BUYER_PRIVATE_KEY (base58, 64-byte) from those files
@@ -102,7 +103,7 @@ Backend: **buyer funded with testnet USDC (trustline required)** + a free OZ fac
 Secrets come from KeePass (`agentpay.kdbx > Stellar`).
 
 ```bash
-cd /home/michael/dev/github/mblake4u/agentpay/poc/rail-stellar-x402
+cd $AGENTPAY_DIR/poc/rail-stellar-x402
 # one-time .env (NEVER commit):
 #   STELLAR_SELLER_SECRET / STELLAR_BUYER_SECRET  <- KeePass agentpay.kdbx > Stellar > {seller,buyer}
 #   OZ_X402_TESTNET_KEY   <- generate (no signup): https://channels.openzeppelin.com/testnet/gen

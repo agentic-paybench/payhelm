@@ -598,6 +598,6 @@ This document only *points* at the taxonomy; the full A1–A8 specification is c
 
 ## Appendix — pointers
 
-- Project context + full closed-decisions table: `CLAUDE.md` (repo root of the project's working repo)
+- Project context + full closed-decisions table: internal working notes (repo root of the project's working repo)
 - Canonical decisions, glossary, dispute taxonomy: the project's Notion workspace
 - Sibling Friday-1 deliverable (reference task shape): the x402_base adapter at `poc/rail-x402-base/`

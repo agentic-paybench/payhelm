@@ -85,17 +85,17 @@ D2's ceremony went well but exposed an ordering gap worth not repeating:
 
 Not about the method at all — about how the work is recorded so the *next* session inherits reality.
 
-1. **Launch sessions from the repo root.** The bulk of D2 ran with `claude` launched from the
-   `dim2-auth-latency/` subdirectory, which Claude Code slugs to a **separate project** (its own
-   transcripts, its own — here absent — memory dir), invisible to repo-root sessions. A mid-session
-   `cd` does not fix it: the project key is fixed at launch. Launch from
+1. **Launch sessions from the repo root.** The bulk of D2 ran with the AI coding assistant launched
+   from the `dim2-auth-latency/` subdirectory, which the assistant's tooling slugs to a **separate
+   project** (its own transcripts, its own — here absent — memory dir), invisible to repo-root
+   sessions. A mid-session `cd` does not fix it: the project key is fixed at launch. Launch from
    `agentic-paybench/payhelm/` so transcripts and memory land in the one project.
 2. **When a dimension's status changes, update the in-repo status doc — don't rely on memory alone.**
    D2's completion facts propagated into per-project memory, but `SESSION-1-HANDOFF.md` was left saying
    "pre-registerable / founder-must-decide" for ~a week, so a fresh session reading the repo got a stale
    story. Status belongs in the repo (handoff + methodology); memory is a pointer, not the record. Close
    the loop on the doc at ratification/freeze.
-3. **Per-project memory does not cross repos.** dim-1's arXiv work (done in the `mblake4u/agentpay`
+3. **Per-project memory does not cross repos.** dim-1's arXiv work (done in the `agentpay`
    project) was invisible to `payhelm` sessions and got re-discovered. Cross-project ceremony knowledge
    lives in Notion (the "Pre-registration anchor ceremony" cheat sheet); check it + prior session logs
    before re-deriving a step.

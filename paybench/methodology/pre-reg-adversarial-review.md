@@ -3,8 +3,8 @@
 **Gate:** methodology freeze (v1.0, 2026-06-05) → cryptographic pre-registration (§9).
 **Purpose:** surface every flank a hostile reviewer (CRFM maintainer, statistician, competitor)
 would attack *before* the method is irreversibly anchored. Full cross-LLM adversarial review is
-reserved for this gate (per the `cross_llm_adversarial_review` + `regulatory_drafting_lessons`
-operating memories) — this document is the input to that review.
+reserved for this gate (per internal working notes on adversarial-review practice and regulatory
+drafting lessons) — this document is the input to that review.
 
 This is an internal review artefact, not part of the pre-registered method. It is committed
 alongside the methodology because publishing one's own adversarial pass *strengthens* a

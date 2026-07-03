@@ -1,6 +1,6 @@
 # Dim-2 RAPL — FR4 topology-2 run plan
 
-> **Turnkey runsheet + driver:** `mblake4u/agentpay` (branch `dim2-rapl-instrumentation`)
+> **Turnkey runsheet + driver:** `agentpay` (branch `dim2-rapl-instrumentation`)
 > `poc/topology2/` — `RUNSHEET.md` (steps + the 15-secret table + OCI variant), `set-codespaces-secrets.sh`
 > (push secrets from the devbox rail `.env`s), `run-topology2.sh` (one-command driver: deps → `.env` →
 > server → harness n=30 → tagged results + `SUMMARY.txt`). This doc is the *why*; that dir is the *how*.
@@ -38,7 +38,7 @@ the local control set). AP2 is in-process → note "topology-invariant by constr
 
 ## Per-vantage setup
 
-1. **Sync repos:** `mblake4u/agentpay` (branch `dim2-rapl-instrumentation`) for the rail harnesses; AP2 repo
+1. **Sync repos:** `agentpay` (branch `dim2-rapl-instrumentation`) for the rail harnesses; AP2 repo
    only if re-running R6 (optional — invariant).
 2. **Install:** Node (TS rails: Solana/Stellar/Tempo/Lightning), Python+uv (Base + AP2). Per-rail
    `npm install` / venv. **ARM64 (T2b):** undici/viem/mppx/`@buildonspark/spark-sdk`/AP2-python all run on

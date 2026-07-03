@@ -433,7 +433,7 @@ Q1–Q3 are **resolved/drafted** (founder-directed + research-grounded; see §2 
   fixtures with real `{median, sigma}`. ~~**Instrumentation gap:** POC servers expose only the fused
   `/resource`; a thin standalone `/verify` route + a same-path RTT-baseline endpoint must be added.~~
   ✅ **CLOSED (2026-06-24)** — `/rapl/verify` + `/rapl/rtt` (or capture-replay for AP2) built + run-validated
-  on all 6 rails in the review-fixed shape (`dim2-q4-runbook.md`; harnesses on `mblake4u/agentpay`
+  on all 6 rails in the review-fixed shape (`dim2-q4-runbook.md`; harnesses on `agentpay`
   branch `dim2-rapl-instrumentation`).
 - **Q5 — k-grid + scoring constants.** ✅ **RESOLVED via RR3 (§2.5/§4).** ms k-ladder
   ({20,50,100,250,500} ms) + rank-stability heatmap + power analysis; metric renamed
@@ -507,9 +507,9 @@ under-specified proposal; running it on a grounded proposal yields a citable ver
   finality?
 
 **Mechanics.** Founder-run multi-lineage ceremony (the doctrine pasted to each
-external lineage, as the `Pre-reg-*` files were). Claude drafts the cross-lineage
-prompt and synthesises the responses into `dim2-adversarial-review.md`, the
-dimension-2 analogue of `pre-reg-adversarial-review.md`.
+external lineage, as the `Pre-reg-*` files were). An AI-assisted pass drafts the
+cross-lineage prompt and synthesises the responses into `dim2-adversarial-review.md`,
+the dimension-2 analogue of `pre-reg-adversarial-review.md`.
 
 **Honest limit.** The gate *hardens and red-teams*; it does not resolve empirical
 facts (that is the research + validation run) and may return a split that still needs

@@ -77,6 +77,6 @@ time the `/verify` accept as a round-trip. To measure Group A client-side, each 
 
 - **Founder/credentialed step.** Real testnet runs (keys, external calls) — **needs explicit
   go-ahead**; not an autonomous action.
-- The server changes (a `/verify` route + RTT endpoint) are **adapter edits in `mblake4u/agentpay`**,
+- The server changes (a `/verify` route + RTT endpoint) are **adapter edits in `agentpay`**,
   a *different repo* from this HELM fork — to be done there, on one machine (one-writer discipline).
 - This document changes nothing and runs nothing; it is the ready-to-execute plan.
