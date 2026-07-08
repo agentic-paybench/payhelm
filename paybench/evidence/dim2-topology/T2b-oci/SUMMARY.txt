@@ -1,0 +1,27 @@
+[base] done -> base.log
+    outcomes: {'ok': 30, 'rejected': 0, 'timeout': 0, 'harness_error': 0}  (of 30 trials)
+    ACCEPT  (Sub-ranking A) RAW: {"n": 30, "min_s": 0.46142601300016395, "p50_s": 0.4722184759993979, "p95_s": 0.5759024290000525, "p99_s": 0.7257809559996531, "max_s": 0.7257809559996531, "median_s_lognormal": 0.49208036357050194, "sigma_log": 0.09344321724244269}
+    CHALLENGE (Sub-ranking B) RAW: {"n": 30, "min_s": 0.0010002589997384348, "p50_s": 0.0019635099997685757, "p95_s": 0.002026797999860719, "p99_s": 0.0022070559998610406, "max_s": 0.0022070559998610406, "median_s_lognormal": 0.0019342401477646435, "sigma_log": 0.12476563262742055}
+[rail-solana-x402] done -> rail-solana-x402.log
+    outcomes: {"ok":30,"rejected":0,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 3  (expect ~1-2; >> that = keep-alive NOT pooling -> distrust timings)
+    ACCEPT  (Sub-ranking A) RAW: {"n":30,"min_s":0.1465275900000015,"p50_s":0.2147362159999975,"p95_s":0.36990002199999983,"p99_s":0.41624050499999793,"max_s":0.41624050499999793,"median_s_lognormal":0.2121313837120205,"sigma_log":0.2877141582186821} corrected: {"rtt_floor_s":0.000697,"n":30,"min_s_corr":0.145831,"p50_s_corr":0.214039,"p95_s_corr":0.369203,"p99_s_corr":0.415543,"median_s_lognormal_corr":0.211434}
+    CHALLENGE (Sub-ranking B) RAW: {"n":30,"min_s":0.0011750860000001922,"p50_s":0.0015644040000006498,"p95_s":0.002139508000000205,"p99_s":0.0023759509999981675,"max_s":0.0023759509999981675,"median_s_lognormal":0.00158497677148239,"sigma_log":0.12375343830752132} corrected: {"rtt_floor_s":0.000697,"n":30,"min_s_corr":0.000478,"p50_s_corr":0.000867,"p95_s_corr":0.001442,"p99_s_corr":0.001679,"median_s_lognormal_corr":0.000888}
+[rail-stellar-x402] done -> rail-stellar-x402.log
+    outcomes: {"ok":26,"rejected":4,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 2  (expect ~1-2; >> that = keep-alive NOT pooling -> distrust timings)
+    ACCEPT  (Sub-ranking A) RAW: {"n":26,"min_s":0.22749779600000328,"p50_s":0.27866453499999627,"p95_s":0.4278954760000015,"p99_s":0.914937629,"max_s":0.914937629,"median_s_lognormal":0.2891677821789374,"sigma_log":0.26400986781792163} corrected: {"rtt_floor_s":0.00074,"n":26,"min_s_corr":0.226758,"p50_s_corr":0.277924,"p95_s_corr":0.427155,"p99_s_corr":0.914198,"median_s_lognormal_corr":0.288428}
+    CHALLENGE (Sub-ranking B) RAW: {"n":26,"min_s":0.0012113710000000992,"p50_s":0.0015643119999986083,"p95_s":0.0025069599999987986,"p99_s":0.0026287149999989195,"max_s":0.0026287149999989195,"median_s_lognormal":0.0016198017698571033,"sigma_log":0.1549422460332872} corrected: {"rtt_floor_s":0.00074,"n":26,"min_s_corr":0.000471,"p50_s_corr":0.000824,"p95_s_corr":0.001767,"p99_s_corr":0.001889,"median_s_lognormal_corr":0.00088}
+[tempo] setup-accounts ok (keyless-funded)
+[tempo] done -> tempo-A.log / tempo-B.log
+    outcomes: {"ok":30,"rejected":0,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 3  (expect ~1-2; >> that = keep-alive NOT pooling)
+    ACCEPT (Sub-ranking A) RAW: {"n":30,"min_s":0.007189268999999968,"p50_s":0.007955604000000222,"p95_s":0.009669873999999709,"p99_s":0.010445915000000241,"max_s":0.010445915000000241,"median_s_lognormal":0.008219321783444058,"sigma_log":0.09159818756371481} corrected: {"rtt_floor_s":0.000559,"n":30,"min_s_corr":0.006631,"p50_s_corr":0.007397,"p95_s_corr":0.009111,"p99_s_corr":0.009887,"median_s_lognormal_corr":0.007661}
+    outcomes: {"ok":30,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 2  (expect ~1-2; >> that = keep-alive NOT pooling)
+    CHALLENGE (Sub-ranking B) RAW: {"n":30,"min_s":0.0014762360000000001,"p50_s":0.002063206000000264,"p95_s":0.00294795300000078,"p99_s":0.0032711589999998977,"max_s":0.0032711589999998977,"median_s_lognormal":0.002146453054584009,"sigma_log":0.1470938986762764} corrected: {"rtt_floor_s":0.000804,"n":30,"min_s_corr":0.000673,"p50_s_corr":0.00126,"p95_s_corr":0.002144,"p99_s_corr":0.002467,"median_s_lognormal_corr":0.001343}
+[lightning] setup-wallets ok
+[rail-lightning-mpp] done -> rail-lightning-mpp.log
+    outcomes: {"ok":30,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 3  (expect ~1-2; >> that = keep-alive NOT pooling)
+    CHALLENGE (Sub-ranking B) RAW: {"n":30,"min_s":0.43102767500000116,"p50_s":0.4966755010000052,"p95_s":0.7190726590000013,"p99_s":0.722155847,"max_s":0.722155847,"median_s_lognormal":0.5522907439213179,"sigma_log":0.21778359401105} corrected: {"rtt_floor_s":0.00073,"n":30,"min_s_corr":0.430298,"p50_s_corr":0.495945,"p95_s_corr":0.718343,"p99_s_corr":0.721426,"median_s_lognormal_corr":0.551561}

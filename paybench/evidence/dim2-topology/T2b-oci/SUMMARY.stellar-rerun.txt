@@ -1,0 +1,5 @@
+[rail-stellar-x402] done -> rail-stellar-x402.log
+    outcomes: {"ok":40,"rejected":0,"timeout":0,"harness_error":0}  (of 40 trials)
+    socket connects observed: 4  (expect ~1-2; >> that = keep-alive NOT pooling -> distrust timings)
+    ACCEPT  (Sub-ranking A) RAW: {"n":40,"min_s":0.2412718129999994,"p50_s":0.284621027000001,"p95_s":0.36618863699999926,"p99_s":0.5529973790000003,"max_s":0.5529973790000003,"median_s_lognormal":0.2901024479446405,"sigma_log":0.1485619245459186} corrected: {"rtt_floor_s":0.000695,"n":40,"min_s_corr":0.240577,"p50_s_corr":0.283926,"p95_s_corr":0.365494,"p99_s_corr":0.552302,"median_s_lognormal_corr":0.289407}
+    CHALLENGE (Sub-ranking B) RAW: {"n":40,"min_s":0.0009635600000001431,"p50_s":0.0015438589999976103,"p95_s":0.0021025449999979174,"p99_s":0.0027342190000053963,"max_s":0.0027342190000053963,"median_s_lognormal":0.0016046231433691598,"sigma_log":0.16369626610544658} corrected: {"rtt_floor_s":0.000695,"n":40,"min_s_corr":0.000269,"p50_s_corr":0.000849,"p95_s_corr":0.001408,"p99_s_corr":0.002039,"median_s_lognormal_corr":0.00091}

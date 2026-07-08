@@ -1,0 +1,8 @@
+[tempo] setup-accounts ok (keyless-funded)
+[tempo] done -> tempo-A.log / tempo-B.log
+    outcomes: {"ok":30,"rejected":0,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 3  (expect ~1-2; >> that = keep-alive NOT pooling)
+    ACCEPT (Sub-ranking A) RAW: {"n":30,"min_s":0.009333358999999746,"p50_s":0.011132583000000067,"p95_s":0.015328676000000086,"p99_s":0.01936438700000008,"max_s":0.01936438700000008,"median_s_lognormal":0.011232776082420168,"sigma_log":0.16273140370398964} corrected: {"rtt_floor_s":0.000659,"n":30,"min_s_corr":0.008675,"p50_s_corr":0.010474,"p95_s_corr":0.01467,"p99_s_corr":0.018706,"median_s_lognormal_corr":0.010574}
+    outcomes: {"ok":30,"timeout":0,"harness_error":0}  (of 30 trials)
+    socket connects observed: 2  (expect ~1-2; >> that = keep-alive NOT pooling)
+    CHALLENGE (Sub-ranking B) RAW: {"n":30,"min_s":0.00187738200000058,"p50_s":0.002541704999999979,"p95_s":0.006947734999999966,"p99_s":0.01963699699999961,"max_s":0.01963699699999961,"median_s_lognormal":0.0028804379068019673,"sigma_log":0.44619991224694505} corrected: {"rtt_floor_s":0.001,"n":30,"min_s_corr":0.000877,"p50_s_corr":0.001541,"p95_s_corr":0.005947,"p99_s_corr":0.018637,"median_s_lognormal_corr":0.00188}

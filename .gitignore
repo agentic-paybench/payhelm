@@ -53,3 +53,4 @@ notes.otl
 .nfs*
 
 node_modules
+!paybench/evidence/**/*.jsonl
