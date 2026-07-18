@@ -9,9 +9,9 @@ Added **2026-06-30, post-freeze**. This directory is **not** part of the dim-2 p
 (`sha256:46a19eab…1dcd388`) and does not change any anchored hash. The **canonical, anchored** artefacts remain:
 - calibration inputs → the frozen fixtures `paybench/fixtures/<rail>-auth-latency-{A,B}.fixture.json`;
 - the 3-topology **order** → `paybench/methodology/dim2-scored-results.md`.
-These raw samples are *gitignored by design* in the agentpay instrumentation repo
-(`agentpay`, branch `dim2-rapl-instrumentation`: *"raw run samples; curated copies live in the payhelm
-fork"*) — **this directory is that curated copy.** Integrity: `SHA256SUMS` (verify with `sha256sum -c SHA256SUMS`).
+These raw samples are gitignored by design in the private instrumentation repo
+(its policy: raw run samples stay local; curated copies live in the payhelm
+fork) — **this directory is that curated copy.** Integrity: `SHA256SUMS` (verify with `sha256sum -c SHA256SUMS`).
 
 ## Topologies
 | Dir | Vantage | When |
@@ -42,7 +42,7 @@ response transcripts — golden-transcript adapter tests therefore cannot be bac
   remains for the real-rail run).
 - **AP2 (R6) is in-process / topology-invariant** — its `mode` variants (chain / full / issueronly) sit under
   `T1-devbox/` for completeness; its *replayable raw captures* (`captured-*.json`) live in
-  `agentpay/poc/rail-ap2/` and are the one rail with true golden transcripts today.
+  the private instrumentation repo and are the one rail with true golden transcripts today.
 - **Read the order as "rail+facilitator-as-deployed"** (each rail on a different facilitator; all topologies
   reach the same pinned backend) — see `ERRATA.md` E2 / G-R3.
 

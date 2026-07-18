@@ -33,8 +33,8 @@ subcommand takes `--dimension {finality,auth-latency}` (`-d`), defaulting to
   descriptor is pinned to the original constants; CI + tests guard it).
 - **`auth-latency`** — the Day-30 authorization-latency dimension (§11), where
   **AP2/R6 debuts** (§8 Resolution B): 6 rails → C(6,2) = 15 pairs → 7,500 trials.
-  Calibration is **PLACEHOLDER** pending founder sourcing — see
-  `../methodology/dim2-auth-latency.DRAFT.md` and `../SESSION-1-HANDOFF.md`.
+  Calibration was later superseded by the frozen dimension-2 methodology — see
+  `../methodology/dim2-auth-latency.md`.
 
 ```bash
 python -m paybench.mockbench.cli all -d auth-latency   # generate + run the auth-latency dimension
