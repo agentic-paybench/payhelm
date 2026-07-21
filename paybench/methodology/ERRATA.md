@@ -9,10 +9,12 @@ follow-on artefact. This file is itself not part of any frozen manifest.
 **Anchored baselines referenced below**
 - **Dimension 1 — settlement-finality (v1.2).** Manifest `prereg-manifest.sha256` =
   `a5f6feb46819dc3926012a8a38ac519cd0d5df33c20734516dca4b32d30d3a6f`; signed tag `paybench-prereg-v1.2`;
-  Bitcoin block 952636; Rekor logIndex 1740328355.
+  Bitcoin block 952636; Rekor logIndex 1740328355; OSF registration DOI
+  <https://doi.org/10.17605/OSF.IO/XGFUJ> (public since 2026-07-17).
 - **Dimension 2 — authorization latency / RAPL.** Manifest `dim2-prereg-manifest.sha256` =
   `46a19eab516ef3214270513f718bd07a846e18a4f42d9916fcb829da71dcd388`; signed tag `paybench-rapl-prereg-v1`;
-  Bitcoin block 955977; Rekor logIndex 2012836917.
+  Bitcoin block 955977; Rekor logIndex 2012836917; OSF registration DOI
+  <https://doi.org/10.17605/OSF.IO/UFQG5> (public since 2026-07-17).
 
 ---
 
@@ -125,3 +127,55 @@ only *derived* samples (`accept_raw_s`, `challenge_raw_s`, `rtt_floor_s`, …), 
 golden-transcript tests cannot be backfilled from existing data, and the real-rail harness must additionally
 **log raw rail transcripts** for that backfill to become possible. (AP2 is the one rail with replayable raw
 captures today.) Tracking: `gauntlet-r1…` **G-P4**.
+
+## E7 (2026-07-03): Freeze provenance clarifications (ceremony machinery, not methodology)
+
+This entry records three process/provenance facts about the anchored freezes. None changes any methodology of
+record or any anchored byte-set; all three were confirmed on 2026-07-03 by re-verifying against the tags with
+`paybench/methodology/verify-freeze.sh` (byte-set, self-hash, OTS + Rekor digests all match for both dimensions).
+
+**(a) The dim-1 and dim-2 freezes predate the gate-8/9 freeze-guard, so the guard reports LEGACY / BLOCKED.**
+Both tags were anchored (`paybench-prereg-v1.2` on 2026-06-06; `paybench-rapl-prereg-v1` on 2026-06-29) before the
+CEREMONY-PREFLIGHT gate-8 (pre-freeze gauntlet) and gate-9 (cross-dimension) attestation machinery existed (added
+2026-06-30). Their `freeze-evidence/*.md` files were authored afterward and are `STATUS: LEGACY`; because the
+evidence is not inside the tagged commit, `freeze-guard.sh` blocks the tags. This is honest, not a defect: neither
+freeze can claim gate-8/9 PASS because the gauntlet post-dates it. Re-pushing either tag uses the documented
+`PAYBENCH_FREEZE_OVERRIDE=1` path, and the freeze-guard CI job must NOT be a required status check while these
+legacy tags exist or it will block legitimately. Every freeze from dim-3 onward commits its filled gate-8/9
+evidence before tagging, so the guard passes without override.
+
+**(b) The tagged freeze commits are now preserved on protected append-only frozen branches.** After later branch
+rebases, the tagged commits were held only by their tags (`aeab0640` survived on `paybench/dim2-auth-latency`;
+`3dd74caa` was on no branch at all). Append-only branches `paybench/dim1-frozen` (at `paybench-prereg-v1.2`) and
+`paybench/dim2-frozen` (at `paybench-rapl-prereg-v1`) now pin the exact anchored commits and must never be rebased
+or force-pushed.
+
+**(c) The dim-1 signed-tag message carries a truncated manifest hash.** The `paybench-prereg-v1.2` tag message
+records the manifest hash elided as `a5f6feb4…d3a6f`, not the full 64-hex digest; the dim-2 tag correctly records
+the full `sha256:46a19eab…388`. The full dim-1 digest of record is
+`a5f6feb46819dc3926012a8a38ac519cd0d5df33c20734516dca4b32d30d3a6f`; the manifest self-hash and both the
+OpenTimestamps and Rekor proofs bind that full value, so only the human-readable tag message is abbreviated.
+Future tag messages carry the full hash with no ellipsis.
+
+**Disposition.** Provenance clarifications only; no re-freeze and no change to any anchored byte-set. Verify any
+freeze from its tag alone with `paybench/methodology/verify-freeze.sh <tag>`.
+
+**Update (2026-07-03, commit `5b84621e`).** The two grandfathered tags are now exempted by EXACT name at the top
+of `ceremony-hooks/freeze-guard.sh`, so the local pre-push hook, the manual self-check, and `verify-freeze.sh`
+allow them without `PAYBENCH_FREEZE_OVERRIDE=1` (this supersedes the override note in (a) above). New prereg tags
+stay fully gated. The freeze-guard workflow can therefore be promoted to a required tag-ruleset workflow once
+DIM-03 freezes with its gate-8/9 evidence committed in-tag; that promotion is intentionally not wired yet.
+
+## E8 (2026-07-21): anchor robustness; the OSF leg is corroborating, not load-bearing
+
+Each dimension's pre-registration is anchored three independent ways (the OSF registration DOI, an
+OpenTimestamps attestation in the Bitcoin blockchain, and a cosign signature in the Rekor transparency
+log), plus a signed git tag. These legs do not depend on each other: the Bitcoin and Rekor anchors commit
+to the same manifest hash and are independently sufficient to prove the freeze date and byte-set even if
+the OSF platform were unavailable, renamed, or discontinued. The frozen documents themselves cannot cite
+their own DOIs (the DOI is minted at registration, after the byte-set is fixed, and an OSF registration
+is immutable from submission), so the DOI-to-manifest linkage is published here and in the anchored
+baselines above rather than inside any frozen file. Both registrations exited their planned Day-0
+embargo on 2026-07-17 and are public; an independent copy of the dimension-1 attachments, including the
+self-verifying `.ots` and `.cosign.bundle` proofs, is held at the Internet Archive
+(<https://archive.org/details/methodology_202606>).
