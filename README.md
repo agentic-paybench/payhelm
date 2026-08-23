@@ -1,3 +1,22 @@
+# PayBench
+
+**A pre-registered, rail-neutral measurement methodology for agent-to-agent payment rails, built as a fork of HELM.** Everything below this section is the upstream HELM README, kept intact; this section is the only change to `main`, which otherwise mirrors upstream so the fork stays mergeable.
+
+What is here:
+
+- **Methodology** (frozen v1.2): `paybench/methodology/methodology.md`. Settlement-finality measurement across rails, with per-rail finality defined at each rail's own canonical reliance level, Bradley-Terry maximum-likelihood scoring, pass@k, and Wilson lower-bound confidence intervals.
+- **Pre-registrations**, anchored before any measurement: settlement finality, OSF DOI [10.17605/OSF.IO/XGFUJ](https://doi.org/10.17605/OSF.IO/XGFUJ), signed tag `paybench-prereg-v1.2`; authorization-primitive latency, OSF DOI [10.17605/OSF.IO/UFQG5](https://doi.org/10.17605/OSF.IO/UFQG5), signed tag `paybench-rapl-prereg-v1`. The anchors prove precedence, integrity, and signer identity; they claim no authorship of the underlying cryptographic primitives.
+- **Harness and calibrated fixtures**: the unified Python harness and content-addressed mock fixtures with provenance, reproducible bit-for-bit in CI.
+
+What is deliberately not here: **no rail-by-rail results and no ranking of named rails.** The method is published; results are withheld by choice, not omission. Nothing in this repository recommends a rail or routes a payment.
+
+Branches: you are on `main`, the upstream mirror plus this banner. The methodology, harness and fixtures live on `paybench/poc` (the working branch; the paths above are relative to it). `paybench/dim1-frozen` and `paybench/dim2-frozen` are append-only frozen lines carrying the anchored pre-registrations.
+
+Companion repository: [oracle](https://github.com/agentic-paybench/oracle), the capability oracle (schema, ingestion, methodology, static read surface), live at [oracle.agentic-paybench.dev](https://oracle.agentic-paybench.dev/).
+
+Research context and contact: [everydayai.link](https://everydayai.link/), mblake@everydayai.link. Corrections to anything published here are welcome by email.
+
+---
 # Holistic Evaluation of Language Models (HELM)
 
 [comment]: <> (When using the img tag, which allows us to specify size, src has to be a URL.)
