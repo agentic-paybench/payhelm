@@ -1,7 +1,7 @@
 # Reproducibility CI for the frozen, pre-registered PayBench v1.2 finality artefact.
 #
 # This guards the published-from artefact: a drift in any fixture content-hash,
-# a change in the Bradley-Terry rank order, or a change in the run_hash must fail
+# a change in the frozen artefact's digest, or a change in the run_hash must fail
 # CI loudly. Do NOT "fix" a red run by regenerating fixtures — that defeats the
 # entire purpose of this workflow.
 #
@@ -39,38 +39,51 @@ jobs:
         run: python -m paybench.mockbench.cli verify
 
       - name: Reproduce finality report
-        run: python -m paybench.mockbench.cli run
+        # stdout is discarded on purpose: the anchored CLI prints a ranked rail list,
+        # and the public Actions log must not carry a rail ordering. stderr is kept.
+        run: python -m paybench.mockbench.cli run > /dev/null
 
-      - name: Assert rank order and run_hash are unchanged
-        # The expected values ARE the frozen v1.2 artefact. If this step fails,
-        # the benchmark output drifted — investigate; do not regenerate to silence it.
+      - name: Assert run_hash and file digest are unchanged
+        # The expected values ARE the frozen v1.2 artefact. The file digest is read from
+        # the pre-registration manifest, so it cannot drift from the anchored byte-set.
+        # If this step fails, the benchmark output drifted: investigate; do not regenerate
+        # to silence it. Failure messages deliberately print digests only.
         run: |
           python - <<'PY'
-          import json, sys
+          import hashlib, json, sys
 
-          EXPECTED_RANKING = ["R10", "R1", "R2", "R9", "R11"]
           EXPECTED_RUN_HASH = "sha256:895f99ed52567421a1d7e9068ab9a0d7147d6381ec137e1b130b805e63b14ee0"
+          RUN_FILE = "paybench/runs/finality-run.json"
 
-          with open("paybench/runs/finality-run.json", encoding="utf-8") as fh:
-              report = json.load(fh)
+          expected_file_digest = None
+          with open("paybench/methodology/prereg-manifest.sha256", encoding="utf-8") as fh:
+              for line in fh:
+                  parts = line.split()
+                  if len(parts) == 2 and parts[1] == "runs/finality-run.json":
+                      expected_file_digest = parts[0]
+          if expected_file_digest is None:
+              print("REPRODUCIBILITY FAILURE: no finality-run.json line in prereg-manifest.sha256")
+              sys.exit(1)
 
-          ranking = report["bradley_terry"]["ranking"]
-          run_hash = report["run_hash"]
+          with open(RUN_FILE, "rb") as fh:
+              raw = fh.read()
+          file_digest = hashlib.sha256(raw).hexdigest()
+          run_hash = json.loads(raw.decode("utf-8"))["run_hash"]
 
           errors = []
-          if ranking != EXPECTED_RANKING:
-              errors.append(f"BT rank order drift: got {ranking}, expected {EXPECTED_RANKING}")
           if run_hash != EXPECTED_RUN_HASH:
               errors.append(f"run_hash drift: got {run_hash}, expected {EXPECTED_RUN_HASH}")
+          if file_digest != expected_file_digest:
+              errors.append(f"file digest drift: got {file_digest}, expected {expected_file_digest}")
 
           if errors:
-              print("REPRODUCIBILITY FAILURE — frozen v1.2 artefact drifted:")
+              print("REPRODUCIBILITY FAILURE: frozen v1.2 artefact drifted:")
               for e in errors:
                   print(f"  - {e}")
               sys.exit(1)
 
-          print(f"OK  rank order {ranking}")
-          print(f"OK  run_hash   {run_hash}")
+          print(f"OK  run_hash    {run_hash}")
+          print(f"OK  file digest {file_digest}")
           PY
 
       - name: Install pytest

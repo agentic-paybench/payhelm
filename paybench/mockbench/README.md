@@ -82,6 +82,7 @@ report carries no wall-clock, so it is byte-stable across executions.
 - **Calibrated mock, not real-rail.** Per Variant E, this harness exercises the full
   measurement + statistics pipeline against *calibrated mock fixtures*. Real-rail rankings are
   the Q3 HELD residual and are not produced here.
+  The anchored run files' orderings are reproducibility fingerprints of calibrated mock fixtures, not findings; see `methodology/ERRATA.md` E9.
 
 ## Layout
 

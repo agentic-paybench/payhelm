@@ -179,3 +179,17 @@ baselines above rather than inside any frozen file. Both registrations exited th
 embargo on 2026-07-17 and are public; an independent copy of the dimension-1 attachments, including the
 self-verifying `.ots` and `.cosign.bundle` proofs, is held at the Internet Archive
 (<https://archive.org/details/methodology_202606>).
+
+## E9 (2026-10-14): the anchored run files carry orderings over calibrated mock fixtures; disclosure and narrowing
+
+**What was anchored.** The version 1.2 settlement-finality run file and the two authorisation-latency run
+files, each committed to by its dimension's anchored byte-set and signed tag.
+
+**The issue.** The run files contain Bradley-Terry orderings and strength values, and earlier public test and
+workflow code asserted those orderings. The orderings are over calibrated mock fixtures, not real-rail
+measurements, and should not be read as a finding about any rail.
+
+**Resolution.** Note dated 2026-10-14. The frozen and externally anchored run files in this repository (the version 1.2 settlement-finality run and the two authorisation-latency runs) contain Bradley-Terry orderings and strength values computed over calibrated mock fixtures. They are retained as the reproducibility fingerprint of those anchored artefacts and are not offered as a finding about any rail. Publications of named-rail findings from this project list rails alphabetically by rail name. The anchored files are not altered, because altering them would break the anchors.
+
+The public reproducibility workflow and the mockbench tests now assert digests only (the run hash and the sha256
+of the anchored files), not any rail ordering.

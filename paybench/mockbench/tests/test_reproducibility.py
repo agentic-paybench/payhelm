@@ -14,6 +14,12 @@ from paybench.mockbench.fixtures import (
     sample_finalities,
 )
 
+# The frozen, pre-registered v1.2 settlement-finality run hash (§9); the same
+# value is pinned in test_auth_latency.py and in the CI workflow.
+FROZEN_FINALITY_RUN_HASH = (
+    "sha256:895f99ed52567421a1d7e9068ab9a0d7147d6381ec137e1b130b805e63b14ee0"
+)
+
 
 def test_sampling_is_deterministic():
     # Same rail, same master seed -> identical sample sequence, every time.
@@ -65,12 +71,9 @@ def test_run_is_bit_for_bit_reproducible():
     assert r1["config"]["n_pairs"] == 10
 
 
-def test_ranking_matches_finality_order():
-    # Fastest calibrated median should top the BT ranking; slowest should be last.
+def test_report_matches_frozen_digest():
+    # The reproduced report must carry the frozen v1.2 run_hash (methodology §9).
+    # The assertion is on the digest only: no rail ordering is asserted or printed.
     report = run_benchmark()
-    ranking = report["bradley_terry"]["ranking"]
-    # Medians: R10 1.75 < R1 2.05 < R2 2.74 < R9 14.63 < R11 16.52
-    assert ranking[0] == "R10"
-    assert ranking[-1] == "R11"
-    assert ranking == ["R10", "R1", "R2", "R9", "R11"]
+    assert report["run_hash"] == FROZEN_FINALITY_RUN_HASH
     assert report["bradley_terry"]["converged"] is True

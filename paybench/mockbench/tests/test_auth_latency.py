@@ -1,7 +1,7 @@
 """Dimension-2 (authorization-latency / RAPL) tests — mirror of test_reproducibility.
 
 Covers the SPLIT RAPL dimension end-to-end (determinism, content-addressing,
-calibration fidelity, reproducible runs, rankings) AND the cross-dimension
+calibration fidelity, reproducible runs, anchored-file digests) AND the cross-dimension
 invariants the generalisation must hold:
 
 * RAPL is SPLIT into two never-cross-raced sub-rankings — A (Payment-Validation)
@@ -14,13 +14,15 @@ invariants the generalisation must hold:
 
 RAPL fixtures are CALIBRATED from the first-party pilot {median, sigma} (the
 Variant-E mock baseline, representative topology per fixture); these tests assert
-harness *behaviour* + the doctrine's within-group order, not an absolute latency.
+harness *behaviour* and artefact digests, not an absolute latency or any rail ordering.
 """
 
 from __future__ import annotations
 
+import hashlib
 import math
 import statistics
+from pathlib import Path
 
 from paybench.mockbench import N_FIXTURE_SAMPLES, TRIALS_PER_PAIR
 from paybench.mockbench.bench import run_benchmark
@@ -34,20 +36,18 @@ from paybench.mockbench.fixtures import (
 
 # Deterministic outputs of the calibrated RAPL fixtures. These pin the harness's
 # reproducibility (regenerating the calibrated fixtures unchanged must reproduce
-# them bit-for-bit) AND the doctrine's within-group order.
-#
-# A — Payment-Validation: AP2 (DPC, local crypto) < Tempo-Session (local) <
-#     Solana < Stellar < Base (network facilitator). Local ≪ network.
-EXPECTED_AUTH_A_RANKING = ["R6", "R10", "R9", "R2", "R1"]
+# them bit-for-bit). Only digests are asserted: the anchored run files contain
+# orderings over calibrated mock fixtures, retained as reproducibility
+# fingerprints and not offered as a finding about any rail (ERRATA.md E9).
 EXPECTED_AUTH_A_RUN_HASH = (
     "sha256:7487c278aecc3586937b1903fc9fdd56cdce842b39560f0d9abb6041d122072b"
 )
-# B — Challenge-Issuance: local-402 (Stellar/Solana/Tempo/Base, ~ms) ≪ Lightning
-#     (BOLT11 invoice mint, ~0.5 s).
-EXPECTED_AUTH_B_RANKING = ["R2", "R9", "R10", "R1", "R11"]
 EXPECTED_AUTH_B_RUN_HASH = (
     "sha256:19b91c8df32f73fca84615ed44f3c00455c81f8a1df39ac2e9ff9314b4dd7c71"
 )
+# sha256 of the anchored run files (byte-identical to the paybench-rapl-prereg-v1 tag).
+EXPECTED_AUTH_A_FILE_SHA256 = "7c8f46b6dc1433d9c462a4f573b1f0f1adbbc3154424878c4bbd52bb63b65223"
+EXPECTED_AUTH_B_FILE_SHA256 = "4e781af0983575e71989e8180556e3a7ae92744dd57ee62c7ab194c523da85ee"
 # The frozen, pre-registered v1.2 settlement-finality run hash (§9). Must never
 # change — the whole point of the dimension-parametric refactor.
 FROZEN_FINALITY_RUN_HASH = (
@@ -121,17 +121,21 @@ def test_auth_runs_are_bit_for_bit_reproducible():
     assert run_benchmark(AUTH_LATENCY_B)["dimension"] == "authorization-latency:challenge-issuance"
 
 
-def test_auth_rankings_track_doctrine_within_group_order():
+def test_auth_run_files_match_anchored_digests():
+    # The anchored run files are retained byte-for-byte; assert their digests, not their contents.
+    runs = Path(__file__).resolve().parents[2] / "runs"
+    for name, expected in (
+        ("auth-latency-A-run.json", EXPECTED_AUTH_A_FILE_SHA256),
+        ("auth-latency-B-run.json", EXPECTED_AUTH_B_FILE_SHA256),
+    ):
+        assert hashlib.sha256((runs / name).read_bytes()).hexdigest() == expected, name
+
+
+def test_auth_runs_converge_and_split_invariant_holds():
     a = run_benchmark(AUTH_LATENCY_A)
     b = run_benchmark(AUTH_LATENCY_B)
-    # A: local crypto (AP2, Tempo-Session) ≪ network facilitator (Solana<Stellar<Base).
-    assert a["bradley_terry"]["ranking"] == EXPECTED_AUTH_A_RANKING
     assert a["bradley_terry"]["converged"] is True
-    assert a["bradley_terry"]["ranking"][0] == "R6"   # AP2 fastest-authorizing
-    assert a["bradley_terry"]["ranking"][-1] == "R1"  # Base slowest in A
-    # B: local-402 ≪ Lightning invoice-mint (slowest).
-    assert b["bradley_terry"]["ranking"] == EXPECTED_AUTH_B_RANKING
-    assert b["bradley_terry"]["ranking"][-1] == "R11"
+    assert b["bradley_terry"]["converged"] is True
     # The SPLIT invariant: AP2 is A-only, Lightning is B-only.
     assert "R6" in a["config"]["rails"] and "R6" not in b["config"]["rails"]
     assert "R11" in b["config"]["rails"] and "R11" not in a["config"]["rails"]
@@ -165,4 +169,3 @@ def test_finality_artefact_is_unperturbed_by_generalisation():
     report = run_benchmark(FINALITY)
     assert report["run_hash"] == FROZEN_FINALITY_RUN_HASH
     assert report["dimension"] == "settlement-finality"
-    assert report["bradley_terry"]["ranking"] == ["R10", "R1", "R2", "R9", "R11"]
