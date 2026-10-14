@@ -76,6 +76,20 @@ def test_report_carries_no_comparison_content():
     assert emit.ORDERING_SENTENCE in _report()["domain"]["description"]
     assert emit.PROTOCOL_SENTENCE in _report()["domain"]["description"]
     assert emit.MEASUREMENT_SENTENCE in _report()["domain"]["description"]
+    description = _report()["domain"]["description"]
+    # the protocol sentence stays verbatim and unbroken, and its scope sentence follows it
+    assert emit.PROTOCOL_SENTENCE + " " + emit.PROTOCOL_SCOPE_SENTENCE in description
+    assert emit.ORDERING_DISCLOSURE in description
+    assert emit.REPLY_SENTENCE in description
+    readme = (Path(emit.__file__).with_name("README.md")).read_text(encoding="utf-8")
+    for sentence in (
+        emit.MEASUREMENT_SENTENCE,
+        emit.ORDERING_SENTENCE,
+        emit.PROTOCOL_SENTENCE,
+        emit.PROTOCOL_SCOPE_SENTENCE.replace("(paybench/methodology/methodology.md)", "(`paybench/methodology/methodology.md`)"),
+        emit.REPLY_SENTENCE,
+    ):
+        assert sentence in readme, sentence[:60]
     assert "before any run" not in text and "before any measurement" not in text
 
 

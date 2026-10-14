@@ -57,6 +57,27 @@ ORDERING_SENTENCE = (
     "carries no performance meaning."
 )
 PROTOCOL_SENTENCE = "The same measurement protocol was applied identically to every rail."
+PROTOCOL_SCOPE_SENTENCE = (
+    "The protocol referred to is the threshold check applied to every fixture draw; the "
+    "calibration runs from which the fixtures were built carry the limitations disclosed and pre-registered "
+    "in section 7 of the methodology (paybench/methodology/methodology.md): the R2 fixture is "
+    "a manual-path lower bound that omits the facilitator round trip, the R11 fixture was "
+    "measured on a hosted regtest, the R10 fixture was measured on a testnet and is an "
+    "optimistic bound, and the R9 tail is partly documentation-derived."
+)
+ORDERING_DISCLOSURE = (
+    "The frozen and anchored finality pre-registration this report points at (signed tag "
+    "paybench-prereg-v1.2; OSF DOI 10.17605/OSF.IO/XGFUJ) pins a run record "
+    "(runs/finality-run.json) whose pairwise-model output contains a statement ordering the "
+    "five rails on this dimension. That statement is part of the frozen record and was fixed "
+    "before this report existed. This report does not assert any ordering: the rails are "
+    "listed alphabetically, the order carries no performance meaning, and nothing here is a "
+    "recommendation to use any rail."
+)
+REPLY_SENTENCE = (
+    "Any operator of a rail or facilitator named here may respond through the structured "
+    "right-of-reply channel at https://reply.agentic-paybench.dev/."
+)
 
 MEASUREMENT_SENTENCE = (
     "These figures are a measurement, not a recommendation: no rail is endorsed, no "
@@ -79,6 +100,12 @@ DOMAIN_DESCRIPTION = (
     + ORDERING_SENTENCE
     + " "
     + PROTOCOL_SENTENCE
+    + " "
+    + PROTOCOL_SCOPE_SENTENCE
+    + " "
+    + ORDERING_DISCLOSURE
+    + " "
+    + REPLY_SENTENCE
 )
 
 CROSSWALK = {
