@@ -1,0 +1,6 @@
+# PayBench DIM-01 settlement finality, test-network confirmatory run: data pre-registration manifest
+# Paths relative to paybench/. Verify: cd paybench && sha256sum -c methodology/dim1-testnet-prereg-manifest.sha256
+# The harness and rail-adapter code is private; methodology/dim1-testnet-harness-manifest.sha256 commits every one
+# of those files by hash (paths relative to the private repository's poc/ directory, checked there with sha256sum -c).
+016d24f29b0465e89647ac910f0d3fd065fe393ccd9e23039a7e2cbf8c350993  methodology/dim1-testnet-PRE-REGISTRATION.md
+1a9d1445d5328f2c2408f24929a439c3b4e9f1e2938fd9d6d91dd005b04b3e15  methodology/dim1-testnet-harness-manifest.sha256
