@@ -1,0 +1,3 @@
+# PayBench DIM-04 Half B, Addendum 1 to the data pre-registration: manifest
+# Paths relative to paybench/. Verify: cd paybench && sha256sum -c methodology/dim4-halfb-addendum-1-manifest.sha256
+e013e17faa9cb4abcfa98eadc899e12050c1b6b23074db0bf2dbd7592d02a3aa  methodology/dim4-halfb-PRE-REGISTRATION-ADDENDUM-1.md
